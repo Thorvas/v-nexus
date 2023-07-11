@@ -1,0 +1,1354 @@
+2023-06-22 20:15:48 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:48 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:48 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:48 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:48 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:49 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:49 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:51 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:53 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:15:58 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:03 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:08 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:13 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:18 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:23 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:28 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:33 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:38 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:43 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:48 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:53 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:16:58 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:17:03 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:17:08 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:17:10 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.util.JdbcUtils.getConnection(JdbcUtils.java:288)
+	at org.h2.server.web.WebServer.getConnection(WebServer.java:808)
+	at org.h2.server.web.WebApp.login(WebApp.java:1033)
+	at org.h2.server.web.WebApp.process(WebApp.java:226)
+	at org.h2.server.web.WebApp.processRequest(WebApp.java:176)
+	at org.h2.server.web.JakartaWebServlet.doGet(JakartaWebServlet.java:129)
+	at org.h2.server.web.JakartaWebServlet.doPost(JakartaWebServlet.java:166)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:166)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:341)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:390)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:894)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 91 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 85 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 87 more
+2023-06-22 20:17:13 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:17:19 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
+2023-06-22 20:17:24 database: flush
+org.h2.message.DbException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Błąd ogólny: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 25 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/cygan/Desktop/Repo/REST Service/demo/file/database.mv.db [2.1.214/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 19 more
+Caused by: java.nio.channels.OverlappingFileLockException
+	at java.base/sun.nio.ch.FileLockTable.checkList(FileLockTable.java:229)
+	at java.base/sun.nio.ch.FileLockTable.add(FileLockTable.java:123)
+	at java.base/sun.nio.ch.FileChannelImpl.tryLock(FileChannelImpl.java:1321)
+	at java.base/java.nio.channels.FileChannel.tryLock(FileChannel.java:1191)
+	at org.h2.mvstore.FileStore.open(FileStore.java:169)
+	... 21 more
