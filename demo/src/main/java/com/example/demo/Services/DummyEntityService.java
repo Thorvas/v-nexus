@@ -24,7 +24,7 @@ public class DummyEntityService {
     /**
      * Deletes an entity from database
      *
-     * @param id An ID value of deleted entity
+     * @param entity An ID value of deleted entity
      */
     public void deleteEntity(DummyEntity entity) {
 

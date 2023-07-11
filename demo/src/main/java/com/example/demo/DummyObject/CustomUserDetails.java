@@ -19,6 +19,7 @@ public class CustomUserDetails implements UserDetails {
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
     private Set<GrantedAuthority> authorities;
+    private Long volunteerId;
 
     public CustomUserDetails(Volunteer user) {
         this.setAuthorities(user.getAuthorities()
@@ -32,5 +33,6 @@ public class CustomUserDetails implements UserDetails {
         this.setAccountNonExpired(user.isAccountNonExpired());
         this.setAccountNonLocked(user.isAccountNonLocked());
         this.setCredentialsNonExpired(user.isCredentialsNonExpired());
+        this.setVolunteerId((user.getId()));
     }
 }

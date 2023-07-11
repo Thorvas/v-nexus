@@ -2,7 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.DummyObject.CustomUserDetails;
 import com.example.demo.DummyObject.Volunteer;
-import com.example.demo.Repositories.CustomUserRepository;
+import com.example.demo.Repositories.VolunteerRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserDetailsCustomImpl implements UserDetailsService {
 
     @Autowired
-    private CustomUserRepository userRepository;
+    private VolunteerRepository userRepository;
 
     @Transactional
     public UserDetails loadUserByUsername(String username) {

@@ -55,8 +55,9 @@ public class Volunteer {
     @ElementCollection
     private List<String> skills;
 
-    @Transient
-    private List<Project> projects;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @Column(name = "reputation")
     private Integer reputation;

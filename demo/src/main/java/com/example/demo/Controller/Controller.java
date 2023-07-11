@@ -1,21 +1,20 @@
 package com.example.demo.Controller;
 
-import com.example.demo.DummyObject.DummyEntity;
-import com.example.demo.Mapper.DummyEntityMapper;
+import com.example.demo.DTO.VolunteerDTO;
+import com.example.demo.DummyObject.Volunteer;
+import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Services.DummyEntityService;
-import com.example.demo.Specification.SpecificationBuilder;
+import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for handling DummyEntity requests.
@@ -23,89 +22,82 @@ import java.util.Optional;
  * @author Thorvas
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/volunteer")
 public class Controller {
 
     @Autowired
     private DummyEntityService service;
 
+    @Autowired
+    private VolunteerService volunteerService;
+
     /**
      * Receives data from logic part of application and saves received data to database
      *
-     * @param entity An entity sent to endpoint from data-analysis module which is saved to database
      * @return The ResponseEntity object which contains saved entity
      */
-    @PostMapping(value = "/postEstimation", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DummyEntity> postEntity(@RequestBody @Valid DummyEntity entity) {
+    @PostMapping(value = "/volunteer", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Volunteer> postVolunteer(@RequestBody @Valid Volunteer volunteer) {
 
-        if (entity.getId() != null) {
+        if (volunteer != null) {
 
-            Optional<DummyEntity> foundEntity = service.findEntityForSaveOrUpdate(entity.getId());
+            volunteerService.saveVolunteer(volunteer);
 
-            if (foundEntity.isPresent()) {
-
-                DummyEntity presentEntity = foundEntity.get();
-                DummyEntityMapper.mapEntity(entity, presentEntity);
-                service.saveEntity(presentEntity);
-                return new ResponseEntity<>(entity, HttpStatus.OK);
-
-            }
-
-            service.saveEntity(entity);
-            return new ResponseEntity<>(entity, HttpStatus.CREATED);
-
-        }
-
-        else {
-
-            throw new IllegalArgumentException("An ID shouldn't be null.");
+            return new ResponseEntity<>(volunteer, HttpStatus.CREATED);
+        } else {
+            throw new IllegalArgumentException("Posted volunteer cannot be null");
         }
     }
 
     /**
      * Retrieves estimation data from database based on parameters provided for filtering.
-     *
-     * @param voivodeship The voivodeship value (as String)
-     * @param poviat      The poviat value (as String)
-     * @param pageable    The Pageable object for pagination
-     * @return The ResponseEntity containing result of search
      */
-    @GetMapping(value = "/estimation", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<DummyEntity>> getEstimation(@RequestParam(value = "voivodeship", required = false) String voivodeship,
-                                                           @RequestParam(value = "poviat", required = false) String poviat,
-                                                           @PageableDefault(size = Integer.MAX_VALUE) Pageable pageable) {
+    @GetMapping(value = "/volunteers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<VolunteerDTO>> getVolunteers() {
 
-        SpecificationBuilder specificationBuilder = new SpecificationBuilder();
+        List<Volunteer> foundVolunteers = volunteerService.searchVolunteers();
 
-        specificationBuilder.withName(poviat)
-                .withVoivodeship(voivodeship);
+        if (foundVolunteers != null) {
 
-        Page<DummyEntity> entities = service.searchEntities(specificationBuilder.buildSpecification(), pageable);
+            List<VolunteerDTO> volunteerDTOS = foundVolunteers.stream()
+                    .map(volunteer -> VolunteerMapper.mapVolunteerToDTO(volunteer))
+                    .collect(Collectors.toList());
 
-        return ResponseEntity.ok(entities);
+            return new ResponseEntity<>(volunteerDTOS, HttpStatus.OK);
+
+        } else {
+
+            throw new EntityNotFoundException("Requested volunteers could not be found");
+        }
+    }
+
+    @GetMapping(value = "/volunteer/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VolunteerDTO> getVolunteer(@PathVariable Long id) {
+
+        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
+
+        return new ResponseEntity<>(VolunteerMapper.mapVolunteerToDTO(foundVolunteer), HttpStatus.OK);
     }
 
     /**
      * Updates an entity in database
      *
-     * @param id     An ID value of updated object
-     * @param entity New object to substitute an updated object
+     * @param id An ID value of updated object
      * @return The ResponseEntity object containing updated object
      */
-    @PatchMapping(value = "/entities/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DummyEntity> updateEntity(@PathVariable Long id, @RequestBody DummyEntity entity) {
+    @PatchMapping(value = "/volunteer/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id, @RequestBody Volunteer volunteer) {
+        if (id != null) {
 
-        Optional<DummyEntity> editedEntity = service.findEntityById(id);
+            Volunteer editedVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Requested entity was not found."));
 
-        if (editedEntity.isPresent()) {
+            VolunteerMapper.mapPropertiesToVolunteer(volunteer, editedVolunteer);
+            volunteerService.saveVolunteer(editedVolunteer);
+            VolunteerDTO returnedDTO = VolunteerMapper.mapVolunteerToDTO(editedVolunteer);
 
-            DummyEntityMapper.mapEntity(entity, editedEntity.get());
-            DummyEntity savedEntity = service.saveEntity(editedEntity.get());
-            return new ResponseEntity<>(savedEntity, HttpStatus.OK);
-
+            return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
         } else {
-
-            throw new EntityNotFoundException("Requested entity was not found.");
+            throw new IllegalArgumentException("An ID of requested volunteer to patch cannot be null.");
         }
     }
 
@@ -115,15 +107,18 @@ public class Controller {
      * @param id An ID value of deleted object
      * @return The String with deletion message
      */
-    @DeleteMapping(value = "/entities/{id}")
+    @DeleteMapping(value = "/volunteer/{id}")
     public ResponseEntity<String> deleteEntity(@PathVariable Long id) {
 
         if (id != null) {
-            Optional<DummyEntity> entityToDelete = service.findEntityById(id);
-            service.deleteEntity(entityToDelete.orElseThrow(() -> new EntityNotFoundException("An entity to delete was not found.")));
+            
+            Volunteer volunteerToDelete = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer to delete could not be found."));
+            volunteerService.deleteVolunteer(volunteerToDelete);
             return new ResponseEntity<>("An entity has been deleted.", HttpStatus.OK);
+        } else {
+
+            throw new IllegalArgumentException("An ID of requested volunteer to patch cannot be null.");
         }
-        throw new IllegalArgumentException("An ID shouldn't be null.");
 
 
     }

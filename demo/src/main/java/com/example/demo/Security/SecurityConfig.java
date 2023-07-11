@@ -1,6 +1,5 @@
 package com.example.demo.Security;
 
-import com.example.demo.AuthenticationFilter.CustomAuthenticationFilter;
 import com.example.demo.Services.UserDetailsCustomImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -24,19 +23,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
-    }
-
-    @Bean
-    public FilterRegistrationBean<CustomAuthenticationFilter> myFilter(CustomAuthenticationFilter filter) {
-
-        FilterRegistrationBean<CustomAuthenticationFilter> registrationBean
-                = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(filter);
-        registrationBean.addUrlPatterns("/api/postEstimation/*");
-        registrationBean.setOrder(1);
-
-        return registrationBean;
     }
 
     @Bean
