@@ -1,7 +1,6 @@
 package com.example.demo.DTO;
 
 import com.example.demo.DummyObject.Project;
-import com.example.demo.DummyObject.Volunteer;
 import lombok.Data;
 
 import java.time.LocalDate;

@@ -3,7 +3,6 @@ package com.example.demo.Controller;
 import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.DummyObject.Volunteer;
 import com.example.demo.Mapper.VolunteerMapper;
-import com.example.demo.Services.DummyEntityService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -22,12 +21,8 @@ import java.util.stream.Collectors;
  * @author Thorvas
  */
 @RestController
-@RequestMapping("/api/volunteer")
-public class Controller {
-
-    @Autowired
-    private DummyEntityService service;
-
+@RequestMapping("/api")
+public class VolunteerController {
     @Autowired
     private VolunteerService volunteerService;
 
@@ -41,9 +36,9 @@ public class Controller {
 
         if (volunteer != null) {
 
-            volunteerService.saveVolunteer(volunteer);
+            Volunteer savedVolunteer = volunteerService.saveVolunteer(volunteer);
 
-            return new ResponseEntity<>(volunteer, HttpStatus.CREATED);
+            return new ResponseEntity<>(savedVolunteer, HttpStatus.CREATED);
         } else {
             throw new IllegalArgumentException("Posted volunteer cannot be null");
         }
@@ -60,7 +55,7 @@ public class Controller {
         if (foundVolunteers != null) {
 
             List<VolunteerDTO> volunteerDTOS = foundVolunteers.stream()
-                    .map(volunteer -> VolunteerMapper.mapVolunteerToDTO(volunteer))
+                    .map(VolunteerMapper::mapVolunteerToDTO)
                     .collect(Collectors.toList());
 
             return new ResponseEntity<>(volunteerDTOS, HttpStatus.OK);
@@ -97,6 +92,7 @@ public class Controller {
 
             return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
         } else {
+
             throw new IllegalArgumentException("An ID of requested volunteer to patch cannot be null.");
         }
     }
@@ -108,13 +104,14 @@ public class Controller {
      * @return The String with deletion message
      */
     @DeleteMapping(value = "/volunteer/{id}")
-    public ResponseEntity<String> deleteEntity(@PathVariable Long id) {
+    public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id) {
 
         if (id != null) {
-            
+
             Volunteer volunteerToDelete = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer to delete could not be found."));
+            VolunteerDTO returnedDTO = VolunteerMapper.mapVolunteerToDTO(volunteerToDelete);
             volunteerService.deleteVolunteer(volunteerToDelete);
-            return new ResponseEntity<>("An entity has been deleted.", HttpStatus.OK);
+            return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
         } else {
 
             throw new IllegalArgumentException("An ID of requested volunteer to patch cannot be null.");
