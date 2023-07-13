@@ -55,9 +55,15 @@ public class Volunteer {
     @ElementCollection
     private List<String> skills;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    private Project project;
+    @ManyToMany
+    @JoinTable(
+            name = "volunteer_project",
+    joinColumns = @JoinColumn(name = "project_id"),
+    inverseJoinColumns = @JoinColumn(name = "volunteer_id"))
+    private List<Project> participatingProjects;
+
+    @OneToMany(mappedBy = "ownerVolunteer")
+    private List<Project> ownedProjects;
 
     @Column(name = "reputation")
     private Integer reputation;

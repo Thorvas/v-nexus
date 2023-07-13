@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import com.example.demo.DTO.VolunteerDTO;
+import com.example.demo.DummyObject.Project;
 import com.example.demo.DummyObject.Volunteer;
 import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Services.VolunteerService;
@@ -72,6 +73,40 @@ public class VolunteerController {
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
 
         return new ResponseEntity<>(VolunteerMapper.mapVolunteerToDTO(foundVolunteer), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/volunteer/{id}/skills", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<String>> getSkills(@PathVariable Long id) {
+
+        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
+
+        return new ResponseEntity<>(foundVolunteer.getSkills(), HttpStatus.OK);
+
+    }
+
+    @GetMapping(value = "/volunteer/{id}/interests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<String>> getInterests(@PathVariable Long id) {
+
+        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
+
+        return new ResponseEntity<>(foundVolunteer.getInterests(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/volunteer/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Project>> getProjects(@PathVariable Long id) {
+
+        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
+
+        return new ResponseEntity<>(foundVolunteer.getParticipatingProjects(), HttpStatus.OK);
+    }
+
+    //URL to change!
+    @GetMapping(value = "/volunteer/{id}/ownedProjects", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Project>> getOwnedProjects(@PathVariable Long id) {
+
+        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
+
+        return new ResponseEntity<>(foundVolunteer.getOwnedProjects(), HttpStatus.OK);
     }
 
     /**

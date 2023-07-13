@@ -2,6 +2,7 @@ package Controller;
 
 import com.example.demo.Controller.VolunteerController;
 import com.example.demo.DTO.VolunteerDTO;
+import com.example.demo.DummyObject.Project;
 import com.example.demo.DummyObject.Volunteer;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 public class VolunteerControllerTests {
@@ -57,6 +59,80 @@ public class VolunteerControllerTests {
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
+
+    }
+
+    @Test
+    public void getListOfInterestsAndSkills_shouldReturnOkStatus() {
+
+        List<String> exampleInterests = List.of("First interest", "Second interest", "Third interest");
+        List<String> exampleSkills = List.of("First skill", "Second skill", "Third skill");
+
+        this.volunteerToTest.setInterests(exampleInterests);
+        this.volunteerToTest.setSkills(exampleSkills);
+
+        Mockito.when(volunteerService.findVolunteer(volunteerToTest.getId())).thenReturn(Optional.of(volunteerToTest));
+
+        ResponseEntity<List<String>> interestsResponse = volunteerController.getInterests(volunteerToTest.getId());
+        ResponseEntity<List<String>> skillsResponse = volunteerController.getSkills(volunteerToTest.getId());
+
+        Assertions.assertEquals(exampleInterests, interestsResponse.getBody());
+        Assertions.assertEquals(exampleSkills, skillsResponse.getBody());
+        Assertions.assertEquals(HttpStatus.OK, interestsResponse.getStatusCode());
+        Assertions.assertEquals(HttpStatus.OK, skillsResponse.getStatusCode());
+
+    }
+
+    @Test
+    public void getListOfOwnedProjects_shouldReturnOkStatus() {
+
+        Project firstProject = new Project();
+
+        firstProject.setProjectName("Example Project");
+        firstProject.setId(1L);
+        firstProject.setOwnerVolunteer(volunteerToTest);
+
+        volunteerToTest.setOwnedProjects(List.of(firstProject));
+
+        Mockito.when(volunteerService.findVolunteer(volunteerToTest.getId())).thenReturn(Optional.of(volunteerToTest));
+
+        ResponseEntity<List<Project>> response = volunteerController.getOwnedProjects(volunteerToTest.getId());
+
+        Assertions.assertEquals(Set.of(firstProject), response.getBody());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    }
+
+    @Test
+    public void getListOfParticipatingProjects_shouldReturnOkStatus() {
+
+        Project firstProject = new Project();
+        Project secondProject = new Project();
+        Project thirdProject = new Project();
+
+        Volunteer secondExampleVolunteer = new Volunteer();
+
+        firstProject.setId(1L);
+        secondProject.setId(2L);
+        thirdProject.setId(3L);
+
+        secondExampleVolunteer.setId(2L);
+        secondExampleVolunteer.setName(SETUP_NAME);
+        secondExampleVolunteer.setSurname(SETUP_SURNAME);
+        secondExampleVolunteer.setReputation(SETUP_REPUTATION);
+
+        List<Project> listOfProjects = List.of(firstProject, secondProject, thirdProject);
+        List<Volunteer> listOfVolunteers = List.of(volunteerToTest, secondExampleVolunteer);
+
+        volunteerToTest.setParticipatingProjects(listOfProjects);
+        firstProject.setProjectVolunteers(listOfVolunteers);
+
+        Mockito.when(volunteerService.findVolunteer(volunteerToTest.getId())).thenReturn(Optional.of(volunteerToTest));
+
+        ResponseEntity<List<Project>> response = volunteerController.getProjects(volunteerToTest.getId());
+
+        Assertions.assertEquals(listOfProjects, response.getBody());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -154,5 +230,14 @@ public class VolunteerControllerTests {
     public void updateVolunteer_shouldThrowIllegalArgumentException() {
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> volunteerController.updateVolunteer(null, this.volunteerToTest));
+    }
+
+    @Test
+    public void getListOfInterestsAndSkills_shouldThrowEntityNotFoundException() {
+
+        Mockito.when(volunteerService.findVolunteer(this.volunteerToTest.getId())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(EntityNotFoundException.class, () -> volunteerController.getSkills(volunteerToTest.getId()));
+        Assertions.assertThrows(EntityNotFoundException.class, () -> volunteerController.getInterests(volunteerToTest.getId()));
     }
 }

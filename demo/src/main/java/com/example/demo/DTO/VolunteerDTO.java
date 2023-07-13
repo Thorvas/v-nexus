@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class VolunteerDTO {
@@ -14,7 +15,7 @@ public class VolunteerDTO {
     private LocalDate dateOfBirth;
     private String contact;
     private List<String> skills;
-    private Project project;
+    private List<Project> projects;
     private Integer reputation;
     private List<String> interests;
 

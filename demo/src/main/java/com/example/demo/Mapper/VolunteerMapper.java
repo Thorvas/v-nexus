@@ -14,7 +14,7 @@ public class VolunteerMapper {
         newDTO.setDateOfBirth(volunteerToMap.getDateOfBirth());
         newDTO.setContact(volunteerToMap.getContact());
         newDTO.setSkills(volunteerToMap.getSkills());
-        newDTO.setProject(volunteerToMap.getProject());
+        newDTO.setProjects(volunteerToMap.getParticipatingProjects());
         newDTO.setReputation(volunteerToMap.getReputation());
         newDTO.setInterests(volunteerToMap.getInterests());
 
@@ -28,7 +28,7 @@ public class VolunteerMapper {
         targetVolunteer.setDateOfBirth(sourceVolunteer.getDateOfBirth());
         targetVolunteer.setContact(sourceVolunteer.getContact());
         targetVolunteer.setSkills(sourceVolunteer.getSkills());
-        targetVolunteer.setProject(sourceVolunteer.getProject());
+        targetVolunteer.setParticipatingProjects(sourceVolunteer.getParticipatingProjects());
         targetVolunteer.setReputation(sourceVolunteer.getReputation());
         targetVolunteer.setInterests(sourceVolunteer.getInterests());
 

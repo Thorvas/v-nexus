@@ -1,11 +1,11 @@
 package com.example.demo.DummyObject;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 
 @Data
@@ -24,10 +24,16 @@ public class Project {
     private String projectDesription;
 
     @Column(name = "project_date")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate projectDate;
 
-    @OneToMany(mappedBy = "project")
-    private Set<Volunteer> projectVolunteers;
+    @ManyToMany(mappedBy = "participatingProjects")
+    private List<Volunteer> projectVolunteers;
+
+    @ManyToOne
+    @JoinColumn(name = "volunteer_owner")
+    private Volunteer ownerVolunteer;
 
     @Column(name = "project_location")
     private String projectLocation;
