@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * @author Thorvas
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1/volunteers")
 public class VolunteerController {
     @Autowired
     private VolunteerService volunteerService;
@@ -32,7 +32,7 @@ public class VolunteerController {
      *
      * @return The ResponseEntity object which contains saved entity
      */
-    @PostMapping(value = "/volunteer", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Volunteer> postVolunteer(@RequestBody @Valid Volunteer volunteer) {
 
         if (volunteer != null) {
@@ -48,7 +48,7 @@ public class VolunteerController {
     /**
      * Retrieves estimation data from database based on parameters provided for filtering.
      */
-    @GetMapping(value = "/volunteers", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<VolunteerDTO>> getVolunteers() {
 
         List<Volunteer> foundVolunteers = volunteerService.searchVolunteers();
@@ -67,7 +67,7 @@ public class VolunteerController {
         }
     }
 
-    @GetMapping(value = "/volunteer/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getVolunteer(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
@@ -75,7 +75,7 @@ public class VolunteerController {
         return new ResponseEntity<>(VolunteerMapper.mapVolunteerToDTO(foundVolunteer), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/volunteer/{id}/skills", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}/skills", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> getSkills(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
@@ -84,7 +84,7 @@ public class VolunteerController {
 
     }
 
-    @GetMapping(value = "/volunteer/{id}/interests", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}/interests", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> getInterests(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
@@ -92,7 +92,7 @@ public class VolunteerController {
         return new ResponseEntity<>(foundVolunteer.getInterests(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/volunteer/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Project>> getProjects(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
@@ -101,7 +101,7 @@ public class VolunteerController {
     }
 
     //URL to change!
-    @GetMapping(value = "/volunteer/{id}/ownedProjects", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}/projects/owned", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Project>> getOwnedProjects(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
@@ -115,7 +115,7 @@ public class VolunteerController {
      * @param id An ID value of updated object
      * @return The ResponseEntity object containing updated object
      */
-    @PatchMapping(value = "/volunteer/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id, @RequestBody Volunteer volunteer) {
         if (id != null) {
 
@@ -138,7 +138,7 @@ public class VolunteerController {
      * @param id An ID value of deleted object
      * @return The String with deletion message
      */
-    @DeleteMapping(value = "/volunteer/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id) {
 
         if (id != null) {

@@ -20,13 +20,23 @@ public class ProjectService {
         return projectRepository.findById(id);
     }
 
-    public List<Project> searchProjectsWithStatus(boolean status) {
-
-        return projectRepository.findWithStatus(status);
-    }
-
     public List<Project> searchProjectsWithDate(LocalDate date) {
 
         return projectRepository.findWithDate(date);
+    }
+
+    public List<Project> searchAllProjects() {
+
+        return projectRepository.findAll();
+    }
+
+    public List<Project> searchProjectsWithLocation(String location) {
+
+        return projectRepository.findWithLocation(location);
+    }
+
+    public List<Project> searchProjectsWithStatus(boolean status) {
+
+        return projectRepository.findWithStatus(status);
     }
 }
