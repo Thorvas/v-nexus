@@ -20,6 +20,11 @@ public class ProjectService {
         return projectRepository.findById(id);
     }
 
+    public Project saveProject(Project project) {
+
+        return projectRepository.save(project);
+    }
+
     public List<Project> searchProjectsWithDate(LocalDate date) {
 
         return projectRepository.findWithDate(date);
@@ -38,5 +43,10 @@ public class ProjectService {
     public List<Project> searchProjectsWithStatus(boolean status) {
 
         return projectRepository.findWithStatus(status);
+    }
+
+    public void deleteProject(Project project) {
+
+        projectRepository.delete(project);
     }
 }

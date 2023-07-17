@@ -3,6 +3,8 @@ package com.example.demo.Controller;
 import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.DummyObject.Project;
 import com.example.demo.DummyObject.Volunteer;
+import com.example.demo.Mapper.OpinionMapper;
+import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +28,15 @@ import java.util.stream.Collectors;
 public class VolunteerController {
     @Autowired
     private VolunteerService volunteerService;
+
+    @Autowired
+    private VolunteerMapper volunteerMapper;
+
+    @Autowired
+    private ProjectMapper projectMapper;
+
+    @Autowired
+    private OpinionMapper opinionMapper;
 
     /**
      * Receives data from logic part of application and saves received data to database
@@ -56,7 +67,7 @@ public class VolunteerController {
         if (foundVolunteers != null) {
 
             List<VolunteerDTO> volunteerDTOS = foundVolunteers.stream()
-                    .map(VolunteerMapper::mapVolunteerToDTO)
+                    .map(volunteerMapper::mapVolunteerToDTO)
                     .collect(Collectors.toList());
 
             return new ResponseEntity<>(volunteerDTOS, HttpStatus.OK);
@@ -72,7 +83,7 @@ public class VolunteerController {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
 
-        return new ResponseEntity<>(VolunteerMapper.mapVolunteerToDTO(foundVolunteer), HttpStatus.OK);
+        return new ResponseEntity<>(volunteerMapper.mapVolunteerToDTO(foundVolunteer), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/skills", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -115,7 +126,7 @@ public class VolunteerController {
      * @param id An ID value of updated object
      * @return The ResponseEntity object containing updated object
      */
-    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id, @RequestBody Volunteer volunteer) {
         if (id != null) {
 
@@ -123,7 +134,7 @@ public class VolunteerController {
 
             VolunteerMapper.mapPropertiesToVolunteer(volunteer, editedVolunteer);
             volunteerService.saveVolunteer(editedVolunteer);
-            VolunteerDTO returnedDTO = VolunteerMapper.mapVolunteerToDTO(editedVolunteer);
+            VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(editedVolunteer);
 
             return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
         } else {
@@ -138,13 +149,13 @@ public class VolunteerController {
      * @param id An ID value of deleted object
      * @return The String with deletion message
      */
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id) {
 
         if (id != null) {
 
             Volunteer volunteerToDelete = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer to delete could not be found."));
-            VolunteerDTO returnedDTO = VolunteerMapper.mapVolunteerToDTO(volunteerToDelete);
+            VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(volunteerToDelete);
             volunteerService.deleteVolunteer(volunteerToDelete);
             return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
         } else {

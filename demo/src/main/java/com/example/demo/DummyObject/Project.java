@@ -1,6 +1,9 @@
 package com.example.demo.DummyObject;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,6 +14,10 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "project")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Project {
 
     @Id
@@ -28,7 +35,11 @@ public class Project {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate projectDate;
 
-    @ManyToMany(mappedBy = "participatingProjects")
+    @ManyToMany
+    @JoinTable(
+            name = "volunteer_project",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "volunteer_id"))
     private List<Volunteer> projectVolunteers;
 
     @ManyToOne
@@ -42,7 +53,7 @@ public class Project {
     private List<String> requiredSkills;
 
     @Column(name = "project_status")
-    private String projectStatus;
+    private boolean projectStatus;
 
     @OneToMany(mappedBy = "describedProject")
     private List<Opinion> projectOpinions;

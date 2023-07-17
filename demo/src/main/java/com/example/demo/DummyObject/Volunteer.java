@@ -1,5 +1,8 @@
 package com.example.demo.DummyObject;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,6 +13,10 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "volunteer")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Volunteer {
 
     @Id
@@ -55,11 +62,8 @@ public class Volunteer {
     @ElementCollection
     private List<String> skills;
 
-    @ManyToMany
-    @JoinTable(
-            name = "volunteer_project",
-    joinColumns = @JoinColumn(name = "project_id"),
-    inverseJoinColumns = @JoinColumn(name = "volunteer_id"))
+
+    @ManyToMany(mappedBy = "projectVolunteers")
     private List<Project> participatingProjects;
 
     @OneToMany(mappedBy = "ownerVolunteer")

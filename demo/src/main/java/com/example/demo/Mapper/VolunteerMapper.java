@@ -2,21 +2,20 @@ package com.example.demo.Mapper;
 
 import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.DummyObject.Volunteer;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class VolunteerMapper {
 
-    public static VolunteerDTO mapVolunteerToDTO(Volunteer volunteerToMap) {
+    @Autowired
+    private ModelMapper modelMapper;
 
-        VolunteerDTO newDTO = new VolunteerDTO();
+    public VolunteerDTO mapVolunteerToDTO(Volunteer volunteerToMap) {
 
-        newDTO.setName(volunteerToMap.getName());
-        newDTO.setSurname(volunteerToMap.getSurname());
-        newDTO.setDateOfBirth(volunteerToMap.getDateOfBirth());
-        newDTO.setContact(volunteerToMap.getContact());
-        newDTO.setSkills(volunteerToMap.getSkills());
-        newDTO.setProjects(volunteerToMap.getParticipatingProjects());
-        newDTO.setReputation(volunteerToMap.getReputation());
-        newDTO.setInterests(volunteerToMap.getInterests());
+        VolunteerDTO newDTO = modelMapper.map(volunteerToMap, VolunteerDTO.class);
 
         return newDTO;
     }
