@@ -1,9 +1,12 @@
 package com.example.demo.Controller;
 
+import com.example.demo.DTO.CategoryDTO;
 import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.DummyObject.Opinion;
 import com.example.demo.DummyObject.Project;
+import com.example.demo.DummyObject.Volunteer;
+import com.example.demo.Mapper.CategoryMapper;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
@@ -25,6 +28,9 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Autowired
     private ProjectMapper projectMapper;
@@ -54,7 +60,9 @@ public class ProjectController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ProjectDTO>> listProjects() {
 
-        List<ProjectDTO> projectDTOs = projectService.searchAllProjects().stream()
+        List<Project> foundProjects = projectService.searchAllProjects();
+
+        List<ProjectDTO> projectDTOs = foundProjects.stream()
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
@@ -135,6 +143,17 @@ public class ProjectController {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CategoryDTO>> getCategories(@PathVariable Long id) {
+
+        Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        List<CategoryDTO> categories = foundProject.getCategories().stream()
+                .map(categoryMapper::mapCategoryToDTO)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
     @GetMapping(value = "/date/{date}", produces = MediaType.APPLICATION_JSON_VALUE)

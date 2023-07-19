@@ -3,6 +3,7 @@ package com.example.demo.DTO;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
+import org.springframework.hateoas.Link;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,8 +21,8 @@ public class VolunteerDTO {
     private LocalDate dateOfBirth;
     private String contact;
     private List<String> skills;
-    private List<ProjectDTO> participatingProjects;
-    private List<ProjectDTO> ownedProjects;
+    private List<Link> participatingProjects;
+    private List<Link> ownedProjects;
     private Integer reputation;
     private List<String> interests;
 

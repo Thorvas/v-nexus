@@ -61,4 +61,12 @@ public class Project {
     @ElementCollection
     private List<String> tasks;
 
+
+    @ManyToMany
+    @JoinTable(
+            name = "category_project",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> categories;
+
 }
