@@ -5,7 +5,6 @@ import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.DummyObject.Opinion;
 import com.example.demo.DummyObject.Project;
-import com.example.demo.DummyObject.Volunteer;
 import com.example.demo.Mapper.CategoryMapper;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;

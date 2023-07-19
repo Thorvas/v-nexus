@@ -1,5 +1,6 @@
 package com.example.demo.DTO;
 
+import com.example.demo.DummyObject.Project;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -15,7 +16,7 @@ import java.util.List;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
-public class ProjectDTO {
+public class ProjectDTO extends RepresentationModel<ProjectDTO> {
 
     private Long id;
     private String projectName;

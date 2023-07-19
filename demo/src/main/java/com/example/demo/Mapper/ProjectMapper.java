@@ -9,7 +9,6 @@ import com.example.demo.DummyObject.Project;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -33,11 +32,11 @@ public class ProjectMapper {
         Link allParticipantsLink = linkTo(methodOn(ProjectController.class)
                 .getVolunteers(projectToMap.getId())).withRel("all-participating-volunteers");
 
-        Link allCategoriesLink = linkTo(methodOn(CategoryController.class)
-                .retrieveCategories()).withRel("all-categories");
+        Link allCategoriesLink = linkTo(methodOn(ProjectController.class)
+                .getCategories(projectToMap.getId())).withRel("all-categories");
 
-        Link allOpinionsLink = linkTo(methodOn(OpinionController.class)
-                .getAllOpinions()).withRel("all-opinions");
+        Link allOpinionsLink = linkTo(methodOn(ProjectController.class)
+                .getOpinions(projectToMap.getId())).withRel("all-opinions");
 
         newDTO.setProjectVolunteers(projectToMap.getProjectVolunteers().stream()
                 .map(volunteer -> linkTo(methodOn(VolunteerController.class)
@@ -68,7 +67,7 @@ public class ProjectMapper {
                         Collectors.toList(),
                         list -> {
                             list.add(allCategoriesLink);
-                                    return list;
+                            return list;
                         })
                 ));
 
