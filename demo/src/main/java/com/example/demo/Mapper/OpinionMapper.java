@@ -1,8 +1,6 @@
 package com.example.demo.Mapper;
 
 import com.example.demo.Controller.OpinionController;
-import com.example.demo.Controller.ProjectController;
-import com.example.demo.Controller.VolunteerController;
 import com.example.demo.DTO.OpinionDTO;
 import com.example.demo.DummyObject.Opinion;
 import org.modelmapper.ModelMapper;
@@ -23,11 +21,19 @@ public class OpinionMapper {
 
         OpinionDTO newDTO = modelMapper.map(opinionToMap, OpinionDTO.class);
 
-        newDTO.setAuthor(linkTo(methodOn(OpinionController.class)
-                .getAuthor(opinionToMap.getId())).withRel("opinion-author"));
+        Link opinionAuthorLink = linkTo(methodOn(OpinionController.class)
+                .getAuthor(opinionToMap.getId())).withRel("opinion-author");
 
-        newDTO.setDescribedProject(linkTo(methodOn(OpinionController.class)
-                .getProject(opinionToMap.getId())).withRel("described-project"));
+        Link describedProjectLink = linkTo(methodOn(OpinionController.class)
+                .getProject(opinionToMap.getId())).withRel("described-project");
+
+        Link selfLink = linkTo(methodOn(OpinionController.class)
+                .getOpinion(newDTO.getId())).withSelfRel();
+
+        Link rootLink = linkTo(methodOn(OpinionController.class)
+                .getAllOpinions()).withRel("root");
+
+        newDTO.add(opinionAuthorLink, describedProjectLink, selfLink, rootLink);
 
         return newDTO;
     }

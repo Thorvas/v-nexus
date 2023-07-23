@@ -1,7 +1,7 @@
 package com.example.demo.Controller;
 
+import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.DTO.VolunteerDTO;
-import com.example.demo.DummyObject.Project;
 import com.example.demo.DummyObject.Volunteer;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;
@@ -10,6 +10,8 @@ import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller for handling DummyEntity requests.
@@ -37,6 +42,7 @@ public class VolunteerController {
 
     @Autowired
     private OpinionMapper opinionMapper;
+
 
     /**
      * Receives data from logic part of application and saves received data to database
@@ -60,17 +66,22 @@ public class VolunteerController {
      * Retrieves estimation data from database based on parameters provided for filtering.
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<VolunteerDTO>> getVolunteers() {
+    public ResponseEntity<CollectionModel<VolunteerDTO>> getVolunteers() {
 
         List<Volunteer> foundVolunteers = volunteerService.searchVolunteers();
 
         if (foundVolunteers != null) {
 
-            List<VolunteerDTO> volunteerDTOS = foundVolunteers.stream()
+            List<VolunteerDTO> volunteerDTOs = foundVolunteers.stream()
                     .map(volunteerMapper::mapVolunteerToDTO)
                     .collect(Collectors.toList());
 
-            return new ResponseEntity<>(volunteerDTOS, HttpStatus.OK);
+            CollectionModel<VolunteerDTO> resource = CollectionModel.of(volunteerDTOs);
+
+            resource.add(linkTo(methodOn(VolunteerController.class)
+                    .getVolunteers()).withSelfRel());
+
+            return new ResponseEntity<>(resource, HttpStatus.OK);
 
         } else {
 
@@ -79,45 +90,54 @@ public class VolunteerController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> getVolunteer(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<VolunteerDTO>> getVolunteer(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
 
-        return new ResponseEntity<>(volunteerMapper.mapVolunteerToDTO(foundVolunteer), HttpStatus.OK);
-    }
+        VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(foundVolunteer);
 
-    @GetMapping(value = "/{id}/skills", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<String>> getSkills(@PathVariable Long id) {
+        EntityModel<VolunteerDTO> resource = EntityModel.of(volunteerDTO);
 
-        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
-
-        return new ResponseEntity<>(foundVolunteer.getSkills(), HttpStatus.OK);
-
-    }
-
-    @GetMapping(value = "/{id}/interests", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<String>> getInterests(@PathVariable Long id) {
-
-        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
-
-        return new ResponseEntity<>(foundVolunteer.getInterests(), HttpStatus.OK);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Project>> getProjects(@PathVariable Long id) {
+    public ResponseEntity<CollectionModel<ProjectDTO>> getProjects(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
 
-        return new ResponseEntity<>(foundVolunteer.getParticipatingProjects(), HttpStatus.OK);
+        List<ProjectDTO> projectDTOs = foundVolunteer.getParticipatingProjects().stream()
+                .map(projectMapper::mapProjectToDTO)
+                .collect(Collectors.toList());
+
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+
+        resource.add(linkTo(methodOn(VolunteerController.class)
+                        .getProjects(id)).withSelfRel(),
+                linkTo(methodOn(VolunteerController.class)
+                        .getVolunteers()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     //URL to change!
     @GetMapping(value = "/{id}/projects/owned", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Project>> getOwnedProjects(@PathVariable Long id) {
+    public ResponseEntity<CollectionModel<ProjectDTO>> getOwnedProjects(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
 
-        return new ResponseEntity<>(foundVolunteer.getOwnedProjects(), HttpStatus.OK);
+        List<ProjectDTO> projectDTOs = foundVolunteer.getOwnedProjects().stream()
+                .map(projectMapper::mapProjectToDTO)
+                .collect(Collectors.toList());
+
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+
+        resource.add(linkTo(methodOn(VolunteerController.class)
+                        .getOwnedProjects(id)).withSelfRel(),
+                linkTo(methodOn(VolunteerController.class)
+                        .getVolunteers()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     /**

@@ -1,7 +1,5 @@
 package com.example.demo.Mapper;
 
-import com.example.demo.Controller.CategoryController;
-import com.example.demo.Controller.OpinionController;
 import com.example.demo.Controller.ProjectController;
 import com.example.demo.Controller.VolunteerController;
 import com.example.demo.DTO.ProjectDTO;
@@ -10,8 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
-
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -30,49 +26,24 @@ public class ProjectMapper {
         ProjectDTO newDTO = modelMapper.map(projectToMap, ProjectDTO.class);
 
         Link allParticipantsLink = linkTo(methodOn(ProjectController.class)
-                .getVolunteers(projectToMap.getId())).withRel("all-participating-volunteers");
+                .getVolunteers(projectToMap.getId())).withRel("participating-volunteers");
 
         Link allCategoriesLink = linkTo(methodOn(ProjectController.class)
-                .getCategories(projectToMap.getId())).withRel("all-categories");
+                .getCategories(projectToMap.getId())).withRel("categories");
 
         Link allOpinionsLink = linkTo(methodOn(ProjectController.class)
-                .getOpinions(projectToMap.getId())).withRel("all-opinions");
+                .getOpinions(projectToMap.getId())).withRel("opinions");
 
-        newDTO.setProjectVolunteers(projectToMap.getProjectVolunteers().stream()
-                .map(volunteer -> linkTo(methodOn(VolunteerController.class)
-                        .getVolunteer(volunteer.getId())).withRel("participating-volunteer"))
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        list -> {
-                            list.add(allParticipantsLink);
-                            return list;
-                        }
-                )));
+        Link projectOwnerLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteer(projectToMap.getOwnerVolunteer().getId())).withRel("project-owner");
 
-        newDTO.setProjectOpinions(projectToMap.getProjectOpinions().stream()
-                .map(opinion -> linkTo(methodOn(OpinionController.class)
-                        .getOpinion(opinion.getId())).withRel("project-opinion"))
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        list -> {
-                            list.add(allOpinionsLink);
-                            return list;
-                        }
-                )));
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .getVolunteers(projectToMap.getId())).withSelfRel();
 
-        newDTO.setCategories(projectToMap.getCategories().stream()
-                .map(category -> linkTo(methodOn(CategoryController.class)
-                        .retrieveCategory(category.getId())).withRel("project-category"))
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        list -> {
-                            list.add(allCategoriesLink);
-                            return list;
-                        })
-                ));
+        Link rootLink = linkTo(methodOn(ProjectController.class)
+                .listProjects()).withRel("root");
 
-        newDTO.setProjectOwner(linkTo(methodOn(VolunteerController.class)
-                .getVolunteer(projectToMap.getOwnerVolunteer().getId())).withRel("project-owner"));
+        newDTO.add(allParticipantsLink, allCategoriesLink, allOpinionsLink, projectOwnerLink, selfLink, rootLink);
 
         return newDTO;
     }

@@ -28,32 +28,18 @@ public class VolunteerMapper {
         VolunteerDTO newDTO = modelMapper.map(volunteerToMap, VolunteerDTO.class);
 
         Link allProjectsLink = linkTo(methodOn(VolunteerController.class)
-                .getProjects(volunteerToMap.getId())).withRel("all-participated-projects");
+                .getProjects(volunteerToMap.getId())).withRel("participated-projects");
 
         Link allOwnedProjectsLink = linkTo(methodOn(VolunteerController.class)
-                .getOwnedProjects(volunteerToMap.getId())).withRel("all-owned-projects");
+                .getOwnedProjects(volunteerToMap.getId())).withRel("owned-projects");
 
-        newDTO.setOwnedProjects(volunteerToMap.getOwnedProjects().stream()
-                .map(singleProject -> WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjectController.class)
-                        .getProject(singleProject.getId())).withRel("owned-project"))
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        list -> {
-                            list.add(allOwnedProjectsLink);
-                            return list;
-                        }
-                )));
+        Link selfLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteer(volunteerToMap.getId())).withSelfRel();
 
-        newDTO.setParticipatingProjects(volunteerToMap.getParticipatingProjects().stream()
-                .map(singleProject -> WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ProjectController.class)
-                        .getProject(singleProject.getId())).withRel("participating-project"))
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        list -> {
-                            list.add(allProjectsLink);
-                            return list;
-                        }
-                )));
+        Link rootLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteers()).withRel("root");
+
+        newDTO.add(allProjectsLink, allOwnedProjectsLink, selfLink, rootLink);
 
         return newDTO;
     }

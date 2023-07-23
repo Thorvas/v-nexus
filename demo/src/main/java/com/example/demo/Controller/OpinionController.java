@@ -12,6 +12,8 @@ import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Services.OpinionService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1/opinions")
@@ -40,57 +45,72 @@ public class OpinionController {
     private ProjectMapper projectMapper;
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OpinionDTO> getOpinion(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<OpinionDTO>> getOpinion(@PathVariable Long id) {
 
         if (id != null) {
 
             Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
 
-            return new ResponseEntity<>(opinionMapper.mapOpinionToDTO(foundOpinion), HttpStatus.OK);
-        }
-        else {
+            OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(foundOpinion);
+
+            EntityModel<OpinionDTO> resource = EntityModel.of(opinionDTO);
+
+            return new ResponseEntity<>(resource, HttpStatus.OK);
+        } else {
             throw new IllegalArgumentException("Id of requested opinion cannot be null.");
         }
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<OpinionDTO>> getAllOpinions() {
+    public ResponseEntity<CollectionModel<OpinionDTO>> getAllOpinions() {
 
         List<Opinion> opinions = opinionService.searchAllOpinions();
 
-        List<OpinionDTO> dtos = opinions.stream()
+        List<OpinionDTO> opinionDTOs = opinions.stream()
                 .map(opinionMapper::mapOpinionToDTO)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
+        CollectionModel<OpinionDTO> resource = CollectionModel.of(opinionDTOs);
+
+        resource.add(linkTo(methodOn(OpinionController.class)
+                .getAllOpinions()).withSelfRel());
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<ProjectDTO>> getProject(@PathVariable Long id) {
 
         if (id != null) {
 
             Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+
             Project describedProject = foundOpinion.getDescribedProject();
 
-            return new ResponseEntity<>(projectMapper.mapProjectToDTO(describedProject), HttpStatus.OK);
-        }
-        else {
+            ProjectDTO projectDTO = projectMapper.mapProjectToDTO(describedProject);
+
+            EntityModel<ProjectDTO> resource = EntityModel.of(projectDTO);
+
+            return new ResponseEntity<>(resource, HttpStatus.OK);
+        } else {
             throw new IllegalArgumentException("Id of requested opinion cannot be null.");
         }
     }
 
     @GetMapping(value = "/{id}/author", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> getAuthor(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<VolunteerDTO>> getAuthor(@PathVariable Long id) {
 
         if (id != null) {
 
             Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
             Volunteer author = foundOpinion.getAuthor();
 
-            return new ResponseEntity<>(volunteerMapper.mapVolunteerToDTO(author), HttpStatus.OK);
-        }
-        else {
+            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(author);
+
+            EntityModel<VolunteerDTO> resource = EntityModel.of(volunteerDTO);
+
+            return new ResponseEntity<>(resource, HttpStatus.OK);
+        } else {
             throw new IllegalArgumentException("Id of requested opinion cannot be null.");
         }
     }

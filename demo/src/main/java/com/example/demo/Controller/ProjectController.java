@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import com.example.demo.DTO.CategoryDTO;
+import com.example.demo.DTO.OpinionDTO;
 import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.DummyObject.Opinion;
@@ -12,6 +13,8 @@ import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Services.ProjectService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1/projects")
@@ -57,7 +63,7 @@ public class ProjectController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ProjectDTO>> listProjects() {
+    public ResponseEntity<CollectionModel<ProjectDTO>> listProjects() {
 
         List<Project> foundProjects = projectService.searchAllProjects();
 
@@ -65,64 +71,81 @@ public class ProjectController {
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+
+        resource.add(linkTo(methodOn(ProjectController.class)
+                .listProjects()).withSelfRel());
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<ProjectDTO>> getProject(@PathVariable Long id) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
-        return new ResponseEntity<>(projectMapper.mapProjectToDTO(foundProject), HttpStatus.OK);
+        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(foundProject);
+
+        EntityModel<ProjectDTO> resource = EntityModel.of(projectDTO);
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/{id}/volunteers", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<VolunteerDTO>> getVolunteers(@PathVariable Long id) {
+    public ResponseEntity<CollectionModel<VolunteerDTO>> getVolunteers(@PathVariable Long id) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
-        List<VolunteerDTO> volunteerDTOS = foundProject.getProjectVolunteers().stream()
+        List<VolunteerDTO> volunteerDTOs = foundProject.getProjectVolunteers().stream()
                 .map(volunteerMapper::mapVolunteerToDTO)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(volunteerDTOS, HttpStatus.OK);
+        CollectionModel<VolunteerDTO> resource = CollectionModel.of(volunteerDTOs);
+
+        resource.add(linkTo(methodOn(ProjectController.class)
+                .getVolunteers(id)).withSelfRel(),
+                linkTo(methodOn(ProjectController.class)
+                        .listProjects()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/owner", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> getOwner(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<VolunteerDTO>> getOwner(@PathVariable Long id) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
-        return new ResponseEntity<>(volunteerMapper.mapVolunteerToDTO(foundProject.getOwnerVolunteer()), HttpStatus.OK);
-    }
+        VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(foundProject.getOwnerVolunteer());
 
-    @GetMapping(value = "/{id}/skills", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<String>> getSkills(@PathVariable Long id) {
+        EntityModel<VolunteerDTO> resource = EntityModel.of(volunteerDTO);
 
-        Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
-
-        return new ResponseEntity<>(foundProject.getRequiredSkills(), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/{id}/tasks", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<String>> getTasks(@PathVariable Long id) {
-
-        Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
-
-        return new ResponseEntity<>(foundProject.getTasks(), HttpStatus.OK);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/opinions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Opinion>> getOpinions(@PathVariable Long id) {
+    public ResponseEntity<CollectionModel<OpinionDTO>> getOpinions(@PathVariable Long id) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
-        return new ResponseEntity<>(foundProject.getProjectOpinions(), HttpStatus.OK);
+        List<Opinion> opinions = foundProject.getProjectOpinions();
+
+        List<OpinionDTO> opinionDTOs = opinions.stream()
+                .map(opinionMapper::mapOpinionToDTO)
+                .collect(Collectors.toList());
+
+        CollectionModel<OpinionDTO> resource = CollectionModel.of(opinionDTOs);
+
+        resource.add(linkTo(methodOn(ProjectController.class)
+                .getOpinions(id)).withSelfRel(),
+                linkTo(methodOn(ProjectController.class)
+                        .listProjects()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/location/{location}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ProjectDTO>> getProjectsWithLocation(@PathVariable String location) {
+    public ResponseEntity<CollectionModel<ProjectDTO>> getProjectsWithLocation(@PathVariable String location) {
 
         List<Project> foundProjects = projectService.searchProjectsWithLocation(location);
 
@@ -130,33 +153,55 @@ public class ProjectController {
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+
+        resource.add(linkTo(methodOn(ProjectController.class)
+                .getProjectsWithLocation(location)).withSelfRel(),
+                linkTo(methodOn(ProjectController.class)
+                        .listProjects()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/status/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ProjectDTO>> getProjectsWithStatus(@PathVariable Boolean status) {
+    public ResponseEntity<CollectionModel<ProjectDTO>> getProjectsWithStatus(@PathVariable Boolean status) {
 
         List<ProjectDTO> projectDTOs = projectService.searchProjectsWithStatus(status)
                 .stream()
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+
+        resource.add(linkTo(methodOn(ProjectController.class)
+                .getProjectsWithStatus(status)).withSelfRel(),
+                linkTo(methodOn(ProjectController.class)
+                        .listProjects()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CategoryDTO>> getCategories(@PathVariable Long id) {
+    public ResponseEntity<CollectionModel<CategoryDTO>> getCategories(@PathVariable Long id) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
         List<CategoryDTO> categories = foundProject.getCategories().stream()
                 .map(categoryMapper::mapCategoryToDTO)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+        CollectionModel<CategoryDTO> resource = CollectionModel.of(categories);
+
+        resource.add(linkTo(methodOn(ProjectController.class)
+                        .getCategories(id)).withSelfRel(),
+                linkTo(methodOn(ProjectController.class)
+                        .listProjects()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+
     }
 
     @GetMapping(value = "/date/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ProjectDTO>> getProjectsWithDate(@PathVariable LocalDate date) {
+    public ResponseEntity<CollectionModel<ProjectDTO>> getProjectsWithDate(@PathVariable LocalDate date) {
 
         List<Project> foundProjects = projectService.searchProjectsWithDate(date);
 
@@ -164,7 +209,14 @@ public class ProjectController {
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(projectDTOs, HttpStatus.OK);
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+
+        resource.add(linkTo(methodOn(ProjectController.class)
+                .getProjectsWithDate(date)).withSelfRel(),
+                linkTo(methodOn(ProjectController.class)
+                        .listProjects()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
