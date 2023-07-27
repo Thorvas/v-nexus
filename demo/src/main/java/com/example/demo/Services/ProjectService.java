@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 
+import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.DummyObject.Project;
 import com.example.demo.Repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -28,6 +30,16 @@ public class ProjectService {
     public List<Project> searchProjectsWithDate(LocalDate date) {
 
         return projectRepository.findWithDate(date);
+    }
+
+    public List<Project> matchProjectsWithSkills(VolunteerDTO volunteerDTO) {
+        List<Project> foundProjects = projectRepository.findAll();
+
+        List<Project> returnedProjects = foundProjects.stream()
+                .filter(project -> project.getRequiredSkills().stream()
+                        .anyMatch(skill -> volunteerDTO.getSkills().contains(skill))).distinct().collect(Collectors.toList());
+
+        return returnedProjects;
     }
 
     public List<Project> searchAllProjects() {

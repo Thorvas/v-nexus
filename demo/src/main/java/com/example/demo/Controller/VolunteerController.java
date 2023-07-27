@@ -6,6 +6,7 @@ import com.example.demo.DummyObject.Volunteer;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
+import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -33,6 +34,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class VolunteerController {
     @Autowired
     private VolunteerService volunteerService;
+
+    @Autowired
+    private ProjectService projectService;
 
     @Autowired
     private VolunteerMapper volunteerMapper;
@@ -87,6 +91,26 @@ public class VolunteerController {
 
             throw new EntityNotFoundException("Requested volunteers could not be found");
         }
+    }
+
+    @GetMapping(value = "/{id}/matchingProjects", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectionModel<ProjectDTO>> getMatchingProjects(@PathVariable Long id) {
+
+        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
+
+        List<ProjectDTO> projectDTOs = projectService.matchProjectsWithSkills(volunteerMapper.mapVolunteerToDTO(foundVolunteer))
+                .stream()
+                .map(projectMapper::mapProjectToDTO)
+                .collect(Collectors.toList());
+
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+
+        resource.add(linkTo(methodOn(VolunteerController.class)
+                        .getMatchingProjects(id)).withSelfRel(),
+                linkTo(methodOn(VolunteerController.class)
+                        .getVolunteers()).withRel("root"));
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

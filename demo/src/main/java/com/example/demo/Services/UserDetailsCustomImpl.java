@@ -15,6 +15,7 @@ public class UserDetailsCustomImpl implements UserDetailsService {
     @Autowired
     private VolunteerRepository userRepository;
 
+    @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) {
         Volunteer foundUser = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found."));
