@@ -1,7 +1,7 @@
 package com.example.demo.Services;
 
 import com.example.demo.DTO.VolunteerDTO;
-import com.example.demo.DummyObject.Project;
+import com.example.demo.Objects.Project;
 import com.example.demo.Repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,7 @@ public class ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
 
     public Optional<Project> findProject(Long id) {
 

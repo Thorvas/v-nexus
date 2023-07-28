@@ -1,4 +1,4 @@
-package com.example.demo.DummyObject;
+package com.example.demo.Objects;
 
 import jakarta.persistence.*;
 import lombok.Data;

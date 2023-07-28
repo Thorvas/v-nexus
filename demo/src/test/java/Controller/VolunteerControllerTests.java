@@ -2,8 +2,8 @@ package Controller;
 
 import com.example.demo.Controller.VolunteerController;
 import com.example.demo.DTO.VolunteerDTO;
-import com.example.demo.DummyObject.Project;
-import com.example.demo.DummyObject.Volunteer;
+import com.example.demo.Objects.Project;
+import com.example.demo.Objects.Volunteer;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;

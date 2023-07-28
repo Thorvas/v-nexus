@@ -2,7 +2,7 @@ package com.example.demo.Mapper;
 
 import com.example.demo.Controller.CategoryController;
 import com.example.demo.DTO.CategoryDTO;
-import com.example.demo.DummyObject.Category;
+import com.example.demo.Objects.Category;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;

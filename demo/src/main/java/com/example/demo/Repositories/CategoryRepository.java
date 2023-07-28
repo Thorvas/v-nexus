@@ -1,7 +1,7 @@
 package com.example.demo.Repositories;
 
-import com.example.demo.DummyObject.Category;
-import com.example.demo.DummyObject.Project;
+import com.example.demo.Objects.Category;
+import com.example.demo.Objects.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

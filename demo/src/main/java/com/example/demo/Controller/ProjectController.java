@@ -4,20 +4,26 @@ import com.example.demo.DTO.CategoryDTO;
 import com.example.demo.DTO.OpinionDTO;
 import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.DTO.VolunteerDTO;
-import com.example.demo.DummyObject.Opinion;
-import com.example.demo.DummyObject.Project;
+import com.example.demo.Objects.CustomUserDetails;
+import com.example.demo.Objects.Opinion;
+import com.example.demo.Objects.Project;
 import com.example.demo.Mapper.CategoryMapper;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
+import com.example.demo.Objects.Volunteer;
 import com.example.demo.Services.ProjectService;
+import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -35,6 +41,9 @@ public class ProjectController {
     private ProjectService projectService;
 
     @Autowired
+    private VolunteerService volunteerService;
+
+    @Autowired
     private CategoryMapper categoryMapper;
 
     @Autowired
@@ -49,7 +58,13 @@ public class ProjectController {
     private final String PROJECT_NOT_FOUND_MESSAGE = "Requested project could not be found.";
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project) {
+    public ResponseEntity<ProjectDTO> saveProject(@RequestBody @Valid Project project, Authentication principal) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
+        Volunteer foundVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+
+        project.setOwnerVolunteer(foundVolunteer);
+        project.addVolunteerToProject(foundVolunteer);
 
         if (project != null) {
 
@@ -59,7 +74,26 @@ public class ProjectController {
         } else {
             throw new IllegalArgumentException("Posted project cannot be null.");
         }
+    }
 
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id, @RequestBody @Valid Project project, Authentication principal) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
+        Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Volunteer currentUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+
+        if (foundProject.getOwnerVolunteer().getId().equals(currentUser.getId())) {
+
+            project.setId(foundProject.getId());
+            Project savedProject = projectService.saveProject(project);
+            ProjectDTO returnedProject = projectMapper.mapProjectToDTO(savedProject);
+
+            return new ResponseEntity<>(returnedProject, HttpStatus.OK);
+        }
+        else {
+            throw new BadCredentialsException("Project you are trying to edit does not belong to you.");
+        }
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

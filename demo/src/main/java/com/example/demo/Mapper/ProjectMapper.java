@@ -3,7 +3,7 @@ package com.example.demo.Mapper;
 import com.example.demo.Controller.ProjectController;
 import com.example.demo.Controller.VolunteerController;
 import com.example.demo.DTO.ProjectDTO;
-import com.example.demo.DummyObject.Project;
+import com.example.demo.Objects.Project;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -53,7 +53,7 @@ public class ProjectMapper {
         targetProject.setProjectName(sourceProject.getProjectName());
         targetProject.setProjectDate(sourceProject.getProjectDate());
         targetProject.setProjectVolunteers(sourceProject.getProjectVolunteers());
-        targetProject.setProjectDesription(sourceProject.getProjectDesription());
+        targetProject.setProjectDescription(sourceProject.getProjectDescription());
         targetProject.setProjectLocation(sourceProject.getProjectLocation());
         targetProject.setProjectOpinions(sourceProject.getProjectOpinions());
         targetProject.setProjectStatus(sourceProject.isProjectStatus());

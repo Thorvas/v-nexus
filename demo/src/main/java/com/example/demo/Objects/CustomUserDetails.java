@@ -1,14 +1,18 @@
-package com.example.demo.DummyObject;
+package com.example.demo.Objects;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@Data
+@Getter
+@Setter
 public class CustomUserDetails implements UserDetails {
 
     private String username;
@@ -19,12 +23,11 @@ public class CustomUserDetails implements UserDetails {
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
     private Set<GrantedAuthority> authorities;
-    private Long volunteerId;
+    private UserData userData;
 
-    public CustomUserDetails(Volunteer user) {
-        this.setAuthorities(user.getAuthorities()
-                .stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+    public CustomUserDetails(UserData user) {
+        this.setAuthorities(Stream.of(user.getRole())
+                .map(authority -> new SimpleGrantedAuthority(authority))
                 .collect(Collectors.toSet()));
         this.setActive(user.isActive());
         this.setPassword(user.getPassword());
@@ -33,6 +36,6 @@ public class CustomUserDetails implements UserDetails {
         this.setAccountNonExpired(user.isAccountNonExpired());
         this.setAccountNonLocked(user.isAccountNonLocked());
         this.setCredentialsNonExpired(user.isCredentialsNonExpired());
-        this.setVolunteerId((user.getId()));
+        this.setUserData(user);
     }
 }

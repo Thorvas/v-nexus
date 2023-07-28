@@ -1,7 +1,7 @@
 package com.example.demo.Services;
 
-import com.example.demo.DummyObject.Category;
-import com.example.demo.DummyObject.Project;
+import com.example.demo.Objects.Category;
+import com.example.demo.Objects.Project;
 import com.example.demo.Repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

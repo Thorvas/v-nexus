@@ -1,18 +1,20 @@
-package com.example.demo.DummyObject;
+package com.example.demo.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
 @Data
 @Entity
+@Builder
 @Table(name = "project")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -28,7 +30,7 @@ public class Project {
     private String projectName;
 
     @Column(name = "project_description")
-    private String projectDesription;
+    private String projectDescription;
 
     @Column(name = "project_date")
     @Temporal(TemporalType.DATE)
@@ -68,5 +70,42 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
+
+    public List<Volunteer> addVolunteerToProject(Volunteer volunteer) {
+
+        List<Volunteer> newList = this.getProjectVolunteers();
+
+        if (this.getProjectVolunteers() == null) {
+
+            newList = new ArrayList<>();
+            newList.add(volunteer);
+            this.setProjectVolunteers(newList);
+        }
+        else {
+            newList.add(volunteer);
+        }
+
+        return newList;
+    }
+
+    public List<Volunteer> removeVolunteerFromProject(Volunteer volunteer) {
+
+        List<Volunteer> newList = this.getProjectVolunteers();
+
+        if (newList != null) {
+
+            if (newList.contains(volunteer)) {
+                newList.remove(volunteer);
+
+                return newList;
+            }
+            else {
+                throw new EntityNotFoundException("Such volunteer does not belong to this project.");
+            }
+        }
+        else {
+            throw new RuntimeException("There are no participants in this project.");
+        }
+    }
 
 }

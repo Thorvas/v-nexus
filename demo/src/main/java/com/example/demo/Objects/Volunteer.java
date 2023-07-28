@@ -1,14 +1,13 @@
-package com.example.demo.DummyObject;
+package com.example.demo.Objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity
@@ -23,30 +22,6 @@ public class Volunteer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "is_active")
-    private boolean isActive;
-
-    @Column(name = "is_unlocked")
-    private boolean isAccountNonLocked;
-
-    @Column(name = "is_actual")
-    private boolean isAccountNonExpired;
-
-    @Column(name = "credentials_actual")
-    private boolean isCredentialsNonExpired;
-
-    @Column(name = "is_enabled")
-    private boolean isEnabled;
-
-    @OneToMany(mappedBy = "user")
-    private Set<Authority> authorities;
-
     @Column(name = "name")
     private String name;
 
@@ -54,6 +29,8 @@ public class Volunteer {
     private String surname;
 
     @Column(name = "birth_date")
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     @Column(name = "phone")
@@ -74,5 +51,8 @@ public class Volunteer {
 
     @ElementCollection
     private List<String> interests;
+
+    @OneToOne(mappedBy = "referencedVolunteer")
+    private UserData userData;
 
 }

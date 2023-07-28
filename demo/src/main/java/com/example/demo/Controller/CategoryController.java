@@ -2,7 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.CategoryDTO;
 import com.example.demo.DTO.ProjectDTO;
-import com.example.demo.DummyObject.Category;
+import com.example.demo.Objects.Category;
 import com.example.demo.Mapper.CategoryMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Services.CategoryService;

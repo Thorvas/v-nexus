@@ -1,17 +1,12 @@
 package com.example.demo.Mapper;
 
-import com.example.demo.Controller.OpinionController;
-import com.example.demo.Controller.ProjectController;
 import com.example.demo.Controller.VolunteerController;
 import com.example.demo.DTO.VolunteerDTO;
-import com.example.demo.DummyObject.Volunteer;
+import com.example.demo.Objects.Volunteer;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
-
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

@@ -2,7 +2,7 @@ package com.example.demo.Mapper;
 
 import com.example.demo.Controller.OpinionController;
 import com.example.demo.DTO.OpinionDTO;
-import com.example.demo.DummyObject.Opinion;
+import com.example.demo.Objects.Opinion;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;

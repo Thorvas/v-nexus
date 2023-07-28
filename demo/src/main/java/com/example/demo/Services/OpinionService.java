@@ -1,6 +1,6 @@
 package com.example.demo.Services;
 
-import com.example.demo.DummyObject.Opinion;
+import com.example.demo.Objects.Opinion;
 import com.example.demo.Repositories.OpinionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,5 +22,10 @@ public class OpinionService {
     public List<Opinion> searchAllOpinions() {
 
         return repository.findAll();
+    }
+
+    public Opinion saveOpinion(Opinion opinion) {
+
+        return repository.save(opinion);
     }
 }

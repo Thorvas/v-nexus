@@ -1,6 +1,6 @@
 package com.example.demo.Services;
 
-import com.example.demo.DummyObject.Volunteer;
+import com.example.demo.Objects.Volunteer;
 import com.example.demo.Repositories.VolunteerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

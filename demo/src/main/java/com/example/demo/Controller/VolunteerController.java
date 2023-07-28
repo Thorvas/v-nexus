@@ -2,10 +2,11 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.DTO.VolunteerDTO;
-import com.example.demo.DummyObject.Volunteer;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
+import com.example.demo.Objects.CustomUserDetails;
+import com.example.demo.Objects.Volunteer;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +17,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,25 +49,6 @@ public class VolunteerController {
 
     @Autowired
     private OpinionMapper opinionMapper;
-
-
-    /**
-     * Receives data from logic part of application and saves received data to database
-     *
-     * @return The ResponseEntity object which contains saved entity
-     */
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Volunteer> postVolunteer(@RequestBody @Valid Volunteer volunteer) {
-
-        if (volunteer != null) {
-
-            Volunteer savedVolunteer = volunteerService.saveVolunteer(volunteer);
-
-            return new ResponseEntity<>(savedVolunteer, HttpStatus.CREATED);
-        } else {
-            throw new IllegalArgumentException("Posted volunteer cannot be null");
-        }
-    }
 
     /**
      * Retrieves estimation data from database based on parameters provided for filtering.
@@ -167,23 +151,30 @@ public class VolunteerController {
     /**
      * Updates an entity in database
      *
-     * @param id An ID value of updated object
+     * @param volunteer An ID value of updated object
      * @return The ResponseEntity object containing updated object
      */
-    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id, @RequestBody Volunteer volunteer) {
-        if (id != null) {
+    @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VolunteerDTO> updateVolunteer(@RequestBody @Valid Volunteer volunteer, Authentication principal) {
 
-            Volunteer editedVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Requested entity was not found."));
+        CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
+        Volunteer foundVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        volunteer.setId(foundVolunteer.getId());
 
-            VolunteerMapper.mapPropertiesToVolunteer(volunteer, editedVolunteer);
-            volunteerService.saveVolunteer(editedVolunteer);
-            VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(editedVolunteer);
+        if (volunteer != null) {
+            if (foundVolunteer.getUserData() != null && principal.getName().equals(foundVolunteer.getUserData().getUsername())) {
 
-            return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
+                Volunteer savedVolunteer = volunteerService.saveVolunteer(volunteer);
+
+                VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(savedVolunteer);
+
+                return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
+
+            } else {
+                throw new BadCredentialsException("You cannot edit other volunteer's data.");
+            }
         } else {
-
-            throw new IllegalArgumentException("An ID of requested volunteer to patch cannot be null.");
+            throw new IllegalArgumentException("Updated volunteer cannot be null");
         }
     }
 
@@ -200,7 +191,9 @@ public class VolunteerController {
 
             Volunteer volunteerToDelete = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer to delete could not be found."));
             VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(volunteerToDelete);
+
             volunteerService.deleteVolunteer(volunteerToDelete);
+
             return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
         } else {
 
