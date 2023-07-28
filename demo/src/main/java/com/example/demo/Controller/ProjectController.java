@@ -58,7 +58,7 @@ public class ProjectController {
     private final String PROJECT_NOT_FOUND_MESSAGE = "Requested project could not be found.";
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> saveProject(@RequestBody @Valid Project project, Authentication principal) {
+    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project, Authentication principal) {
 
         CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
         Volunteer foundVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));

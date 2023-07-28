@@ -4,17 +4,18 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Builder
 @Table(name = "project")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -80,8 +81,7 @@ public class Project {
             newList = new ArrayList<>();
             newList.add(volunteer);
             this.setProjectVolunteers(newList);
-        }
-        else {
+        } else {
             newList.add(volunteer);
         }
 
@@ -98,12 +98,10 @@ public class Project {
                 newList.remove(volunteer);
 
                 return newList;
-            }
-            else {
+            } else {
                 throw new EntityNotFoundException("Such volunteer does not belong to this project.");
             }
-        }
-        else {
+        } else {
             throw new RuntimeException("There are no participants in this project.");
         }
     }
