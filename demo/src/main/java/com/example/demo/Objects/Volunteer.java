@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -44,13 +45,19 @@ public class Volunteer {
 
 
     @ManyToMany(mappedBy = "projectVolunteers")
-    private List<Project> participatingProjects;
+    private Set<Project> participatingProjects;
 
     @OneToMany(mappedBy = "ownerVolunteer")
-    private List<Project> ownedProjects;
+    private Set<Project> ownedProjects;
 
     @Column(name = "reputation")
     private Integer reputation;
+
+    @OneToMany(mappedBy = "requestSender")
+    private Set<VolunteerRequest> sentRequests;
+
+    @OneToMany(mappedBy = "requestReceiver")
+    private Set<VolunteerRequest> receivedRequests;
 
     @ElementCollection
     private List<String> interests;

@@ -4,14 +4,11 @@ import com.example.demo.DTO.CategoryDTO;
 import com.example.demo.DTO.OpinionDTO;
 import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.DTO.VolunteerDTO;
-import com.example.demo.Objects.CustomUserDetails;
-import com.example.demo.Objects.Opinion;
-import com.example.demo.Objects.Project;
+import com.example.demo.Objects.*;
 import com.example.demo.Mapper.CategoryMapper;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
-import com.example.demo.Objects.Volunteer;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
@@ -66,14 +63,9 @@ public class ProjectController {
         project.setOwnerVolunteer(foundVolunteer);
         project.addVolunteerToProject(foundVolunteer);
 
-        if (project != null) {
+        Project savedProject = projectService.saveProject(project);
 
-            Project savedProject = projectService.saveProject(project);
-
-            return new ResponseEntity<>(projectMapper.mapProjectToDTO(savedProject), HttpStatus.CREATED);
-        } else {
-            throw new IllegalArgumentException("Posted project cannot be null.");
-        }
+        return new ResponseEntity<>(projectMapper.mapProjectToDTO(savedProject), HttpStatus.CREATED);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -283,5 +275,19 @@ public class ProjectController {
         }
     }
 
+    @PatchMapping(value = "/{projectId}/volunteers/{volunteerId}")
+    public ResponseEntity<ProjectDTO> addVolunteerToProject(@PathVariable("projectId") Long projectId,
+                                                                  @PathVariable("volunteerId") Long volunteerId) {
 
+        Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Requested project could not be found."));
+        Volunteer addedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException("Requested volunteer could not be found."));
+
+        editedProject.addVolunteerToProject(addedVolunteer);
+
+        projectService.saveProject(editedProject);
+
+        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(editedProject);
+
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+    }
 }
