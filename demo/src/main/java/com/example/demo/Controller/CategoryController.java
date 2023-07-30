@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,10 +45,10 @@ public class CategoryController {
                 .map(categoryMapper::mapCategoryToDTO)
                 .collect(Collectors.toList());
 
-        CollectionModel<CategoryDTO> resource = CollectionModel.of(categoryDTOs);
+        Link selfLink = linkTo(methodOn(CategoryController.class)
+                .retrieveCategories()).withSelfRel();
 
-        resource.add(linkTo(methodOn(CategoryController.class)
-                .retrieveCategories()).withSelfRel());
+        CollectionModel<CategoryDTO> resource = CollectionModel.of(categoryDTOs, selfLink);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
@@ -59,7 +60,9 @@ public class CategoryController {
 
         CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(foundCategory);
 
-        EntityModel<CategoryDTO> resource = EntityModel.of(categoryDTO);
+        Link rootLink = linkTo(methodOn(CategoryController.class).retrieveCategories()).withRel("root");
+
+        EntityModel<CategoryDTO> resource = EntityModel.of(categoryDTO, rootLink);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }

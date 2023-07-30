@@ -38,17 +38,4 @@ public class VolunteerMapper {
 
         return newDTO;
     }
-
-    public static void mapPropertiesToVolunteer(Volunteer sourceVolunteer, Volunteer targetVolunteer) {
-
-        targetVolunteer.setName(sourceVolunteer.getName());
-        targetVolunteer.setSurname(sourceVolunteer.getSurname());
-        targetVolunteer.setDateOfBirth(sourceVolunteer.getDateOfBirth());
-        targetVolunteer.setContact(sourceVolunteer.getContact());
-        targetVolunteer.setSkills(sourceVolunteer.getSkills());
-        targetVolunteer.setParticipatingProjects(sourceVolunteer.getParticipatingProjects());
-        targetVolunteer.setReputation(sourceVolunteer.getReputation());
-        targetVolunteer.setInterests(sourceVolunteer.getInterests());
-
-    }
 }

@@ -34,13 +34,4 @@ public class CategoryMapper {
 
         return newDTO;
     }
-
-    public static void mapPropertiesToCategory(Category sourceCategory, Category targetCategory) {
-
-        targetCategory.setCategoryDescription(sourceCategory.getCategoryDescription());
-        targetCategory.setCategoryName(sourceCategory.getCategoryName());
-        targetCategory.setCategoryPopularity(sourceCategory.getCategoryPopularity());
-        targetCategory.setProjectsCategories(sourceCategory.getProjectsCategories());
-
-    }
 }

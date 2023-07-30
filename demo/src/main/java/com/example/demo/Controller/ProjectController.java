@@ -98,7 +98,6 @@ public class ProjectController {
                 .collect(Collectors.toList());
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
-
         resource.add(linkTo(methodOn(ProjectController.class)
                 .listProjects()).withSelfRel());
 
@@ -252,8 +251,9 @@ public class ProjectController {
 
             Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
-            ProjectMapper.mapPropertiesToProject(project, foundProject);
-            return new ResponseEntity<>(projectMapper.mapProjectToDTO(foundProject), HttpStatus.OK);
+            ProjectDTO projectDTO = projectMapper.mapProjectToDTO(foundProject);
+
+            return new ResponseEntity<>(projectDTO, HttpStatus.OK);
         } else {
 
             throw new IllegalArgumentException("Updated project cannot be null!");
@@ -284,6 +284,21 @@ public class ProjectController {
 
         editedProject.addVolunteerToProject(addedVolunteer);
 
+        projectService.saveProject(editedProject);
+
+        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(editedProject);
+
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/{projectId}/volunteers/{volunteerId}")
+    public ResponseEntity<ProjectDTO> removeVolunteerFromProject(@PathVariable("projectId") Long projectId,
+                                                                 @PathVariable("volunteerId") Long volunteerId) {
+
+        Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Requested project was not found."));
+        Volunteer removedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException("Requested volunteer was not found."));
+
+        editedProject.removeVolunteerFromProject(removedVolunteer);
         projectService.saveProject(editedProject);
 
         ProjectDTO projectDTO = projectMapper.mapProjectToDTO(editedProject);

@@ -84,11 +84,9 @@
             if (newList == null) {
 
                 newList = new HashSet<>();
-                newList.add(volunteer);
-                this.setProjectVolunteers(newList);
-            } else {
-                newList.add(volunteer);
             }
+            newList.add(volunteer);
+            this.setProjectVolunteers(newList);
 
             return newList;
         }
@@ -100,9 +98,12 @@
             if (newList != null) {
 
                 if (newList.contains(volunteer)) {
+
                     newList.remove(volunteer);
+                    this.setProjectVolunteers(newList);
 
                     return newList;
+
                 } else {
 
                     throw new EntityNotFoundException("Such volunteer does not belong to this project.");
@@ -120,13 +121,10 @@
             if (newList == null) {
 
                 newList = new ArrayList<>();
-                newList.add(opinion);
-                this.setProjectOpinions(newList);
 
             }
-            else {
-                newList.add(opinion);
-            }
+            newList.add(opinion);
+            this.setProjectOpinions(newList);
 
             return newList;
         }
@@ -140,6 +138,8 @@
                 if (newList.contains(opinion)) {
 
                     newList.remove(opinion);
+                    this.setProjectOpinions(newList);
+
                     return newList;
                 }
                 else {

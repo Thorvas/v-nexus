@@ -38,11 +38,5 @@ public class OpinionMapper {
         return newDTO;
     }
 
-    public static void mapPropertiesToOpinion(Opinion sourceOpinion, Opinion targetOpinion) {
 
-        targetOpinion.setOpinion(sourceOpinion.getOpinion());
-        targetOpinion.setAuthor(sourceOpinion.getAuthor());
-        targetOpinion.setDescribedProject(sourceOpinion.getDescribedProject());
-
-    }
 }

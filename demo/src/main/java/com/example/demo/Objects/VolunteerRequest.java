@@ -27,4 +27,8 @@ public class VolunteerRequest {
     @ManyToOne
     @JoinColumn(name = "requested_project")
     private Project requestedProject;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "request_status")
+    private RequestStatus status;
 }

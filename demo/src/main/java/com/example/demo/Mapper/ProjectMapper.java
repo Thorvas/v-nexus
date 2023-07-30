@@ -47,18 +47,4 @@ public class ProjectMapper {
 
         return newDTO;
     }
-
-    public static void mapPropertiesToProject(Project sourceProject, Project targetProject) {
-
-        targetProject.setProjectName(sourceProject.getProjectName());
-        targetProject.setProjectDate(sourceProject.getProjectDate());
-        targetProject.setProjectVolunteers(sourceProject.getProjectVolunteers());
-        targetProject.setProjectDescription(sourceProject.getProjectDescription());
-        targetProject.setProjectLocation(sourceProject.getProjectLocation());
-        targetProject.setProjectOpinions(sourceProject.getProjectOpinions());
-        targetProject.setProjectStatus(sourceProject.isProjectStatus());
-        targetProject.setOwnerVolunteer(sourceProject.getOwnerVolunteer());
-        targetProject.setCategories(sourceProject.getCategories());
-
-    }
 }

@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -79,10 +80,10 @@ public class OpinionController {
                 .map(opinionMapper::mapOpinionToDTO)
                 .collect(Collectors.toList());
 
-        CollectionModel<OpinionDTO> resource = CollectionModel.of(opinionDTOs);
+        Link selfLink = linkTo(methodOn(OpinionController.class)
+                .getAllOpinions()).withSelfRel();
 
-        resource.add(linkTo(methodOn(OpinionController.class)
-                .getAllOpinions()).withSelfRel());
+        CollectionModel<OpinionDTO> resource = CollectionModel.of(opinionDTOs, selfLink);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }

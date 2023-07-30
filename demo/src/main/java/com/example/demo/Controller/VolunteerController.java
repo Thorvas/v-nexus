@@ -7,13 +7,16 @@ import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Objects.CustomUserDetails;
 import com.example.demo.Objects.Volunteer;
+import com.example.demo.Objects.VolunteerRequest;
 import com.example.demo.Services.ProjectService;
+import com.example.demo.Services.RequestService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Controller for handling DummyEntity requests.
+ *
  *
  * @author Thorvas
  */
@@ -50,9 +53,9 @@ public class VolunteerController {
     @Autowired
     private OpinionMapper opinionMapper;
 
-    /**
-     * Retrieves estimation data from database based on parameters provided for filtering.
-     */
+    @Autowired
+    private RequestService requestService;
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<VolunteerDTO>> getVolunteers() {
 
@@ -104,7 +107,9 @@ public class VolunteerController {
 
         VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(foundVolunteer);
 
-        EntityModel<VolunteerDTO> resource = EntityModel.of(volunteerDTO);
+        Link selfLink = linkTo(methodOn(VolunteerController.class).getVolunteer(id)).withSelfRel();
+
+        EntityModel<VolunteerDTO> resource = EntityModel.of(volunteerDTO, selfLink);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
@@ -165,7 +170,6 @@ public class VolunteerController {
             if (foundVolunteer.getUserData() != null && principal.getName().equals(foundVolunteer.getUserData().getUsername())) {
 
                 Volunteer savedVolunteer = volunteerService.saveVolunteer(volunteer);
-
                 VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(savedVolunteer);
 
                 return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
@@ -178,12 +182,6 @@ public class VolunteerController {
         }
     }
 
-    /**
-     * Deletes an entity from database
-     *
-     * @param id An ID value of deleted object
-     * @return The String with deletion message
-     */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id) {
 
