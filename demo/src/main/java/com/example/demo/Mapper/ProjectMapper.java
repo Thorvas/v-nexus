@@ -40,10 +40,7 @@ public class ProjectMapper {
         Link selfLink = linkTo(methodOn(ProjectController.class)
                 .getVolunteers(projectToMap.getId())).withSelfRel();
 
-        Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
-
-        newDTO.add(allParticipantsLink, allCategoriesLink, allOpinionsLink, projectOwnerLink, selfLink, rootLink);
+        newDTO.add(allParticipantsLink, allCategoriesLink, allOpinionsLink, projectOwnerLink, selfLink);
 
         return newDTO;
     }

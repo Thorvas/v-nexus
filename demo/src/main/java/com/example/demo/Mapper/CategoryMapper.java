@@ -27,10 +27,7 @@ public class CategoryMapper {
         Link selfLink = linkTo(methodOn(CategoryController.class)
                 .retrieveCategory(categoryToMap.getId())).withSelfRel();
 
-        Link rootLink = linkTo(methodOn(CategoryController.class)
-                .retrieveCategories()).withRel("root");
-
-        newDTO.add(allProjectsLink, selfLink, rootLink);
+        newDTO.add(allProjectsLink, selfLink);
 
         return newDTO;
     }

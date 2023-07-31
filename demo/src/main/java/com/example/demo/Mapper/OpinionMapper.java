@@ -30,10 +30,7 @@ public class OpinionMapper {
         Link selfLink = linkTo(methodOn(OpinionController.class)
                 .getOpinion(newDTO.getId())).withSelfRel();
 
-        Link rootLink = linkTo(methodOn(OpinionController.class)
-                .getAllOpinions()).withRel("root");
-
-        newDTO.add(opinionAuthorLink, describedProjectLink, selfLink, rootLink);
+        newDTO.add(opinionAuthorLink, describedProjectLink, selfLink);
 
         return newDTO;
     }

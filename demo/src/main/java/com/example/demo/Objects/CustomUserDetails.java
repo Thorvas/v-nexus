@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -25,8 +24,8 @@ public class CustomUserDetails implements UserDetails {
     private UserData userData;
 
     public CustomUserDetails(UserData user) {
-        this.setAuthorities(Stream.of(user.getRole())
-                .map(authority -> new SimpleGrantedAuthority(authority))
+        this.setAuthorities(user.getRole().getRoles().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
                 .collect(Collectors.toSet()));
         this.setActive(user.isActive());
         this.setPassword(user.getPassword());

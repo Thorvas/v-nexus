@@ -7,7 +7,6 @@ import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Objects.CustomUserDetails;
 import com.example.demo.Objects.Volunteer;
-import com.example.demo.Objects.VolunteerRequest;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.RequestService;
 import com.example.demo.Services.VolunteerService;
@@ -15,7 +14,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,8 +29,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- *
- *
  * @author Thorvas
  */
 @RestController
@@ -67,10 +63,10 @@ public class VolunteerController {
                     .map(volunteerMapper::mapVolunteerToDTO)
                     .collect(Collectors.toList());
 
-            CollectionModel<VolunteerDTO> resource = CollectionModel.of(volunteerDTOs);
+            Link selfLink = linkTo(methodOn(VolunteerController.class)
+                    .getVolunteers()).withSelfRel();
 
-            resource.add(linkTo(methodOn(VolunteerController.class)
-                    .getVolunteers()).withSelfRel());
+            CollectionModel<VolunteerDTO> resource = CollectionModel.of(volunteerDTOs, selfLink);
 
             return new ResponseEntity<>(resource, HttpStatus.OK);
 
@@ -90,28 +86,30 @@ public class VolunteerController {
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
-        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+        Link rootLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteers()).withRel("root");
 
-        resource.add(linkTo(methodOn(VolunteerController.class)
-                        .getMatchingProjects(id)).withSelfRel(),
-                linkTo(methodOn(VolunteerController.class)
-                        .getVolunteers()).withRel("root"));
+        Link selfLink = linkTo(methodOn(VolunteerController.class)
+                .getMatchingProjects(id)).withSelfRel();
+
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<VolunteerDTO>> getVolunteer(@PathVariable Long id) {
+    public ResponseEntity<VolunteerDTO> getVolunteer(@PathVariable Long id) {
 
         Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer of requested id could not be found."));
 
+        Link rootLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteers()).withRel("root");
+
         VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(foundVolunteer);
 
-        Link selfLink = linkTo(methodOn(VolunteerController.class).getVolunteer(id)).withSelfRel();
+        volunteerDTO.add(rootLink);
 
-        EntityModel<VolunteerDTO> resource = EntityModel.of(volunteerDTO, selfLink);
-
-        return new ResponseEntity<>(resource, HttpStatus.OK);
+        return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -123,12 +121,13 @@ public class VolunteerController {
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
-        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+        Link selfLink = linkTo(methodOn(VolunteerController.class)
+                .getProjects(id)).withSelfRel();
 
-        resource.add(linkTo(methodOn(VolunteerController.class)
-                        .getProjects(id)).withSelfRel(),
-                linkTo(methodOn(VolunteerController.class)
-                        .getVolunteers()).withRel("root"));
+        Link rootLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteers()).withRel("root");
+
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
@@ -143,12 +142,13 @@ public class VolunteerController {
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
-        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
+        Link selfLink = linkTo(methodOn(VolunteerController.class)
+                .getOwnedProjects(id)).withSelfRel();
 
-        resource.add(linkTo(methodOn(VolunteerController.class)
-                        .getOwnedProjects(id)).withSelfRel(),
-                linkTo(methodOn(VolunteerController.class)
-                        .getVolunteers()).withRel("root"));
+        Link rootLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteers()).withRel("root");
+
+        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
@@ -166,19 +166,15 @@ public class VolunteerController {
         Volunteer foundVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         volunteer.setId(foundVolunteer.getId());
 
-        if (volunteer != null) {
-            if (foundVolunteer.getUserData() != null && principal.getName().equals(foundVolunteer.getUserData().getUsername())) {
+        if (foundVolunteer.getUserData() != null && principal.getName().equals(foundVolunteer.getUserData().getUsername())) {
 
-                Volunteer savedVolunteer = volunteerService.saveVolunteer(volunteer);
-                VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(savedVolunteer);
+            Volunteer savedVolunteer = volunteerService.saveVolunteer(volunteer);
+            VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(savedVolunteer);
 
-                return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
+            return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
 
-            } else {
-                throw new BadCredentialsException("You cannot edit other volunteer's data.");
-            }
         } else {
-            throw new IllegalArgumentException("Updated volunteer cannot be null");
+            throw new BadCredentialsException("You cannot edit other volunteer's data.");
         }
     }
 
@@ -197,7 +193,5 @@ public class VolunteerController {
 
             throw new IllegalArgumentException("An ID of requested volunteer to patch cannot be null.");
         }
-
-
     }
 }

@@ -12,6 +12,8 @@ import com.example.demo.Services.RequestService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1/requests")
@@ -68,7 +73,7 @@ public class RequestController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<RequestDTO>> getAllRequests() {
+    public ResponseEntity<CollectionModel<RequestDTO>> getAllRequests() {
 
         List<VolunteerRequest> allRequests = requestService.searchAllRequests();
 
@@ -76,7 +81,14 @@ public class RequestController {
                 .map(request -> requestMapper.mapRequestToDTO(request))
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(allRequestsDTO, HttpStatus.OK);
+        Link selfLink = linkTo(methodOn(RequestController.class)
+                .getAllRequests()).withSelfRel();
+
+        CollectionModel<RequestDTO> resource = CollectionModel.of(allRequestsDTO);
+
+        resource.add(selfLink);
+
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -84,6 +96,11 @@ public class RequestController {
 
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
         RequestDTO requestDTO = requestMapper.mapRequestToDTO(foundRequest);
+
+        Link rootLink = linkTo(methodOn(RequestController.class)
+                .getAllRequests()).withRel("root");
+
+        requestDTO.add(rootLink);
 
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);
     }
@@ -108,7 +125,12 @@ public class RequestController {
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
         Volunteer requestSender = foundRequest.getRequestSender();
 
+        Link rootLink = linkTo(methodOn(RequestController.class)
+                .getAllRequests()).withRel("root");
+
         VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(requestSender);
+
+        volunteerDTO.add(rootLink);
 
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
 
@@ -120,17 +142,28 @@ public class RequestController {
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
         Volunteer requestReceiver = foundRequest.getRequestReceiver();
 
+        Link rootLink = linkTo(methodOn(RequestController.class)
+                .getAllRequests()).withRel("root");
+
         VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(requestReceiver);
+
+        volunteerDTO.add(rootLink);
 
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> getRequestProject(@PathVariable Long id) {
+
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
         Project requestProject = foundRequest.getRequestedProject();
 
+        Link rootLink = linkTo(methodOn(RequestController.class)
+                .getAllRequests()).withRel("root");
+
         ProjectDTO projectDTO = projectMapper.mapProjectToDTO(requestProject);
+
+        projectDTO.add(rootLink);
 
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }

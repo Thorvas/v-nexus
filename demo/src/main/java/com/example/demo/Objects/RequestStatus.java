@@ -5,9 +5,9 @@ public enum RequestStatus {
     DECLINED("STATUS_DECLINED"),
     PENDING("STATUS_PENDING");
 
-    private String status;
+    private final String status;
 
-    private RequestStatus(String status) {
+    RequestStatus(String status) {
         this.status = status;
     }
 

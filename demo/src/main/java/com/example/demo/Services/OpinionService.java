@@ -28,4 +28,9 @@ public class OpinionService {
 
         return repository.save(opinion);
     }
+
+    public void deleteOpinion(Opinion opinion) {
+
+        repository.delete(opinion);
+    }
 }

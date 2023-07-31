@@ -3,13 +3,13 @@ package com.example.demo.Controller;
 import com.example.demo.DTO.OpinionDTO;
 import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.DTO.VolunteerDTO;
+import com.example.demo.Mapper.OpinionMapper;
+import com.example.demo.Mapper.ProjectMapper;
+import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Objects.CustomUserDetails;
 import com.example.demo.Objects.Opinion;
 import com.example.demo.Objects.Project;
 import com.example.demo.Objects.Volunteer;
-import com.example.demo.Mapper.OpinionMapper;
-import com.example.demo.Mapper.ProjectMapper;
-import com.example.demo.Mapper.VolunteerMapper;
 import com.example.demo.Services.OpinionService;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
@@ -17,7 +17,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -55,7 +54,7 @@ public class OpinionController {
     private ProjectService projectService;
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<OpinionDTO>> getOpinion(@PathVariable Long id) {
+    public ResponseEntity<OpinionDTO> getOpinion(@PathVariable Long id) {
 
         if (id != null) {
 
@@ -63,9 +62,12 @@ public class OpinionController {
 
             OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(foundOpinion);
 
-            EntityModel<OpinionDTO> resource = EntityModel.of(opinionDTO);
+            Link rootLink = linkTo(methodOn(OpinionController.class)
+                    .getAllOpinions()).withRel("root");
 
-            return new ResponseEntity<>(resource, HttpStatus.OK);
+            opinionDTO.add(rootLink);
+
+            return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
         } else {
             throw new IllegalArgumentException("Id of requested opinion cannot be null.");
         }
@@ -89,7 +91,7 @@ public class OpinionController {
     }
 
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<ProjectDTO>> getProject(@PathVariable Long id) {
+    public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
 
         if (id != null) {
 
@@ -99,16 +101,19 @@ public class OpinionController {
 
             ProjectDTO projectDTO = projectMapper.mapProjectToDTO(describedProject);
 
-            EntityModel<ProjectDTO> resource = EntityModel.of(projectDTO);
+            Link rootLink = linkTo(methodOn(ProjectController.class)
+                    .listProjects()).withRel("root");
 
-            return new ResponseEntity<>(resource, HttpStatus.OK);
+            projectDTO.add(rootLink);
+
+            return new ResponseEntity<>(projectDTO, HttpStatus.OK);
         } else {
             throw new IllegalArgumentException("Id of requested opinion cannot be null.");
         }
     }
 
     @GetMapping(value = "/{id}/author", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<VolunteerDTO>> getAuthor(@PathVariable Long id) {
+    public ResponseEntity<VolunteerDTO> getAuthor(@PathVariable Long id) {
 
         if (id != null) {
 
@@ -117,9 +122,12 @@ public class OpinionController {
 
             VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(author);
 
-            EntityModel<VolunteerDTO> resource = EntityModel.of(volunteerDTO);
+            Link rootLink = linkTo(methodOn(VolunteerController.class)
+                    .getVolunteers()).withRel("root");
 
-            return new ResponseEntity<>(resource, HttpStatus.OK);
+            volunteerDTO.add(rootLink);
+
+            return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
         } else {
             throw new IllegalArgumentException("Id of requested opinion cannot be null.");
         }
@@ -145,10 +153,20 @@ public class OpinionController {
             OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(savedOpinion);
 
             return new ResponseEntity<>(opinionDTO, HttpStatus.CREATED);
-        }
-
-        else {
+        } else {
             throw new BadCredentialsException("Logged user id does not match author's id.");
         }
+    }
+
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id) {
+
+        Opinion opinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+
+        opinionService.deleteOpinion(opinion);
+
+        OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(opinion);
+
+        return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
     }
 }

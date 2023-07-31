@@ -2,14 +2,13 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.CategoryDTO;
 import com.example.demo.DTO.ProjectDTO;
-import com.example.demo.Objects.Category;
 import com.example.demo.Mapper.CategoryMapper;
 import com.example.demo.Mapper.ProjectMapper;
+import com.example.demo.Objects.Category;
 import com.example.demo.Services.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,17 +53,18 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<CategoryDTO>> retrieveCategory(@PathVariable Long id) {
+    public ResponseEntity<CategoryDTO> retrieveCategory(@PathVariable Long id) {
 
         Category foundCategory = categoryService.searchCategory(id).orElseThrow(() -> new EntityNotFoundException("Requested entity could not be found."));
 
         CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(foundCategory);
 
-        Link rootLink = linkTo(methodOn(CategoryController.class).retrieveCategories()).withRel("root");
+        Link rootLink = linkTo(methodOn(CategoryController.class)
+                .retrieveCategories()).withRel("root");
 
-        EntityModel<CategoryDTO> resource = EntityModel.of(categoryDTO, rootLink);
+        categoryDTO.add(rootLink);
 
-        return new ResponseEntity<>(resource, HttpStatus.OK);
+        return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,12 +76,14 @@ public class CategoryController {
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
 
+        Link selfLink = linkTo(methodOn(CategoryController.class)
+                .retrieveProjects(id)).withSelfRel();
+        Link rootLink = linkTo(methodOn(CategoryController.class)
+                .retrieveCategories()).withRel("root");
+
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs);
 
-        resource.add(linkTo(methodOn(CategoryController.class)
-                .retrieveProjects(id)).withSelfRel(),
-                linkTo(methodOn(CategoryController.class)
-                        .retrieveCategories()).withRel("root"));
+        resource.add(selfLink, rootLink);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }

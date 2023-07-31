@@ -1,10 +1,7 @@
 package com.example.demo.Services;
 
 
-import com.example.demo.Objects.AuthenticationRequest;
-import com.example.demo.Objects.AuthenticationResponse;
-import com.example.demo.Objects.UserData;
-import com.example.demo.Objects.Volunteer;
+import com.example.demo.Objects.*;
 import com.example.demo.Repositories.UserDataRepository;
 import com.example.demo.Repositories.VolunteerRepository;
 import com.example.demo.Security.JwtService;
@@ -46,7 +43,7 @@ public class AuthenticationService {
         UserData userData = UserData.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("ROLE_USER")
+                .role(UserRole.ROLE_VOLUNTEER)
                 .isEnabled(true)
                 .isAccountNonExpired(true)
                 .isCredentialsNonExpired(true)

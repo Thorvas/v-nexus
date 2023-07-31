@@ -36,8 +36,9 @@ public class UserData {
     @Column(name = "is_enabled")
     private boolean isEnabled;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private String role;
+    private UserRole role;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "volunteer_id")

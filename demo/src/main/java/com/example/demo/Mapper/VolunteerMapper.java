@@ -31,10 +31,7 @@ public class VolunteerMapper {
         Link selfLink = linkTo(methodOn(VolunteerController.class)
                 .getVolunteer(volunteerToMap.getId())).withSelfRel();
 
-        Link rootLink = linkTo(methodOn(VolunteerController.class)
-                .getVolunteers()).withRel("root");
-
-        newDTO.add(allProjectsLink, allOwnedProjectsLink, selfLink, rootLink);
+        newDTO.add(allProjectsLink, allOwnedProjectsLink, selfLink);
 
         return newDTO;
     }
