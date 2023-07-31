@@ -22,9 +22,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -38,30 +37,23 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api/v1/projects")
 public class ProjectController {
 
+    private final String PROJECT_NOT_FOUND_MESSAGE = "Requested project could not be found.";
     @Autowired
     private ProjectService projectService;
-
     @Autowired
     private VolunteerService volunteerService;
-
     @Autowired
     private CategoryMapper categoryMapper;
-
     @Autowired
     private ProjectMapper projectMapper;
-
     @Autowired
     private VolunteerMapper volunteerMapper;
-
     @Autowired
     private OpinionMapper opinionMapper;
 
-    private final String PROJECT_NOT_FOUND_MESSAGE = "Requested project could not be found.";
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project, Authentication principal) {
+    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
         Volunteer foundVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
 
         project.setOwnerVolunteer(foundVolunteer);
@@ -73,9 +65,8 @@ public class ProjectController {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id, @RequestBody @Valid Project project, Authentication principal) {
+    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id, @RequestBody @Valid Project project, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         Volunteer currentUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
 
@@ -315,8 +306,7 @@ public class ProjectController {
             ProjectDTO projectDTO = projectMapper.mapProjectToDTO(editedProject);
 
             return new ResponseEntity<>(projectDTO, HttpStatus.OK);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Requested volunteer does not participate in this project.");
         }
     }

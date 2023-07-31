@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -137,9 +137,8 @@ public class OpinionController {
     public ResponseEntity<OpinionDTO> postOpinion(@RequestParam(name = "authorId") Long authorId,
                                                   @RequestParam(name = "projectId") Long projectId,
                                                   @RequestBody @Valid Opinion opinion,
-                                                  Authentication principal) {
+                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
         Volunteer loggedVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         Volunteer author = volunteerService.findVolunteer(authorId).orElseThrow(() -> new EntityNotFoundException("Such author does not exist."));
         Project describedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Described project does not exist."));

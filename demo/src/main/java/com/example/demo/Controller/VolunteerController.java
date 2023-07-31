@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -160,13 +160,12 @@ public class VolunteerController {
      * @return The ResponseEntity object containing updated object
      */
     @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> updateVolunteer(@RequestBody @Valid Volunteer volunteer, Authentication principal) {
+    public ResponseEntity<VolunteerDTO> updateVolunteer(@RequestBody @Valid Volunteer volunteer, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) principal.getPrincipal();
         Volunteer foundVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         volunteer.setId(foundVolunteer.getId());
 
-        if (foundVolunteer.getUserData() != null && principal.getName().equals(foundVolunteer.getUserData().getUsername())) {
+        if (foundVolunteer.getUserData() != null && userDetails.getUsername().equals(foundVolunteer.getUserData().getUsername())) {
 
             Volunteer savedVolunteer = volunteerService.saveVolunteer(volunteer);
             VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(savedVolunteer);
