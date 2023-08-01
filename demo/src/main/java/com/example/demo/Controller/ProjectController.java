@@ -51,7 +51,8 @@ public class ProjectController {
     private OpinionMapper opinionMapper;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project,
+                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         Project savedProject = projectService.createProject(loggedUser, project);
@@ -243,7 +244,8 @@ public class ProjectController {
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> deleteProject(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ProjectDTO> deleteProject(@PathVariable Long id,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Project projectToDelete = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("User not found."));

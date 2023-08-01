@@ -160,7 +160,9 @@ public class VolunteerController {
      * @return The ResponseEntity object containing updated object
      */
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id, @RequestBody @Valid Volunteer volunteer, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id,
+                                                        @RequestBody @Valid Volunteer volunteer,
+                                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         Volunteer updatedVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Updated volunteer could not be found."));
@@ -178,7 +180,8 @@ public class VolunteerController {
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id,
+                                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         Volunteer volunteerToDelete = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer to delete could not be found."));

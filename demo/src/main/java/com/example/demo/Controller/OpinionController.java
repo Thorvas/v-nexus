@@ -141,7 +141,8 @@ public class OpinionController {
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Opinion opinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));

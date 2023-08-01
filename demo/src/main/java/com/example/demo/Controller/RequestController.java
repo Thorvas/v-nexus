@@ -51,7 +51,8 @@ public class RequestController {
 
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RequestDTO> createRequest(@RequestParam("projectId") Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<RequestDTO> createRequest(@RequestParam("projectId") Long id,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException("Project not found."));
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
@@ -100,7 +101,8 @@ public class RequestController {
 
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RequestDTO> deleteRequest(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<RequestDTO> deleteRequest(@PathVariable Long id,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
 
@@ -118,7 +120,8 @@ public class RequestController {
     }
 
     @GetMapping(value = "/{id}/sender", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> getRequestSender(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<VolunteerDTO> getRequestSender(@PathVariable Long id,
+                                                         @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("User could not be found."));
@@ -143,7 +146,8 @@ public class RequestController {
     }
 
     @GetMapping(value = "/{id}/receiver", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> getRequestReceiver(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<VolunteerDTO> getRequestReceiver(@PathVariable Long id,
+                                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity could not be found."));
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
@@ -182,7 +186,8 @@ public class RequestController {
     }
 
     @PatchMapping(value = "/{id}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RequestDTO> acceptRequest(@PathVariable("id") Long requestId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<RequestDTO> acceptRequest(@PathVariable("id") Long requestId,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         VolunteerRequest request = requestService.findRequest(requestId).orElseThrow(() -> new EntityNotFoundException("Request was not found."));
@@ -203,7 +208,8 @@ public class RequestController {
     }
 
     @PatchMapping(value = "/{id}/decline", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RequestDTO> declineRequest(@PathVariable("id") Long requestId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<RequestDTO> declineRequest(@PathVariable("id") Long requestId,
+                                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         VolunteerRequest request = requestService.findRequest(requestId).orElseThrow(() -> new EntityNotFoundException("Request was not found."));

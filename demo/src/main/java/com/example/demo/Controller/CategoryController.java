@@ -79,6 +79,25 @@ public class CategoryController {
         }
     }
 
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable Long id,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Category foundCategory = categoryService.findCategory(id).orElseThrow(() -> new EntityNotFoundException("Category could not be found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+
+        if (loggedUser.getUserData().isAdmin()) {
+
+            categoryService.deleteCategory(foundCategory);
+
+            CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(foundCategory);
+
+            return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
+        } else {
+            throw new BadCredentialsException("You are not permitted to delete categories.");
+        }
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<CategoryDTO>> retrieveCategories() {
 
