@@ -5,7 +5,10 @@ import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.Mapper.CategoryMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Objects.Category;
+import com.example.demo.Objects.CustomUserDetails;
+import com.example.demo.Objects.Volunteer;
 import com.example.demo.Services.CategoryService;
+import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -13,10 +16,9 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +39,46 @@ public class CategoryController {
     @Autowired
     private ProjectMapper projectMapper;
 
+    @Autowired
+    private VolunteerService volunteerService;
+
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CategoryDTO> postCategory(@RequestBody Category category, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+
+        if (loggedUser.getUserData().isAdmin()) {
+
+            Category savedCategory = categoryService.createCategory(category.getCategoryName(), category.getCategoryDescription(), category.getCategoryPopularity());
+            CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(savedCategory);
+
+            return new ResponseEntity<>(categoryDTO, HttpStatus.CREATED);
+        } else {
+
+            throw new BadCredentialsException("You are not permitted to add new categories.");
+        }
+    }
+
+    @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody Category category,
+                                                      @PathVariable Long id,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Category foundCategory = categoryService.findCategory(id).orElseThrow(() -> new EntityNotFoundException("Category could not be found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+
+        if (loggedUser.getUserData().isAdmin()) {
+
+            Category savedCategory = categoryService.updateCategory(foundCategory, category);
+            CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(savedCategory);
+
+            return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
+        } else {
+
+            throw new BadCredentialsException("You are not permitted to update categories.");
+        }
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<CategoryDTO>> retrieveCategories() {
 
@@ -55,7 +97,7 @@ public class CategoryController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryDTO> retrieveCategory(@PathVariable Long id) {
 
-        Category foundCategory = categoryService.searchCategory(id).orElseThrow(() -> new EntityNotFoundException("Requested entity could not be found."));
+        Category foundCategory = categoryService.findCategory(id).orElseThrow(() -> new EntityNotFoundException("Requested entity could not be found."));
 
         CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(foundCategory);
 
@@ -70,7 +112,7 @@ public class CategoryController {
     @GetMapping(value = "/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<ProjectDTO>> retrieveProjects(@PathVariable Long id) {
 
-        Category foundCategory = categoryService.searchCategory(id).orElseThrow(() -> new EntityNotFoundException("Requested category could not be found."));
+        Category foundCategory = categoryService.findCategory(id).orElseThrow(() -> new EntityNotFoundException("Requested category could not be found."));
 
         List<ProjectDTO> projectDTOs = foundCategory.getProjectsCategories().stream()
                 .map(projectMapper::mapProjectToDTO)

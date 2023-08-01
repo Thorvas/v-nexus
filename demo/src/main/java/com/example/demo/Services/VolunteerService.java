@@ -28,7 +28,20 @@ public class VolunteerService {
         return repository.save(volunteer);
     }
 
+    public boolean isMatchingVolunteer(Volunteer foundVolunteer, Volunteer user) {
+
+        return foundVolunteer.getId().equals(user.getId());
+    }
+
     public void deleteVolunteer(Volunteer volunteer) {
         repository.delete(volunteer);
+    }
+
+    public Volunteer updateVolunteer(Volunteer sourceVolunteer, Volunteer targetVolunteer) {
+
+        targetVolunteer.setId(sourceVolunteer.getId());
+        repository.save(targetVolunteer);
+
+        return targetVolunteer;
     }
 }

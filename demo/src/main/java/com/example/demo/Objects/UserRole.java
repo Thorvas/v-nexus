@@ -7,15 +7,15 @@ public enum UserRole {
     ROLE_VOLUNTEER(Arrays.asList(UserAuthority.READ, UserAuthority.WRITE)),
     ROLE_ADMIN(Arrays.asList(UserAuthority.READ, UserAuthority.WRITE, UserAuthority.ADMIN));
 
-    private final List<UserAuthority> roles;
+    private final List<UserAuthority> authorities;
 
-    UserRole(List<UserAuthority> roles) {
+    UserRole(List<UserAuthority> authorities) {
 
-        this.roles = roles;
+        this.authorities = authorities;
     }
 
-    public List<UserAuthority> getRoles() {
+    public List<UserAuthority> getAuthorities() {
 
-        return this.roles;
+        return this.authorities;
     }
 }

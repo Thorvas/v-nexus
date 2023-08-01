@@ -56,21 +56,16 @@ public class OpinionController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> getOpinion(@PathVariable Long id) {
 
-        if (id != null) {
+        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
 
-            Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+        OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(foundOpinion);
 
-            OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(foundOpinion);
+        Link rootLink = linkTo(methodOn(OpinionController.class)
+                .getAllOpinions()).withRel("root");
 
-            Link rootLink = linkTo(methodOn(OpinionController.class)
-                    .getAllOpinions()).withRel("root");
+        opinionDTO.add(rootLink);
 
-            opinionDTO.add(rootLink);
-
-            return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
-        } else {
-            throw new IllegalArgumentException("Id of requested opinion cannot be null.");
-        }
+        return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -93,44 +88,34 @@ public class OpinionController {
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
 
-        if (id != null) {
+        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
 
-            Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+        Project describedProject = foundOpinion.getDescribedProject();
 
-            Project describedProject = foundOpinion.getDescribedProject();
+        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(describedProject);
 
-            ProjectDTO projectDTO = projectMapper.mapProjectToDTO(describedProject);
+        Link rootLink = linkTo(methodOn(ProjectController.class)
+                .listProjects()).withRel("root");
 
-            Link rootLink = linkTo(methodOn(ProjectController.class)
-                    .listProjects()).withRel("root");
+        projectDTO.add(rootLink);
 
-            projectDTO.add(rootLink);
-
-            return new ResponseEntity<>(projectDTO, HttpStatus.OK);
-        } else {
-            throw new IllegalArgumentException("Id of requested opinion cannot be null.");
-        }
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/author", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getAuthor(@PathVariable Long id) {
 
-        if (id != null) {
+        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+        Volunteer author = foundOpinion.getAuthor();
 
-            Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
-            Volunteer author = foundOpinion.getAuthor();
+        VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(author);
 
-            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(author);
+        Link rootLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteers()).withRel("root");
 
-            Link rootLink = linkTo(methodOn(VolunteerController.class)
-                    .getVolunteers()).withRel("root");
+        volunteerDTO.add(rootLink);
 
-            volunteerDTO.add(rootLink);
-
-            return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
-        } else {
-            throw new IllegalArgumentException("Id of requested opinion cannot be null.");
-        }
+        return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -139,16 +124,14 @@ public class OpinionController {
                                                   @RequestBody @Valid Opinion opinion,
                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        Volunteer loggedVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         Volunteer author = volunteerService.findVolunteer(authorId).orElseThrow(() -> new EntityNotFoundException("Such author does not exist."));
         Project describedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Described project does not exist."));
 
-        if (loggedVolunteer.getId().equals(author.getId())) {
+        if (opinionService.isOpinionAuthor(author, loggedUser)) {
 
-            opinion.setAuthor(author);
-            opinion.setDescribedProject(describedProject);
+            Opinion savedOpinion = opinionService.createOpinion(author, describedProject, opinion.getOpinion());
 
-            Opinion savedOpinion = opinionService.saveOpinion(opinion);
             OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(savedOpinion);
 
             return new ResponseEntity<>(opinionDTO, HttpStatus.CREATED);
@@ -158,14 +141,20 @@ public class OpinionController {
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id) {
+    public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Opinion opinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
 
-        opinionService.deleteOpinion(opinion);
+        if (opinionService.isOpinionAuthor(opinion.getAuthor(), loggedUser) || loggedUser.getUserData().isAdmin()) {
 
-        OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(opinion);
+            opinionService.deleteOpinion(opinion);
 
-        return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
+            OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(opinion);
+
+            return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
+        } else {
+            throw new BadCredentialsException("You are not permitted to perform this operation.");
+        }
     }
 }

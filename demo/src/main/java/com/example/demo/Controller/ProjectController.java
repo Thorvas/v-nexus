@@ -15,7 +15,6 @@ import com.example.demo.Objects.Volunteer;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -54,32 +53,11 @@ public class ProjectController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        Volunteer foundVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Project savedProject = projectService.createProject(loggedUser, project);
+        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(savedProject);
 
-        project.setOwnerVolunteer(foundVolunteer);
-        project.addVolunteerToProject(foundVolunteer);
-
-        Project savedProject = projectService.saveProject(project);
-
-        return new ResponseEntity<>(projectMapper.mapProjectToDTO(savedProject), HttpStatus.CREATED);
-    }
-
-    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id, @RequestBody @Valid Project project, @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
-        Volunteer currentUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
-
-        if (foundProject.getOwnerVolunteer().getId().equals(currentUser.getId())) {
-
-            project.setId(foundProject.getId());
-            Project savedProject = projectService.saveProject(project);
-            ProjectDTO returnedProject = projectMapper.mapProjectToDTO(savedProject);
-
-            return new ResponseEntity<>(returnedProject, HttpStatus.OK);
-        } else {
-            throw new BadCredentialsException("Project you are trying to edit does not belong to you.");
-        }
+        return new ResponseEntity<>(projectDTO, HttpStatus.CREATED);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -245,69 +223,80 @@ public class ProjectController {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> patchProject(@RequestBody Project project, @PathVariable Long id) {
+    public ResponseEntity<ProjectDTO> patchProject(@RequestBody Project project,
+                                                   @PathVariable Long id,
+                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        if (project != null) {
+        Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("User not found."));
 
-            Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        if (projectService.isVolunteerProjectOwner(loggedUser, foundProject) || loggedUser.getUserData().isAdmin()) {
 
-            ProjectDTO projectDTO = projectMapper.mapProjectToDTO(foundProject);
+            Project savedProject = projectService.updateProject(foundProject, project);
+            ProjectDTO projectDTO = projectMapper.mapProjectToDTO(savedProject);
 
             return new ResponseEntity<>(projectDTO, HttpStatus.OK);
         } else {
 
-            throw new IllegalArgumentException("Updated project cannot be null!");
+            throw new BadCredentialsException("You are not permitted to update this project.");
         }
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> deleteProject(@PathVariable Long id) {
+    public ResponseEntity<ProjectDTO> deleteProject(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        if (id != null) {
+        Project projectToDelete = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("User not found."));
 
-            Project projectToDelete = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        if (projectService.isVolunteerProjectOwner(loggedUser, projectToDelete) || loggedUser.getUserData().isAdmin()) {
 
             projectService.deleteProject(projectToDelete);
 
             return new ResponseEntity<>(projectMapper.mapProjectToDTO(projectToDelete), HttpStatus.OK);
         } else {
-            throw new IllegalArgumentException("Id of requested entity should not be null.");
+            throw new BadCredentialsException("You do not have permission to perform that operation.");
         }
     }
 
     @PatchMapping(value = "/{projectId}/volunteers/{volunteerId}")
     public ResponseEntity<ProjectDTO> addVolunteerToProject(@PathVariable("projectId") Long projectId,
-                                                            @PathVariable("volunteerId") Long volunteerId) {
+                                                            @PathVariable("volunteerId") Long volunteerId,
+                                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Requested project could not be found."));
         Volunteer addedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException("Requested volunteer could not be found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Could not find an entity."));
 
-        editedProject.addVolunteerToProject(addedVolunteer);
+        if (loggedUser.getUserData().isAdmin()) {
 
-        projectService.saveProject(editedProject);
-
-        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(editedProject);
-
-        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
-    }
-
-    @DeleteMapping(value = "/{projectId}/volunteers/{volunteerId}")
-    public ResponseEntity<ProjectDTO> removeVolunteerFromProject(@PathVariable("projectId") Long projectId,
-                                                                 @PathVariable("volunteerId") Long volunteerId) {
-
-        Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Requested project was not found."));
-        Volunteer removedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException("Requested volunteer was not found."));
-
-        if (editedProject.getProjectVolunteers().contains(removedVolunteer)) {
-
-            editedProject.removeVolunteerFromProject(removedVolunteer);
-            projectService.saveProject(editedProject);
+            projectService.addVolunteerToProject(addedVolunteer, editedProject);
 
             ProjectDTO projectDTO = projectMapper.mapProjectToDTO(editedProject);
 
             return new ResponseEntity<>(projectDTO, HttpStatus.OK);
         } else {
-            throw new IllegalArgumentException("Requested volunteer does not participate in this project.");
+            throw new BadCredentialsException("You are not permitted to perform this operation.");
+        }
+    }
+
+    @DeleteMapping(value = "/{projectId}/volunteers/{volunteerId}")
+    public ResponseEntity<ProjectDTO> removeVolunteerFromProject(@PathVariable("projectId") Long projectId,
+                                                                 @PathVariable("volunteerId") Long volunteerId,
+                                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Requested project was not found."));
+        Volunteer removedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException("Requested volunteer was not found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Could not find an entity."));
+
+        if (loggedUser.getUserData().isAdmin()) {
+
+            projectService.removeVolunteerFromProject(removedVolunteer, editedProject);
+
+            ProjectDTO projectDTO = projectMapper.mapProjectToDTO(editedProject);
+
+            return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+        } else {
+            throw new IllegalArgumentException("You are not permitted to perform this operation.");
         }
     }
 }

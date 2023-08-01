@@ -17,6 +17,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,17 +54,10 @@ public class RequestController {
     public ResponseEntity<RequestDTO> createRequest(@RequestParam("projectId") Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException("Project not found."));
-        Volunteer currentUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
         Volunteer projectOwner = foundProject.getOwnerVolunteer();
 
-        VolunteerRequest newRequest = VolunteerRequest.builder()
-                .requestReceiver(projectOwner)
-                .requestSender(currentUser)
-                .requestedProject(foundProject)
-                .status(RequestStatus.PENDING)
-                .build();
-
-        requestService.saveRequest(newRequest);
+        VolunteerRequest newRequest = requestService.createRequest(projectOwner, loggedUser, foundProject);
 
         RequestDTO requestDTO = requestMapper.mapRequestToDTO(newRequest);
 
@@ -106,50 +100,69 @@ public class RequestController {
 
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RequestDTO> deleteRequest(@PathVariable Long id) {
+    public ResponseEntity<RequestDTO> deleteRequest(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
 
-        requestService.deleteRequest(foundRequest);
+        if (userDetails.getUserData().isAdmin()) {
 
-        RequestDTO requestDTO = requestMapper.mapRequestToDTO(foundRequest);
+            requestService.deleteRequest(foundRequest);
 
-        return new ResponseEntity<>(requestDTO, HttpStatus.OK);
+            RequestDTO requestDTO = requestMapper.mapRequestToDTO(foundRequest);
 
+            return new ResponseEntity<>(requestDTO, HttpStatus.OK);
+        }
+        else {
+            throw new BadCredentialsException("You do not have enough permission to perform this operation.");
+        }
     }
 
     @GetMapping(value = "/{id}/sender", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> getRequestSender(@PathVariable Long id) {
+    public ResponseEntity<VolunteerDTO> getRequestSender(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
-        Volunteer requestSender = foundRequest.getRequestSender();
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("User could not be found."));
 
-        Link rootLink = linkTo(methodOn(RequestController.class)
-                .getAllRequests()).withRel("root");
+        if (requestService.isVolunteerSenderOrReceiver(foundRequest, loggedUser) || loggedUser.getUserData().isAdmin()) {
 
-        VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(requestSender);
+            Volunteer requestSender = foundRequest.getRequestSender();
 
-        volunteerDTO.add(rootLink);
+            Link rootLink = linkTo(methodOn(RequestController.class)
+                    .getAllRequests()).withRel("root");
 
-        return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
+            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(requestSender);
+
+            volunteerDTO.add(rootLink);
+
+            return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
+        } else {
+            throw new BadCredentialsException("You are not receiver or sender of this request.");
+        }
+
 
     }
 
     @GetMapping(value = "/{id}/receiver", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getRequestReceiver(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity could not be found."));
         VolunteerRequest foundRequest = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException("Request could not be found."));
-        Volunteer requestReceiver = foundRequest.getRequestReceiver();
 
-        Link rootLink = linkTo(methodOn(RequestController.class)
-                .getAllRequests()).withRel("root");
+        if (requestService.isVolunteerSenderOrReceiver(foundRequest, loggedUser) || loggedUser.getUserData().isAdmin()) {
 
-        VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(requestReceiver);
+            Volunteer requestReceiver = foundRequest.getRequestReceiver();
 
-        volunteerDTO.add(rootLink);
+            Link rootLink = linkTo(methodOn(RequestController.class)
+                    .getAllRequests()).withRel("root");
 
-        return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
+            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(requestReceiver);
+
+            volunteerDTO.add(rootLink);
+
+            return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
+        } else {
+            throw new BadCredentialsException("You are not receiver or sender of this request.");
+        }
     }
 
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -177,14 +190,9 @@ public class RequestController {
         Volunteer volunteerToAdd = request.getRequestSender();
         Project requestedProject = request.getRequestedProject();
 
-        if (request.getRequestReceiver().getId().equals(loggedUser.getId()) && loggedUser.getOwnedProjects().contains(requestedProject) && request.getStatus() == RequestStatus.PENDING) {
+        if ((requestService.isVolunteerReceiver(request, loggedUser) || loggedUser.getUserData().isAdmin()) && loggedUser.getOwnedProjects().contains(requestedProject) && request.getStatus() == RequestStatus.PENDING) {
 
-            requestedProject.addVolunteerToProject(volunteerToAdd);
-
-            request.setStatus(RequestStatus.ACCEPTED);
-
-            requestService.saveRequest(request);
-            projectService.saveProject(requestedProject);
+            requestService.acceptRequest(request, volunteerToAdd, requestedProject);
 
             RequestDTO requestDTO = requestMapper.mapRequestToDTO(request);
 
@@ -203,10 +211,9 @@ public class RequestController {
         Volunteer volunteerToAdd = request.getRequestSender();
         Project requestedProject = request.getRequestedProject();
 
-        if (request.getRequestReceiver().getId().equals(loggedUser.getId()) && loggedUser.getOwnedProjects().contains(requestedProject) && request.getStatus() == RequestStatus.PENDING) {
+        if ((requestService.isVolunteerReceiver(request, loggedUser) || loggedUser.getUserData().isAdmin()) && loggedUser.getOwnedProjects().contains(requestedProject) && requestService.hasPendingStatus(request)) {
 
-            request.setStatus(RequestStatus.DECLINED);
-            requestService.saveRequest(request);
+            requestService.declineRequest(request, volunteerToAdd, requestedProject);
 
             RequestDTO requestDTO = requestMapper.mapRequestToDTO(request);
 

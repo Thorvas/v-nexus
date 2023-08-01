@@ -20,7 +20,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Optional<Category> searchCategory(Long id) {
+    public Optional<Category> findCategory(Long id) {
 
         return categoryRepository.findById(id);
     }
@@ -28,5 +28,26 @@ public class CategoryService {
     public List<Project> findProjectsWithCategoryName(String name) {
 
         return categoryRepository.findProjectFromCategory(name);
+    }
+
+    public Category updateCategory(Category sourceCategory, Category targetCategory) {
+
+        targetCategory.setId(sourceCategory.getId());
+        categoryRepository.save(targetCategory);
+
+        return targetCategory;
+    }
+
+    public Category createCategory(String name, String description, Integer popularity) {
+
+        Category category = Category.builder()
+                .categoryName(name)
+                .categoryDescription(description)
+                .categoryPopularity(popularity)
+                .build();
+
+        categoryRepository.save(category);
+
+        return category;
     }
 }

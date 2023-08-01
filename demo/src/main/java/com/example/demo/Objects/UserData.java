@@ -43,4 +43,10 @@ public class UserData {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "volunteer_id")
     private Volunteer referencedVolunteer;
+
+    public boolean isAdmin() {
+
+        return role.equals(UserRole.ROLE_ADMIN);
+    }
+
 }

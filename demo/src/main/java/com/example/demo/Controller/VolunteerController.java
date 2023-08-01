@@ -159,38 +159,39 @@ public class VolunteerController {
      * @param volunteer An ID value of updated object
      * @return The ResponseEntity object containing updated object
      */
-    @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> updateVolunteer(@RequestBody @Valid Volunteer volunteer, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id, @RequestBody @Valid Volunteer volunteer, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        Volunteer foundVolunteer = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
-        volunteer.setId(foundVolunteer.getId());
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Volunteer updatedVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Updated volunteer could not be found."));
 
-        if (foundVolunteer.getUserData() != null && userDetails.getUsername().equals(foundVolunteer.getUserData().getUsername())) {
+        if (volunteerService.isMatchingVolunteer(updatedVolunteer, loggedUser) || loggedUser.getUserData().isAdmin()) {
 
-            Volunteer savedVolunteer = volunteerService.saveVolunteer(volunteer);
-            VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(savedVolunteer);
+            Volunteer savedVolunteer = volunteerService.updateVolunteer(updatedVolunteer, volunteer);
+            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(savedVolunteer);
 
-            return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
-
+            return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
         } else {
-            throw new BadCredentialsException("You cannot edit other volunteer's data.");
+
+            throw new BadCredentialsException("You are not permitted to edit that data.");
         }
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id) {
+    public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        if (id != null) {
+        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Volunteer volunteerToDelete = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer to delete could not be found."));
+        VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteerToDelete);
 
-            Volunteer volunteerToDelete = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException("Volunteer to delete could not be found."));
-            VolunteerDTO returnedDTO = volunteerMapper.mapVolunteerToDTO(volunteerToDelete);
+        if (volunteerService.isMatchingVolunteer(loggedUser, volunteerToDelete) || loggedUser.getUserData().isAdmin()) {
 
             volunteerService.deleteVolunteer(volunteerToDelete);
 
-            return new ResponseEntity<>(returnedDTO, HttpStatus.OK);
+            return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
         } else {
-
-            throw new IllegalArgumentException("An ID of requested volunteer to patch cannot be null.");
+            throw new BadCredentialsException("You are not permitted to remove that volunteer.");
         }
+
     }
 }

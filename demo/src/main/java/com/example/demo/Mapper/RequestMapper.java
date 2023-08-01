@@ -27,7 +27,7 @@ public class RequestMapper {
                 .withRel("volunteer-receiver");
 
         Link volunteerSenderLink = linkTo(methodOn(RequestController.class)
-                .getRequestSender(request.getRequestSender().getId()))
+                .getRequestSender(request.getRequestSender().getId(), null))
                 .withRel("volunteer-sender");
 
         Link requestedProjectLink = linkTo(methodOn(RequestController.class)

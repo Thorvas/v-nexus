@@ -2,6 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.Objects.Project;
+import com.example.demo.Objects.Volunteer;
 import com.example.demo.Repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,30 @@ public class ProjectService {
         return projectRepository.findById(id);
     }
 
+    public void addVolunteerToProject(Volunteer addedVolunteer, Project project) {
+
+        project.addVolunteerToProject(addedVolunteer);
+        projectRepository.save(project);
+    }
+
+    public void removeVolunteerFromProject(Volunteer removedVolunteer, Project project) {
+
+        project.removeVolunteerFromProject(removedVolunteer);
+        projectRepository.save(project);
+    }
+
     public Project saveProject(Project project) {
 
         return projectRepository.save(project);
+    }
+
+    public Project createProject(Volunteer loggedUser, Project project) {
+
+        project.setOwnerVolunteer(loggedUser);
+        project.addVolunteerToProject(loggedUser);
+        projectRepository.save(project);
+
+        return project;
     }
 
     public List<Project> searchProjectsWithDate(LocalDate date) {
@@ -36,11 +58,22 @@ public class ProjectService {
     public List<Project> matchProjectsWithSkills(VolunteerDTO volunteerDTO) {
         List<Project> foundProjects = projectRepository.findAll();
 
-        List<Project> returnedProjects = foundProjects.stream()
+        return foundProjects.stream()
                 .filter(project -> project.getRequiredSkills().stream()
                         .anyMatch(skill -> volunteerDTO.getSkills().contains(skill))).distinct().collect(Collectors.toList());
+    }
 
-        return returnedProjects;
+    public boolean isVolunteerProjectOwner(Volunteer volunteer, Project project) {
+
+        return volunteer.getId().equals(project.getOwnerVolunteer().getId());
+    }
+
+    public Project updateProject(Project sourceProject, Project targetProject) {
+
+        targetProject.setId(sourceProject.getId());
+        projectRepository.save(targetProject);
+
+        return targetProject;
     }
 
     public List<Project> searchAllProjects() {
