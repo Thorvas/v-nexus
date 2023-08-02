@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AuthenticationService {
 
@@ -34,7 +36,7 @@ public class AuthenticationService {
     @Autowired
     AuthenticationManager authManager;
 
-    public AuthenticationResponse register(AuthenticationRequest request) {
+    public Optional<AuthenticationResponse> register(AuthenticationRequest request) {
 
         Volunteer newVolunteer = new Volunteer();
 
@@ -52,28 +54,37 @@ public class AuthenticationService {
                 .referencedVolunteer(newVolunteer)
                 .build();
 
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+
+            return Optional.empty();
+        }
+
         userRepository.save(userData);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(userData.getUsername());
 
         String jwtToken = jwtService.generateToken(userDetails);
 
-        return AuthenticationResponse.builder()
+        return Optional.of(AuthenticationResponse.builder()
                 .token(jwtToken)
-                .build();
+                .build());
     }
 
-    public AuthenticationResponse login(AuthenticationRequest request) {
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
-        ));
+    public Optional<AuthenticationResponse> login(AuthenticationRequest request) {
 
+        try {
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword()
+            ));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         String jwtToken = jwtService.generateToken(userDetails);
 
-        return AuthenticationResponse.builder()
+        return Optional.of(AuthenticationResponse.builder()
                 .token(jwtToken)
-                .build();
+                .build());
     }
 }
