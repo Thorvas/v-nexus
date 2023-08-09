@@ -6,10 +6,10 @@ import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
-import com.example.demo.Objects.CustomUserDetails;
 import com.example.demo.Objects.Opinion;
 import com.example.demo.Objects.Project;
 import com.example.demo.Objects.Volunteer;
+import com.example.demo.Services.AuthenticationService;
 import com.example.demo.Services.OpinionService;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
@@ -21,8 +21,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +34,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/api/v1/opinions")
 public class OpinionController {
+
+    private final String PROJECT_NOT_FOUND_MESSAGE = "Requested project could not be found.";
+    private final String OPINION_NOT_FOUND_MESSAGE = "Requested opinion could not be found.";
+    private final String PERMISSION_DENIED_MESSAGE = "You are not permitted to perform this operation.";
+    private final String VOLUNTEER_NOT_FOUND_MESSAGE = "Requested volunteer could not be found.";
+    private final String ROOT_LINK = "root";
 
     @Autowired
     private OpinionService opinionService;
@@ -53,15 +59,18 @@ public class OpinionController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private AuthenticationService authenticationService;
+
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> getOpinion(@PathVariable Long id) {
 
-        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
 
         OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(foundOpinion);
 
         Link rootLink = linkTo(methodOn(OpinionController.class)
-                .getAllOpinions()).withRel("root");
+                .getAllOpinions()).withRel(ROOT_LINK);
 
         opinionDTO.add(rootLink);
 
@@ -88,14 +97,14 @@ public class OpinionController {
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
 
-        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
 
         Project describedProject = foundOpinion.getDescribedProject();
 
         ProjectDTO projectDTO = projectMapper.mapProjectToDTO(describedProject);
 
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         projectDTO.add(rootLink);
 
@@ -105,13 +114,13 @@ public class OpinionController {
     @GetMapping(value = "/{id}/author", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getAuthor(@PathVariable Long id) {
 
-        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
+        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
         Volunteer author = foundOpinion.getAuthor();
 
         VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(author);
 
         Link rootLink = linkTo(methodOn(VolunteerController.class)
-                .getVolunteers()).withRel("root");
+                .getVolunteers()).withRel(ROOT_LINK);
 
         volunteerDTO.add(rootLink);
 
@@ -121,12 +130,11 @@ public class OpinionController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> postOpinion(@RequestParam(name = "authorId") Long authorId,
                                                   @RequestParam(name = "projectId") Long projectId,
-                                                  @RequestBody @Valid Opinion opinion,
-                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                                  @RequestBody @Valid Opinion opinion) {
 
-        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
-        Volunteer author = volunteerService.findVolunteer(authorId).orElseThrow(() -> new EntityNotFoundException("Such author does not exist."));
-        Project describedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Described project does not exist."));
+        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
+        Volunteer author = volunteerService.findVolunteer(authorId).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
+        Project describedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
         if (opinionService.isOpinionAuthor(author, loggedUser)) {
 
@@ -135,19 +143,20 @@ public class OpinionController {
             OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(savedOpinion);
 
             return new ResponseEntity<>(opinionDTO, HttpStatus.CREATED);
+
         } else {
-            throw new BadCredentialsException("Logged user id does not match author's id.");
+
+            throw new AccessDeniedException(PERMISSION_DENIED_MESSAGE);
         }
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id,
-                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id) {
 
-        Opinion opinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException("Requested opinion could not be found."));
-        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Opinion opinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
+        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
 
-        if (opinionService.isOpinionAuthor(opinion.getAuthor(), loggedUser) || loggedUser.getUserData().isAdmin()) {
+        if (opinionService.isOpinionAuthor(opinion.getAuthor(), loggedUser) || authenticationService.checkIfAdmin(loggedUser)) {
 
             opinionService.deleteOpinion(opinion);
 
@@ -155,7 +164,7 @@ public class OpinionController {
 
             return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
         } else {
-            throw new BadCredentialsException("You are not permitted to perform this operation.");
+            throw new BadCredentialsException(PERMISSION_DENIED_MESSAGE);
         }
     }
 }

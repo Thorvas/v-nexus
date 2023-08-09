@@ -8,10 +8,10 @@ import com.example.demo.Mapper.CategoryMapper;
 import com.example.demo.Mapper.OpinionMapper;
 import com.example.demo.Mapper.ProjectMapper;
 import com.example.demo.Mapper.VolunteerMapper;
-import com.example.demo.Objects.CustomUserDetails;
 import com.example.demo.Objects.Opinion;
 import com.example.demo.Objects.Project;
 import com.example.demo.Objects.Volunteer;
+import com.example.demo.Services.AuthenticationService;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,12 +21,12 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -37,6 +37,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ProjectController {
 
     private final String PROJECT_NOT_FOUND_MESSAGE = "Requested project could not be found.";
+
+    private final String PERMISSION_DENIED_MESSAGE = "You are not permitted to perform this operation.";
+    private final String VOLUNTEER_NOT_FOUND_MESSAGE = "Requested volunteer could not be found.";
+    private final String ROOT_LINK = "root";
+
+    @Autowired
+    private AuthenticationService authenticationService;
     @Autowired
     private ProjectService projectService;
     @Autowired
@@ -51,10 +58,9 @@ public class ProjectController {
     private OpinionMapper opinionMapper;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project,
-                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ProjectDTO> saveProject(@RequestBody Project project) {
 
-        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Entity not found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         Project savedProject = projectService.createProject(loggedUser, project);
         ProjectDTO projectDTO = projectMapper.mapProjectToDTO(savedProject);
 
@@ -83,7 +89,7 @@ public class ProjectController {
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         ProjectDTO projectDTO = projectMapper.mapProjectToDTO(foundProject);
 
@@ -105,7 +111,7 @@ public class ProjectController {
         Link selfLink = linkTo(methodOn(ProjectController.class)
                 .getVolunteers(id)).withSelfRel();
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         CollectionModel<VolunteerDTO> resource = CollectionModel.of(volunteerDTOs, selfLink, rootLink);
 
@@ -118,7 +124,7 @@ public class ProjectController {
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(foundProject.getOwnerVolunteer());
 
@@ -132,7 +138,7 @@ public class ProjectController {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
-        List<Opinion> opinions = foundProject.getProjectOpinions();
+        Set<Opinion> opinions = foundProject.getProjectOpinions();
 
         List<OpinionDTO> opinionDTOs = opinions.stream()
                 .map(opinionMapper::mapOpinionToDTO)
@@ -141,7 +147,7 @@ public class ProjectController {
         Link selfLink = linkTo(methodOn(ProjectController.class)
                 .getOpinions(id)).withSelfRel();
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         CollectionModel<OpinionDTO> resource = CollectionModel.of(opinionDTOs, selfLink, rootLink);
 
@@ -160,7 +166,7 @@ public class ProjectController {
         Link selfLink = linkTo(methodOn(ProjectController.class)
                 .getProjectsWithLocation(location)).withSelfRel();
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink);
 
@@ -178,7 +184,7 @@ public class ProjectController {
         Link selfLink = linkTo(methodOn(ProjectController.class)
                 .getProjectsWithStatus(status)).withSelfRel();
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink);
 
@@ -196,7 +202,7 @@ public class ProjectController {
         Link selfLink = linkTo(methodOn(ProjectController.class)
                 .getCategories(id)).withSelfRel();
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         CollectionModel<CategoryDTO> resource = CollectionModel.of(categories, selfLink, rootLink);
 
@@ -216,7 +222,7 @@ public class ProjectController {
         Link selfLink = linkTo(methodOn(ProjectController.class)
                 .getProjectsWithDate(date)).withSelfRel();
         Link rootLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel("root");
+                .listProjects()).withRel(ROOT_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink);
 
@@ -225,13 +231,12 @@ public class ProjectController {
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> patchProject(@RequestBody Project project,
-                                                   @PathVariable Long id,
-                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                                   @PathVariable Long id) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
-        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("User not found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
 
-        if (projectService.isVolunteerProjectOwner(loggedUser, foundProject) || loggedUser.getUserData().isAdmin()) {
+        if (projectService.isVolunteerProjectOwner(loggedUser, foundProject) || authenticationService.checkIfAdmin(loggedUser)) {
 
             Project savedProject = projectService.updateProject(foundProject, project);
             ProjectDTO projectDTO = projectMapper.mapProjectToDTO(savedProject);
@@ -239,37 +244,35 @@ public class ProjectController {
             return new ResponseEntity<>(projectDTO, HttpStatus.OK);
         } else {
 
-            throw new BadCredentialsException("You are not permitted to update this project.");
+            throw new AccessDeniedException(PERMISSION_DENIED_MESSAGE);
         }
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> deleteProject(@PathVariable Long id,
-                                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ProjectDTO> deleteProject(@PathVariable Long id) {
 
         Project projectToDelete = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
-        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("User not found."));
+        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
 
-        if (projectService.isVolunteerProjectOwner(loggedUser, projectToDelete) || loggedUser.getUserData().isAdmin()) {
+        if (projectService.isVolunteerProjectOwner(loggedUser, projectToDelete) || authenticationService.checkIfAdmin(loggedUser)) {
 
             projectService.deleteProject(projectToDelete);
 
             return new ResponseEntity<>(projectMapper.mapProjectToDTO(projectToDelete), HttpStatus.OK);
         } else {
-            throw new BadCredentialsException("You do not have permission to perform that operation.");
+            throw new AccessDeniedException(PERMISSION_DENIED_MESSAGE);
         }
     }
 
     @PatchMapping(value = "/{projectId}/volunteers/{volunteerId}")
     public ResponseEntity<ProjectDTO> addVolunteerToProject(@PathVariable("projectId") Long projectId,
-                                                            @PathVariable("volunteerId") Long volunteerId,
-                                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                                            @PathVariable("volunteerId") Long volunteerId) {
 
-        Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Requested project could not be found."));
-        Volunteer addedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException("Requested volunteer could not be found."));
-        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Could not find an entity."));
+        Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        Volunteer addedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
+        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
 
-        if (loggedUser.getUserData().isAdmin()) {
+        if (authenticationService.checkIfAdmin(loggedUser)) {
 
             projectService.addVolunteerToProject(addedVolunteer, editedProject);
 
@@ -277,20 +280,19 @@ public class ProjectController {
 
             return new ResponseEntity<>(projectDTO, HttpStatus.OK);
         } else {
-            throw new BadCredentialsException("You are not permitted to perform this operation.");
+            throw new AccessDeniedException(PERMISSION_DENIED_MESSAGE);
         }
     }
 
     @DeleteMapping(value = "/{projectId}/volunteers/{volunteerId}")
     public ResponseEntity<ProjectDTO> removeVolunteerFromProject(@PathVariable("projectId") Long projectId,
-                                                                 @PathVariable("volunteerId") Long volunteerId,
-                                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+                                                                 @PathVariable("volunteerId") Long volunteerId) {
 
-        Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException("Requested project was not found."));
-        Volunteer removedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException("Requested volunteer was not found."));
-        Volunteer loggedUser = volunteerService.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException("Could not find an entity."));
+        Project editedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        Volunteer removedVolunteer = volunteerService.findVolunteer(volunteerId).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
+        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
 
-        if (loggedUser.getUserData().isAdmin()) {
+        if (authenticationService.checkIfAdmin(loggedUser) || projectService.isVolunteerProjectOwner(loggedUser, editedProject)) {
 
             projectService.removeVolunteerFromProject(removedVolunteer, editedProject);
 
@@ -298,7 +300,7 @@ public class ProjectController {
 
             return new ResponseEntity<>(projectDTO, HttpStatus.OK);
         } else {
-            throw new IllegalArgumentException("You are not permitted to perform this operation.");
+            throw new AccessDeniedException(PERMISSION_DENIED_MESSAGE);
         }
     }
 }

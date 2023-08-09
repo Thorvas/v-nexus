@@ -41,10 +41,20 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
+    public Project changeOwner(Volunteer user, Project project) {
+
+        project.setOwnerVolunteer(user);
+
+        projectRepository.save(project);
+
+        return project;
+    }
+
     public Project createProject(Volunteer loggedUser, Project project) {
 
         project.setOwnerVolunteer(loggedUser);
         project.addVolunteerToProject(loggedUser);
+
         projectRepository.save(project);
 
         return project;

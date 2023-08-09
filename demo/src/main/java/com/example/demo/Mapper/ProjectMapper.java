@@ -38,7 +38,7 @@ public class ProjectMapper {
                 .getVolunteer(projectToMap.getOwnerVolunteer().getId())).withRel("project-owner");
 
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .getVolunteers(projectToMap.getId())).withSelfRel();
+                .getProject(projectToMap.getId())).withSelfRel();
 
         newDTO.add(allParticipantsLink, allCategoriesLink, allOpinionsLink, projectOwnerLink, selfLink);
 

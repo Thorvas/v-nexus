@@ -1,6 +1,5 @@
 package com.example.demo.Objects;
 
-import com.example.demo.Utility.CollectionsUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -46,10 +45,6 @@ public class Volunteer {
     @Column(name = "phone")
     private String contact;
 
-    @ElementCollection
-    private List<String> skills;
-
-
     @ManyToMany(mappedBy = "projectVolunteers")
     private Set<Project> participatingProjects;
 
@@ -70,32 +65,5 @@ public class Volunteer {
 
     @OneToOne(mappedBy = "referencedVolunteer")
     private UserData userData;
-
-    public Set<VolunteerRequest> addSentRequest(VolunteerRequest request) {
-
-        Set<VolunteerRequest> requests = this.getSentRequests();
-
-        this.setSentRequests(CollectionsUtil.addElementToSet(requests, request));
-
-        return requests;
-    }
-
-    public Set<Project> addProjectToOwner(Project project) {
-
-        Set<Project> newList = this.getOwnedProjects();
-
-        this.setOwnedProjects(CollectionsUtil.addElementToSet(newList, project));
-
-        return newList;
-    }
-
-    public Set<Project> removeProjectOwner(Project project) {
-
-        Set<Project> newList = this.getOwnedProjects();
-
-        this.setOwnedProjects(CollectionsUtil.removeElementFromSet(newList, project));
-
-        return newList;
-    }
 
 }

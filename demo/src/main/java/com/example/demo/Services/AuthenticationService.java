@@ -45,7 +45,7 @@ public class AuthenticationService {
         UserData userData = UserData.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(UserRole.ROLE_ADMIN)
+                .role(UserRole.ROLE_VOLUNTEER)
                 .isEnabled(true)
                 .isAccountNonExpired(true)
                 .isCredentialsNonExpired(true)
@@ -80,11 +80,16 @@ public class AuthenticationService {
         } catch (Exception e) {
             return Optional.empty();
         }
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         String jwtToken = jwtService.generateToken(userDetails);
 
         return Optional.of(AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build());
+    }
+
+    public boolean checkIfAdmin(Volunteer volunteer) {
+        return volunteer.getUserData().isAdmin();
     }
 }

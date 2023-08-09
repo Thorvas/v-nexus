@@ -23,11 +23,11 @@ public class RequestMapper {
         RequestDTO requestDTO = modelMapper.map(request, RequestDTO.class);
 
         Link volunteerReceiverLink = linkTo(methodOn(RequestController.class)
-                .getRequestReceiver(request.getRequestReceiver().getId(), null))
+                .getRequestReceiver(request.getRequestReceiver().getId()))
                 .withRel("volunteer-receiver");
 
         Link volunteerSenderLink = linkTo(methodOn(RequestController.class)
-                .getRequestSender(request.getRequestSender().getId(), null))
+                .getRequestSender(request.getRequestSender().getId()))
                 .withRel("volunteer-sender");
 
         Link requestedProjectLink = linkTo(methodOn(RequestController.class)

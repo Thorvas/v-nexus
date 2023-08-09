@@ -1,8 +1,10 @@
 package com.example.demo.Services;
 
+import com.example.demo.Objects.CustomUserDetails;
 import com.example.demo.Objects.Volunteer;
 import com.example.demo.Repositories.VolunteerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +15,14 @@ public class VolunteerService {
 
     @Autowired
     private VolunteerRepository repository;
+
+
+    public Volunteer getLoggedVolunteer() {
+
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return userDetails.getUserData().getReferencedVolunteer();
+    }
 
     public List<Volunteer> searchVolunteers() {
 

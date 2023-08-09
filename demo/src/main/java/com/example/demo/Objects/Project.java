@@ -56,9 +56,6 @@ public class Project {
     @Column(name = "project_location")
     private String projectLocation;
 
-    @ElementCollection
-    private List<String> requiredSkills;
-
     @Column(name = "project_status")
     private boolean projectStatus;
 
@@ -67,10 +64,6 @@ public class Project {
 
     @OneToMany(mappedBy = "requestedProject")
     private Set<VolunteerRequest> requestsToProject;
-
-    @ElementCollection
-    private List<String> tasks;
-
 
     @ManyToMany
     @JoinTable(
@@ -91,20 +84,6 @@ public class Project {
 
         Set<Volunteer> newList = CollectionsUtil.removeElementFromSet(this.getProjectVolunteers(), volunteer);
         this.setProjectVolunteers(newList);
-
-        return newList;
-    }
-
-    public Set<Opinion> addOpinionToProject(Opinion opinion) {
-
-        Set<Opinion> newList = CollectionsUtil.addElementToSet(this.getProjectOpinions(), opinion);
-
-        return newList;
-    }
-
-    public Set<Opinion> removeOpinionFromProject(Opinion opinion) {
-
-        Set<Opinion> newList = CollectionsUtil.removeElementFromSet(this.getProjectOpinions(), opinion);
 
         return newList;
     }
