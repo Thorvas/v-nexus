@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -30,6 +30,6 @@ public class Category {
     private Integer categoryPopularity;
 
     @ManyToMany(mappedBy = "categories")
-    private List<Project> projectsCategories;
+    private Set<Project> projectsCategories;
 
 }

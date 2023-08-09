@@ -17,7 +17,7 @@ import java.util.Set;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
-public class VolunteerDTO extends RepresentationModel<VolunteerDTO> {
+public class  VolunteerDTO extends RepresentationModel<VolunteerDTO> {
 
     private Long id;
     private String name;

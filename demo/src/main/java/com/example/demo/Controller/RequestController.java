@@ -29,6 +29,10 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * Controller for requests
+ * @author Thorvas
+ */
 @RestController
 @RequestMapping("/api/v1/requests")
 public class RequestController {
@@ -60,7 +64,11 @@ public class RequestController {
     private final String REQUEST_NOT_FOUND_MESSAGE = "Request could not be found.";
     private final String ROOT_LINK = "root";
 
-
+    /**
+     * POST endpoint for requests. It allows volunteers to create requests for joining to projects
+     * @param id Long id value of project that volunteer wants to apply for
+     * @return JSON response containing created request
+     */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> createRequest(@RequestParam("projectId") Long id) {
 
@@ -76,6 +84,10 @@ public class RequestController {
 
     }
 
+    /**
+     * GET endpoint for requests. It retrieves list of all stored requests
+     * @return JSON response containing retrieved requests
+     */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<RequestDTO>> getAllRequests() {
 
@@ -95,6 +107,11 @@ public class RequestController {
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
+    /**
+     * GET endpoint for requests. It retrieves specific request based on id parameter
+     * @param id Long id value of returned request
+     * @return JSON response containing returned request
+     */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> getSpecificRequest(@PathVariable Long id) {
 
@@ -109,7 +126,11 @@ public class RequestController {
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);
     }
 
-
+    /**
+     * DELETE endpoint for requests. It serves as emergency endpoint for administrators
+     * @param id Long id value of deleted request
+     * @return JSON response containing deleted request
+     */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> deleteRequest(@PathVariable Long id) {
 
@@ -128,6 +149,11 @@ public class RequestController {
         }
     }
 
+    /**
+     * GET endpoint for volunteer that is sender of request. It can be accessed only by sender itself or receiver of request or administrator
+     * @param id Long id value of request that is inspected
+     * @return JSON response containing volunteer that is assumed to be request sender
+     */
     @GetMapping(value = "/{id}/sender", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getRequestSender(@PathVariable Long id) {
 
@@ -153,6 +179,11 @@ public class RequestController {
 
     }
 
+    /**
+     * GET endpoint for volunteer that is receiver of request. It can be accessed only by receiver itself or sender of request or administrator
+     * @param id Long id value of request that is inspected
+     * @return JSON response containing volunteer that is assumed to be request receiver
+     */
     @GetMapping(value = "/{id}/receiver", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getRequestReceiver(@PathVariable Long id) {
 
@@ -176,6 +207,11 @@ public class RequestController {
         }
     }
 
+    /**
+     * GET endpoint for project that is associated with request
+     * @param id Long id value of request that is inspected
+     * @return JSON response containing project associated with request
+     */
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> getRequestProject(@PathVariable Long id) {
 
@@ -192,6 +228,11 @@ public class RequestController {
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 
+    /**
+     * PATCH endpoint for accepting the request. It is accessible by receiver of request or administrator
+     * @param requestId Long id value of accepted request
+     * @return JSON response containing accepted request
+     */
     @PatchMapping(value = "/{id}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> acceptRequest(@PathVariable("id") Long requestId) {
 
@@ -213,6 +254,11 @@ public class RequestController {
         throw new AccessDeniedException(PERMISSION_DENIED_MESSAGE);
     }
 
+    /**
+     * PATCH endpoint for declining the request. It is accessible by receiver of request or administrator
+     * @param requestId Long id value of declined request
+     * @return JSON response containing declined request
+     */
     @PatchMapping(value = "/{id}/decline", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> declineRequest(@PathVariable("id") Long requestId) {
 

@@ -28,6 +28,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
+ * Controller for volunteers
  * @author Thorvas
  */
 @RestController
@@ -52,6 +53,10 @@ public class VolunteerController {
     @Autowired
     private RequestService requestService;
 
+    /**
+     * GET endpoint for volunteers. It retrieves list of all volunteers
+     * @return JSON response containing list of all volunteers
+     */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<VolunteerDTO>> getVolunteers() {
 
@@ -76,27 +81,11 @@ public class VolunteerController {
         }
     }
 
-    @GetMapping(value = "/{id}/matchingProjects", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CollectionModel<ProjectDTO>> getMatchingProjects(@PathVariable Long id) {
-
-        Volunteer foundVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
-
-        List<ProjectDTO> projectDTOs = projectService.matchProjectsWithSkills(volunteerMapper.mapVolunteerToDTO(foundVolunteer))
-                .stream()
-                .map(projectMapper::mapProjectToDTO)
-                .collect(Collectors.toList());
-
-        Link rootLink = linkTo(methodOn(VolunteerController.class)
-                .getVolunteers()).withRel(ROOT_LINK);
-
-        Link selfLink = linkTo(methodOn(VolunteerController.class)
-                .getMatchingProjects(id)).withSelfRel();
-
-        CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink);
-
-        return new ResponseEntity<>(resource, HttpStatus.OK);
-    }
-
+    /**
+     * GET endpoint for volunteers. It retrieves volunteer based on id parameter
+     * @param id Long id value of retrieved volunteer
+     * @return JSON response containing retrieved volunteer
+     */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getVolunteer(@PathVariable Long id) {
 
@@ -112,6 +101,11 @@ public class VolunteerController {
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
 
+    /**
+     * GET endpoint for projects associated with certain volunteer
+     * @param id Long id value of inspected volunteer
+     * @return JSON response containing list of retrieved projects
+     */
     @GetMapping(value = "/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<ProjectDTO>> getProjects(@PathVariable Long id) {
 
@@ -132,7 +126,11 @@ public class VolunteerController {
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
-    //URL to change!
+    /**
+     * GET endpoint for projects that are owned by volunteer
+     * @param id Long id value of inspected volunteer
+     * @return JSON response containing list of projects owned by volunteer
+     */
     @GetMapping(value = "/{id}/projects/owned", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<ProjectDTO>> getOwnedProjects(@PathVariable Long id) {
 
@@ -154,10 +152,9 @@ public class VolunteerController {
     }
 
     /**
-     * Updates an entity in database
-     *
-     * @param volunteer An ID value of updated object
-     * @return The ResponseEntity object containing updated object
+     * PATCH endpoint for volunteers
+     * @param volunteer Long id value of updated volunteer
+     * @return JSON response containing updated volunteer
      */
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id,
@@ -181,6 +178,11 @@ public class VolunteerController {
         }
     }
 
+    /**
+     * DELETE endpoint for volunteers
+     * @param id Long id value of deleted volunteer
+     * @return JSON response containing
+     */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id) {
 
@@ -201,6 +203,12 @@ public class VolunteerController {
         }
     }
 
+    /**
+     * POST endpoint for volunteer's interests
+     * @param interests List of String that contains interests of volunteer
+     * @param id Long id value of edited volunteer
+     * @return JSON response containing updated volunteer
+     */
     @PostMapping(value = "/{id}/interests", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> addInterests(@RequestBody List<String> interests, @PathVariable Long id) {
 
@@ -210,9 +218,10 @@ public class VolunteerController {
         if (volunteerService.isMatchingVolunteer(loggedUser, volunteerToEdit) || authenticationService.checkIfAdmin(loggedUser)) {
 
             Link rootLink = linkTo(methodOn(VolunteerController.class).getVolunteers()).withRel(ROOT_LINK);
+
+            volunteerService.updateInterests(volunteerToEdit, interests);
             VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteerToEdit);
 
-            volunteerToEdit.setInterests(interests);
             volunteerDTO.add(rootLink);
 
             return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);

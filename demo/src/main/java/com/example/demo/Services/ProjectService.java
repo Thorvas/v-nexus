@@ -1,6 +1,6 @@
 package com.example.demo.Services;
 
-import com.example.demo.DTO.VolunteerDTO;
+import com.example.demo.Objects.Category;
 import com.example.demo.Objects.Project;
 import com.example.demo.Objects.Volunteer;
 import com.example.demo.Repositories.ProjectRepository;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -27,6 +26,18 @@ public class ProjectService {
     public void addVolunteerToProject(Volunteer addedVolunteer, Project project) {
 
         project.addVolunteerToProject(addedVolunteer);
+        projectRepository.save(project);
+    }
+
+    public void addCategoryToProject(Project project, Category category) {
+
+        project.addCategoryToProject(category);
+        projectRepository.save(project);
+    }
+
+    public void removeCategoryFromProject(Project project, Category category) {
+
+        project.removeCategoryFromProject(category);
         projectRepository.save(project);
     }
 
@@ -63,14 +74,6 @@ public class ProjectService {
     public List<Project> searchProjectsWithDate(LocalDate date) {
 
         return projectRepository.findWithDate(date);
-    }
-
-    public List<Project> matchProjectsWithSkills(VolunteerDTO volunteerDTO) {
-        List<Project> foundProjects = projectRepository.findAll();
-
-        return foundProjects.stream()
-                .filter(project -> project.getRequiredSkills().stream()
-                        .anyMatch(skill -> volunteerDTO.getSkills().contains(skill))).distinct().collect(Collectors.toList());
     }
 
     public boolean isVolunteerProjectOwner(Volunteer volunteer, Project project) {

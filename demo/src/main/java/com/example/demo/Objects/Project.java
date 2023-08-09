@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 
@@ -70,7 +69,7 @@ public class Project {
             name = "category_project",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category> categories;
+    private Set<Category> categories;
 
     public Set<Volunteer> addVolunteerToProject(Volunteer volunteer) {
 
@@ -84,6 +83,22 @@ public class Project {
 
         Set<Volunteer> newList = CollectionsUtil.removeElementFromSet(this.getProjectVolunteers(), volunteer);
         this.setProjectVolunteers(newList);
+
+        return newList;
+    }
+
+    public Set<Category> addCategoryToProject(Category category) {
+
+        Set<Category> newList = CollectionsUtil.addElementToSet(this.getCategories(), category);
+        this.setCategories(newList);
+
+        return newList;
+    }
+
+    public Set<Category> removeCategoryFromProject(Category category) {
+
+        Set<Category> newList = CollectionsUtil.removeElementFromSet(this.getCategories(), category);
+        this.setCategories(newList);
 
         return newList;
     }

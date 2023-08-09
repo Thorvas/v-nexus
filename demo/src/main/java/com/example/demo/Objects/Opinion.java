@@ -31,7 +31,7 @@ public class Opinion {
     @JoinColumn(name = "project_id")
     private Project describedProject;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "volunteer_id")
     private Volunteer author;
 

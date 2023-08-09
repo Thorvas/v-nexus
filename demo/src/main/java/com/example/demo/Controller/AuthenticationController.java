@@ -27,8 +27,8 @@ public class AuthenticationController {
     /**
      * Registration endpoint. Creates new user based on login and password credentials and returns generated JWT token
      * Passwords are encrypted in BCrypt
-     * @param request - request object containing login and password
-     * @return - created JWT token based on provided credentials
+     * @param request request object containing login and password
+     * @return created JWT token based on provided credentials
      */
     @PostMapping(value = "/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody AuthenticationRequest request){
@@ -39,8 +39,8 @@ public class AuthenticationController {
 
     /**
      * Login endpoint. Retrieves JWT token based on credentials included in request
-     * @param request - request object containing login and password
-     * @return - created JWT token based on provided credentials
+     * @param request request object containing login and password
+     * @return created JWT token based on provided credentials
      */
     @PostMapping(value = "/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {

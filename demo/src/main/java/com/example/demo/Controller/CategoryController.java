@@ -53,11 +53,11 @@ public class CategoryController {
 
     /**
      * POST endpoint for categories. Allows administrators to create new categories for project matching
-     * @param category - passed JSON category that will be saved within database
-     * @return - JSON response containing created category
+     * @param category passed JSON category that will be saved within database
+     * @return JSON response containing created category
      */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CategoryDTO> postCategory(@RequestBody Category category) {
+    public ResponseEntity<CategoryDTO> postCategory(@RequestBody CategoryDTO category) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
 
@@ -75,12 +75,12 @@ public class CategoryController {
 
     /**
      * PATCH endpoint for categories. Allows administrators to modify existing categories.
-     * @param category - passed JSON category that will replace its' existing counterpart
-     * @param id - Long id value of updated category
-     * @return - JSON response containing updated category
+     * @param category passed JSON category that will replace its' existing counterpart
+     * @param id Long id value of updated category
+     * @return JSON response containing updated category
      */
     @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody Category category,
+    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody CategoryDTO category,
                                                       @PathVariable Long id) {
 
         Category foundCategory = categoryService.findCategory(id).orElseThrow(() -> new EntityNotFoundException(CATEGORY_NOT_FOUND_MESSAGE));
@@ -100,8 +100,8 @@ public class CategoryController {
 
     /**
      * DELETE endpoint for categories. Allows administrators to delete certain categories
-     * @param id - Long id value of deleted category
-     * @return - JSON response containing deleted category
+     * @param id Long id value of deleted category
+     * @return JSON response containing deleted category
      */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable Long id) {
@@ -128,7 +128,7 @@ public class CategoryController {
 
     /**
      * GET endpoint for categories
-     * @return - List of existing categories
+     * @return List of existing categories
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<CategoryDTO>> retrieveCategories() {
@@ -147,8 +147,8 @@ public class CategoryController {
 
     /**
      * GET endpoint for single category
-     * @param id - Long id value of retrieved category
-     * @return - JSON response containing requested category
+     * @param id Long id value of retrieved category
+     * @return JSON response containing requested category
      */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryDTO> retrieveCategory(@PathVariable Long id) {
@@ -167,8 +167,8 @@ public class CategoryController {
 
     /**
      * GET endpoint for projects that match with given category
-     * @param id - Long id value of category
-     * @return - List of projects that match with given category
+     * @param id Long id value of category
+     * @return List of projects that match with given category
      */
     @GetMapping(value = "/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<ProjectDTO>> retrieveProjects(@PathVariable Long id) {

@@ -24,6 +24,11 @@ public class VolunteerService {
         return userDetails.getUserData().getReferencedVolunteer();
     }
 
+    public void updateInterests(Volunteer volunteer, List<String> interests) {
+
+        volunteer.setInterests(interests);
+    }
+
     public List<Volunteer> searchVolunteers() {
 
         return repository.findAll();

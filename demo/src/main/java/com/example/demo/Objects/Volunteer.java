@@ -66,4 +66,7 @@ public class Volunteer {
     @OneToOne(mappedBy = "referencedVolunteer")
     private UserData userData;
 
+    @OneToMany(mappedBy = "author")
+    private List<Opinion> opinions;
+
 }

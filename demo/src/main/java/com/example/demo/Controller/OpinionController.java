@@ -14,7 +14,6 @@ import com.example.demo.Services.OpinionService;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -31,6 +30,10 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * Controller for opinions
+ * @author Thorvas
+ */
 @RestController
 @RequestMapping("/api/v1/opinions")
 public class OpinionController {
@@ -62,6 +65,11 @@ public class OpinionController {
     @Autowired
     private AuthenticationService authenticationService;
 
+    /**
+     * GET endpoint for opinions. Allows authenticated users to retrieve specific opinion
+     * @param id Long id value of retrieved opinion
+     * @return JSON response containing retrieved opinion
+     */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> getOpinion(@PathVariable Long id) {
 
@@ -77,6 +85,10 @@ public class OpinionController {
         return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
     }
 
+    /**
+     * GET endpoint for opinions. Allows authenticated users to retrieve all opinions
+     * @return JSON response containing retrieved opinions
+     */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<OpinionDTO>> getAllOpinions() {
 
@@ -94,6 +106,11 @@ public class OpinionController {
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
+    /**
+     * GET endpoint for project described by certain opinion
+     * @param id Long id value of opinion
+     * @return JSON response containing described project
+     */
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
 
@@ -111,6 +128,11 @@ public class OpinionController {
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 
+    /**
+     * GET endpoint for volunteer that is author of certain opinion
+     * @param id Long id value of opinion
+     * @return JSON response containing author as volunteer
+     */
     @GetMapping(value = "/{id}/author", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getAuthor(@PathVariable Long id) {
 
@@ -127,16 +149,23 @@ public class OpinionController {
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
 
+    /**
+     * POST endpoint for opinions. Allows users to create opinions about projects
+     * @param authorId Long id value of volunteer that is posting opinion
+     * @param projectId Long id value of project that is described
+     * @param opinionContent String value that defines contents of opinion
+     * @return JSON response containing created opinion
+     */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> postOpinion(@RequestParam(name = "authorId") Long authorId,
                                                   @RequestParam(name = "projectId") Long projectId,
-                                                  @RequestBody @Valid Opinion opinion) {
+                                                  @RequestBody Opinion opinion) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         Volunteer author = volunteerService.findVolunteer(authorId).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         Project describedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
 
-        if (opinionService.isOpinionAuthor(author, loggedUser)) {
+        if (opinionService.isOpinionAuthor(author, loggedUser) || authenticationService.checkIfAdmin(loggedUser)) {
 
             Opinion savedOpinion = opinionService.createOpinion(author, describedProject, opinion.getOpinion());
 
@@ -150,6 +179,11 @@ public class OpinionController {
         }
     }
 
+    /**
+     * DELETE endpoint for opinions. Allows users to delete opinions if they are their authors or administrators
+     * @param id Long id value of opinion that is being deleted
+     * @return JSON response containing deleted opinion
+     */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id) {
 
@@ -164,6 +198,7 @@ public class OpinionController {
 
             return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
         } else {
+
             throw new BadCredentialsException(PERMISSION_DENIED_MESSAGE);
         }
     }
