@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 
+import com.example.demo.DTO.OpinionDTO;
 import com.example.demo.Objects.Opinion;
 import com.example.demo.Objects.Project;
 import com.example.demo.Objects.Volunteer;
@@ -41,10 +42,10 @@ public class OpinionService {
         return author.getId().equals(user.getId());
     }
 
-    public Opinion createOpinion(Volunteer author, Project project, String content) {
+    public Opinion createOpinion(Volunteer author, Project project, OpinionDTO opinionDTO) {
 
         Opinion opinion = Opinion.builder()
-                .opinion(content)
+                .opinion(opinionDTO.getContent())
                 .author(author)
                 .describedProject(project)
                 .build();

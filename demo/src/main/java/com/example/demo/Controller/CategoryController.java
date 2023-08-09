@@ -10,6 +10,7 @@ import com.example.demo.Services.AuthenticationService;
 import com.example.demo.Services.CategoryService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -28,6 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  * Controller for categories
  * Categories can be modified and created only by administrators but retrieval is also allowed for regular authenticated users
+ *
  * @author Thorvas
  */
 @RestController
@@ -53,11 +55,12 @@ public class CategoryController {
 
     /**
      * POST endpoint for categories. Allows administrators to create new categories for project matching
+     *
      * @param category passed JSON category that will be saved within database
      * @return JSON response containing created category
      */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CategoryDTO> postCategory(@RequestBody CategoryDTO category) {
+    public ResponseEntity<CategoryDTO> postCategory(@Valid @RequestBody CategoryDTO category) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
 
@@ -75,12 +78,13 @@ public class CategoryController {
 
     /**
      * PATCH endpoint for categories. Allows administrators to modify existing categories.
+     *
      * @param category passed JSON category that will replace its' existing counterpart
-     * @param id Long id value of updated category
+     * @param id       Long id value of updated category
      * @return JSON response containing updated category
      */
     @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody CategoryDTO category,
+    public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO category,
                                                       @PathVariable Long id) {
 
         Category foundCategory = categoryService.findCategory(id).orElseThrow(() -> new EntityNotFoundException(CATEGORY_NOT_FOUND_MESSAGE));
@@ -100,6 +104,7 @@ public class CategoryController {
 
     /**
      * DELETE endpoint for categories. Allows administrators to delete certain categories
+     *
      * @param id Long id value of deleted category
      * @return JSON response containing deleted category
      */
@@ -128,6 +133,7 @@ public class CategoryController {
 
     /**
      * GET endpoint for categories
+     *
      * @return List of existing categories
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -147,6 +153,7 @@ public class CategoryController {
 
     /**
      * GET endpoint for single category
+     *
      * @param id Long id value of retrieved category
      * @return JSON response containing requested category
      */
@@ -167,6 +174,7 @@ public class CategoryController {
 
     /**
      * GET endpoint for projects that match with given category
+     *
      * @param id Long id value of category
      * @return List of projects that match with given category
      */

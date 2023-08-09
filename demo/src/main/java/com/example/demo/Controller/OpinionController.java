@@ -14,6 +14,7 @@ import com.example.demo.Services.OpinionService;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -32,6 +33,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller for opinions
+ *
  * @author Thorvas
  */
 @RestController
@@ -67,6 +69,7 @@ public class OpinionController {
 
     /**
      * GET endpoint for opinions. Allows authenticated users to retrieve specific opinion
+     *
      * @param id Long id value of retrieved opinion
      * @return JSON response containing retrieved opinion
      */
@@ -87,6 +90,7 @@ public class OpinionController {
 
     /**
      * GET endpoint for opinions. Allows authenticated users to retrieve all opinions
+     *
      * @return JSON response containing retrieved opinions
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -108,6 +112,7 @@ public class OpinionController {
 
     /**
      * GET endpoint for project described by certain opinion
+     *
      * @param id Long id value of opinion
      * @return JSON response containing described project
      */
@@ -130,6 +135,7 @@ public class OpinionController {
 
     /**
      * GET endpoint for volunteer that is author of certain opinion
+     *
      * @param id Long id value of opinion
      * @return JSON response containing author as volunteer
      */
@@ -151,15 +157,16 @@ public class OpinionController {
 
     /**
      * POST endpoint for opinions. Allows users to create opinions about projects
-     * @param authorId Long id value of volunteer that is posting opinion
+     *
+     * @param authorId  Long id value of volunteer that is posting opinion
      * @param projectId Long id value of project that is described
-     * @param opinionContent String value that defines contents of opinion
+     * @param opinion   Object that defines contents of opinion
      * @return JSON response containing created opinion
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> postOpinion(@RequestParam(name = "authorId") Long authorId,
                                                   @RequestParam(name = "projectId") Long projectId,
-                                                  @RequestBody Opinion opinion) {
+                                                  @Valid @RequestBody OpinionDTO opinion) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         Volunteer author = volunteerService.findVolunteer(authorId).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
@@ -167,7 +174,7 @@ public class OpinionController {
 
         if (opinionService.isOpinionAuthor(author, loggedUser) || authenticationService.checkIfAdmin(loggedUser)) {
 
-            Opinion savedOpinion = opinionService.createOpinion(author, describedProject, opinion.getOpinion());
+            Opinion savedOpinion = opinionService.createOpinion(author, describedProject, opinion);
 
             OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(savedOpinion);
 
@@ -181,6 +188,7 @@ public class OpinionController {
 
     /**
      * DELETE endpoint for opinions. Allows users to delete opinions if they are their authors or administrators
+     *
      * @param id Long id value of opinion that is being deleted
      * @return JSON response containing deleted opinion
      */

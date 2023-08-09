@@ -1,9 +1,11 @@
 package com.example.demo.Services;
 
+import com.example.demo.DTO.ProjectDTO;
 import com.example.demo.Objects.Category;
 import com.example.demo.Objects.Project;
 import com.example.demo.Objects.Volunteer;
 import com.example.demo.Repositories.ProjectRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
 
     public Optional<Project> findProject(Long id) {
 
@@ -61,7 +65,9 @@ public class ProjectService {
         return project;
     }
 
-    public Project createProject(Volunteer loggedUser, Project project) {
+    public Project createProject(Volunteer loggedUser, ProjectDTO projectDTO) {
+
+        Project project = modelMapper.map(projectDTO, Project.class);
 
         project.setOwnerVolunteer(loggedUser);
         project.addVolunteerToProject(loggedUser);
@@ -81,12 +87,14 @@ public class ProjectService {
         return volunteer.getId().equals(project.getOwnerVolunteer().getId());
     }
 
-    public Project updateProject(Project sourceProject, Project targetProject) {
+    public Project updateProject(Project sourceProject, ProjectDTO projectDTO) {
 
-        targetProject.setId(sourceProject.getId());
-        projectRepository.save(targetProject);
+        Project project = modelMapper.map(projectDTO, Project.class);
 
-        return targetProject;
+        project.setId(sourceProject.getId());
+        projectRepository.save(project);
+
+        return project;
     }
 
     public List<Project> searchAllProjects() {

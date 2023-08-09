@@ -158,7 +158,7 @@ public class VolunteerController {
      */
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id,
-                                                        @RequestBody @Valid Volunteer volunteer) {
+                                                        @RequestBody @Valid VolunteerDTO volunteer) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         Volunteer updatedVolunteer = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
@@ -210,7 +210,7 @@ public class VolunteerController {
      * @return JSON response containing updated volunteer
      */
     @PostMapping(value = "/{id}/interests", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> addInterests(@RequestBody List<String> interests, @PathVariable Long id) {
+    public ResponseEntity<VolunteerDTO> addInterests(@Valid @RequestBody List<String> interests, @PathVariable Long id) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         Volunteer volunteerToEdit = volunteerService.findVolunteer(id).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));

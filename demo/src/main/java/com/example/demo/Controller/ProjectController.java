@@ -17,6 +17,7 @@ import com.example.demo.Services.CategoryService;
 import com.example.demo.Services.ProjectService;
 import com.example.demo.Services.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -36,6 +37,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller for projects
+ *
  * @author Thorvas
  */
 @RestController
@@ -68,11 +70,12 @@ public class ProjectController {
 
     /**
      * POST endpoint for projects. Allows users to create their own projects
+     *
      * @param project Project that is published
      * @return JSON response containing published project
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> saveProject(@RequestBody ProjectDTO project) {
+    public ResponseEntity<ProjectDTO> saveProject(@Valid @RequestBody ProjectDTO project) {
 
         Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         Project savedProject = projectService.createProject(loggedUser, project);
@@ -84,6 +87,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for projects. Retrieves list of existing projects
+     *
      * @return JSON response containing list of existing projects
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -104,6 +108,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for projects. Retrieves project based on id parameter
+     *
      * @param id Long id value of retrieved project
      * @return JSON response containing retrieved project
      */
@@ -125,6 +130,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for volunteers that participate in certain project
+     *
      * @param id Long id value of inspected project
      * @return JSON response containing list of volunteers that participate in project
      */
@@ -149,6 +155,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for volunteer that is the owner of project
+     *
      * @param id Long id value of inspected project
      * @return JSON response containing volunteer being owner of inspected project
      */
@@ -169,6 +176,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for opinions that regard certain project
+     *
      * @param id Long id value of inspected project
      * @return JSON response containing list of opinions that are regarding certain project
      */
@@ -195,6 +203,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for projects located within certain location
+     *
      * @param location String representing location in which project is located
      * @return JSON response containing list of projects that are located within specified location
      */
@@ -219,6 +228,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for projects with certain status - either active of inactive
+     *
      * @param status Boolean representing current state of projects. It accepts "true" or "false" to indicate that project is active or inactive
      * @return JSON response containing list of projects that are active or inactive
      */
@@ -242,6 +252,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for categories associated with certain project
+     *
      * @param id Long id value of inspected project
      * @return JSON response containing list of categories associated with project
      */
@@ -266,6 +277,7 @@ public class ProjectController {
 
     /**
      * GET endpoint for projects that are matching with specified date
+     *
      * @param date Date value representing date of project
      * @return JSON response containing list of projects that match with specified date
      */
@@ -290,12 +302,13 @@ public class ProjectController {
 
     /**
      * PATCH endpoint for projects. It updates current project with data provided in request
+     *
      * @param project project that will substitute existing project
-     * @param id Long id value of updated project
+     * @param id      Long id value of updated project
      * @return JSON response containing updated project
      */
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> patchProject(@RequestBody ProjectDTO project,
+    public ResponseEntity<ProjectDTO> patchProject(@Valid @RequestBody ProjectDTO project,
                                                    @PathVariable Long id) {
 
         Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
@@ -315,13 +328,14 @@ public class ProjectController {
 
     /**
      * PATCH endpoint for changing owner of project
-     * @param projectId Long id value of updated project
+     *
+     * @param projectId   Long id value of updated project
      * @param volunteerId Long id value of new owner
      * @return JSON response containing updated project
      */
     @PatchMapping(value = "/{projectId}/change-owner/{volunteerId}")
     public ResponseEntity<ProjectDTO> changeProjectOwner(@PathVariable Long projectId,
-                                                           @PathVariable Long volunteerId
+                                                         @PathVariable Long volunteerId
     ) {
 
         Project foundProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
@@ -343,7 +357,8 @@ public class ProjectController {
 
     /**
      * POST endpoint for adding categories to project
-     * @param projectId Long id value of inspected project
+     *
+     * @param projectId  Long id value of inspected project
      * @param categoryId Long id value of added category
      * @return JSON response containing updated project
      */
@@ -371,13 +386,14 @@ public class ProjectController {
 
     /**
      * DELETE endpoint for removing categories from project
-     * @param projectId Long id value of inspected project
+     *
+     * @param projectId  Long id value of inspected project
      * @param categoryId Long id value of removed category
      * @return JSON response containing updated project
      */
     @DeleteMapping(value = "/{projectId}/remove-category/{categoryId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> removeCategoryFromProject(@PathVariable Long projectId,
-                                                           @PathVariable Long categoryId
+                                                                @PathVariable Long categoryId
     ) {
 
         Project foundProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
@@ -399,6 +415,7 @@ public class ProjectController {
 
     /**
      * DELETE endpoint for projects. It deletes certain project based on provided id value
+     *
      * @param id Long id value of deleted project
      * @return JSON response containing deleted project
      */
@@ -420,7 +437,8 @@ public class ProjectController {
 
     /**
      * POST endpoint for adding volunteers to projects. It serves as emergency endpoint for administrators
-     * @param projectId Long id value of project that is edited
+     *
+     * @param projectId   Long id value of project that is edited
      * @param volunteerId Long id value of added volunteer
      * @return JSON response containing updated project
      */
@@ -446,7 +464,8 @@ public class ProjectController {
 
     /**
      * DELETE endpoint for removing volunteers from projects. It serves as emergency endpoint for administrators
-     * @param projectId Long id value of project that is edited
+     *
+     * @param projectId   Long id value of project that is edited
      * @param volunteerId Long id value of removed volunteer
      * @return JSON response containing edited project
      */

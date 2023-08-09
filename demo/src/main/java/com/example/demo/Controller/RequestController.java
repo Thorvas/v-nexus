@@ -31,6 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller for requests
+ *
  * @author Thorvas
  */
 @RestController
@@ -66,6 +67,7 @@ public class RequestController {
 
     /**
      * POST endpoint for requests. It allows volunteers to create requests for joining to projects
+     *
      * @param id Long id value of project that volunteer wants to apply for
      * @return JSON response containing created request
      */
@@ -86,6 +88,7 @@ public class RequestController {
 
     /**
      * GET endpoint for requests. It retrieves list of all stored requests
+     *
      * @return JSON response containing retrieved requests
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -109,6 +112,7 @@ public class RequestController {
 
     /**
      * GET endpoint for requests. It retrieves specific request based on id parameter
+     *
      * @param id Long id value of returned request
      * @return JSON response containing returned request
      */
@@ -128,6 +132,7 @@ public class RequestController {
 
     /**
      * DELETE endpoint for requests. It serves as emergency endpoint for administrators
+     *
      * @param id Long id value of deleted request
      * @return JSON response containing deleted request
      */
@@ -151,6 +156,7 @@ public class RequestController {
 
     /**
      * GET endpoint for volunteer that is sender of request. It can be accessed only by sender itself or receiver of request or administrator
+     *
      * @param id Long id value of request that is inspected
      * @return JSON response containing volunteer that is assumed to be request sender
      */
@@ -181,6 +187,7 @@ public class RequestController {
 
     /**
      * GET endpoint for volunteer that is receiver of request. It can be accessed only by receiver itself or sender of request or administrator
+     *
      * @param id Long id value of request that is inspected
      * @return JSON response containing volunteer that is assumed to be request receiver
      */
@@ -209,6 +216,7 @@ public class RequestController {
 
     /**
      * GET endpoint for project that is associated with request
+     *
      * @param id Long id value of request that is inspected
      * @return JSON response containing project associated with request
      */
@@ -230,6 +238,7 @@ public class RequestController {
 
     /**
      * PATCH endpoint for accepting the request. It is accessible by receiver of request or administrator
+     *
      * @param requestId Long id value of accepted request
      * @return JSON response containing accepted request
      */
@@ -256,6 +265,7 @@ public class RequestController {
 
     /**
      * PATCH endpoint for declining the request. It is accessible by receiver of request or administrator
+     *
      * @param requestId Long id value of declined request
      * @return JSON response containing declined request
      */

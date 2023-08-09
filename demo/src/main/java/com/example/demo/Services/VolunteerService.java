@@ -1,8 +1,10 @@
 package com.example.demo.Services;
 
+import com.example.demo.DTO.VolunteerDTO;
 import com.example.demo.Objects.CustomUserDetails;
 import com.example.demo.Objects.Volunteer;
 import com.example.demo.Repositories.VolunteerRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ public class VolunteerService {
     @Autowired
     private VolunteerRepository repository;
 
+    @Autowired
+    private ModelMapper modelMapper;
 
     public Volunteer getLoggedVolunteer() {
 
@@ -52,11 +56,13 @@ public class VolunteerService {
         repository.delete(volunteer);
     }
 
-    public Volunteer updateVolunteer(Volunteer sourceVolunteer, Volunteer targetVolunteer) {
+    public Volunteer updateVolunteer(Volunteer sourceVolunteer, VolunteerDTO volunteerDTO) {
 
-        targetVolunteer.setId(sourceVolunteer.getId());
-        repository.save(targetVolunteer);
+        Volunteer volunteer = modelMapper.map(volunteerDTO, Volunteer.class);
 
-        return targetVolunteer;
+        volunteer.setId(sourceVolunteer.getId());
+        repository.save(volunteer);
+
+        return volunteer;
     }
 }
