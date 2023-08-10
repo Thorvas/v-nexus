@@ -1,5 +1,10 @@
 package com.example.demo.Objects;
 
+/**
+ * Class representing authorities stored within roles
+ *
+ * @author Thorvas
+ */
 public enum UserAuthority {
     READ("AUTHORITY_READ"),
     WRITE("AUTHORITY_WRITE"),

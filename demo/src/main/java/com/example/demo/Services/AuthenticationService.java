@@ -15,6 +15,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Service responsible for authentication of user
+ *
+ * @author Thorvas
+ */
 @Service
 public class AuthenticationService {
 
@@ -36,6 +41,12 @@ public class AuthenticationService {
     @Autowired
     AuthenticationManager authManager;
 
+    /**
+     * Performs user registration
+     *
+     * @param request incoming request
+     * @return JWT token
+     */
     public Optional<AuthenticationResponse> register(AuthenticationRequest request) {
 
         Volunteer newVolunteer = new Volunteer();
@@ -70,6 +81,12 @@ public class AuthenticationService {
                 .build());
     }
 
+    /**
+     * Performs user login
+     *
+     * @param request incoming request
+     * @return JWT token
+     */
     public Optional<AuthenticationResponse> login(AuthenticationRequest request) {
 
         try {
@@ -89,6 +106,12 @@ public class AuthenticationService {
                 .build());
     }
 
+    /**
+     * Checks whether volunteer is an admin
+     *
+     * @param volunteer Inspected volunteet
+     * @return Boolean value containing result of operation
+     */
     public boolean checkIfAdmin(Volunteer volunteer) {
         return volunteer.getUserData().isAdmin();
     }

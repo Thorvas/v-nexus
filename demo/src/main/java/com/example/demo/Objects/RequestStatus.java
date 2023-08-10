@@ -1,5 +1,10 @@
 package com.example.demo.Objects;
 
+/**
+ * Enum representing status of request
+ *
+ * @author Thorvas
+ */
 public enum RequestStatus {
     ACCEPTED("STATUS_ACCEPTED"),
     DECLINED("STATUS_DECLINED"),

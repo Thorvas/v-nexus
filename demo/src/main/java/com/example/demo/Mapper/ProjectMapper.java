@@ -12,7 +12,11 @@ import org.springframework.stereotype.Component;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-
+/**
+ * Mapper for projects
+ *
+ * @author Thorvas
+ */
 @Component
 public class ProjectMapper {
 
@@ -20,7 +24,12 @@ public class ProjectMapper {
     private ModelMapper modelMapper;
 
 
-    //TODO: Added links are not correct. All categories and all opinions should point to PROJECT'S resources, not general.
+    /**
+     * Method that maps given project into its DTO with HATEOAS links
+     *
+     * @param projectToMap Project that is to be mapped into DTO
+     * @return Mapped projectDTO object
+     */
     public ProjectDTO mapProjectToDTO(Project projectToMap) {
 
         ProjectDTO newDTO = modelMapper.map(projectToMap, ProjectDTO.class);

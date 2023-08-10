@@ -7,6 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Repository responsible for connection with projects in database
+ *
+ * @author Thorvas
+ */
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT p FROM Project p WHERE p.projectDate = :date")

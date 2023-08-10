@@ -14,6 +14,11 @@ import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object for projects
+ *
+ * @author Thorvas
+ */
 @Data
 @Relation(collectionRelation = "projects", itemRelation = "project")
 @JsonIdentityInfo(

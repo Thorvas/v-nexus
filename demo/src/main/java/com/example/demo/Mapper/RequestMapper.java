@@ -12,12 +12,23 @@ import org.springframework.stereotype.Component;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * Mapper for requests
+ *
+ * @author Thorvas
+ */
 @Component
 public class RequestMapper {
 
     @Autowired
     private ModelMapper modelMapper;
 
+    /**
+     * Method that maps given request into its DTO with HATEOAS links
+     *
+     * @param request Request that is to be mapped into DTO
+     * @return Mapped requestDTO object
+     */
     public RequestDTO mapRequestToDTO(VolunteerRequest request) {
 
         RequestDTO requestDTO = modelMapper.map(request, RequestDTO.class);

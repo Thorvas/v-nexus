@@ -9,6 +9,11 @@ import lombok.Data;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data Transfer Object for opinions
+ *
+ * @author Thorvas
+ */
 @Data
 @Relation(collectionRelation = "opinions", itemRelation = "opinion")
 @JsonIdentityInfo(

@@ -8,6 +8,11 @@ import lombok.Data;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data Transfer Object for requests
+ *
+ * @author Thorvas
+ */
 @Data
 @Relation(collectionRelation = "projects", itemRelation = "project")
 @JsonIdentityInfo(

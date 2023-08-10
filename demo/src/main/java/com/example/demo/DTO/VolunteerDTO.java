@@ -15,6 +15,11 @@ import org.springframework.hateoas.server.core.Relation;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Data Transfer Object for volunteers
+ *
+ * @author Thorvas
+ */
 @Data
 @Relation(collectionRelation = "volunteers", itemRelation = "volunteer")
 @JsonIdentityInfo(

@@ -1,8 +1,16 @@
 package com.example.demo.Objects;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+/**
+ * Class representing data of user regarding his credentials and account status
+ *
+ * @author Thorvas
+ */
 @Data
 @Entity
 @Builder

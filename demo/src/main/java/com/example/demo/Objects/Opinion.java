@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class representing opinions of projects
+ */
 @Data
 @Entity
 @Builder

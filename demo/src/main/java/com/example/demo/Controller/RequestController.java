@@ -251,11 +251,11 @@ public class RequestController {
         Volunteer volunteerToAdd = request.getRequestSender();
         Project requestedProject = request.getRequestedProject();
 
-        if ((requestService.isVolunteerReceiver(request, loggedUser) || authenticationService.checkIfAdmin(loggedUser)) && loggedUser.getOwnedProjects().contains(requestedProject) && requestService.hasPendingStatus(request)) {
+        if ((requestService.isVolunteerReceiver(request, loggedUser) || authenticationService.checkIfAdmin(loggedUser)) && loggedUser.getOwnedProjects().contains(requestedProject)) {
 
-            requestService.acceptRequest(request, volunteerToAdd, requestedProject);
+            VolunteerRequest result = requestService.acceptRequest(request, volunteerToAdd, requestedProject).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
 
-            RequestDTO requestDTO = requestMapper.mapRequestToDTO(request);
+            RequestDTO requestDTO = requestMapper.mapRequestToDTO(result);
 
             return new ResponseEntity<>(requestDTO, HttpStatus.OK);
         }
@@ -275,14 +275,13 @@ public class RequestController {
         Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         VolunteerRequest request = requestService.findRequest(requestId).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
 
-        Volunteer volunteerToAdd = request.getRequestSender();
         Project requestedProject = request.getRequestedProject();
 
         if ((requestService.isVolunteerReceiver(request, loggedUser) || authenticationService.checkIfAdmin(loggedUser)) && loggedUser.getOwnedProjects().contains(requestedProject) && requestService.hasPendingStatus(request)) {
 
-            requestService.declineRequest(request, volunteerToAdd, requestedProject);
+            VolunteerRequest result = requestService.declineRequest(request).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
 
-            RequestDTO requestDTO = requestMapper.mapRequestToDTO(request);
+            RequestDTO requestDTO = requestMapper.mapRequestToDTO(result);
 
             return new ResponseEntity<>(requestDTO, HttpStatus.OK);
         } else {

@@ -3,11 +3,19 @@ package com.example.demo.DTO;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * Data Transfer Object for categories
+ *
+ * @author Thorvas
+ */
 @Data
 @Relation(collectionRelation = "categories", itemRelation = "category")
 @JsonIdentityInfo(

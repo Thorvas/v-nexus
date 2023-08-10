@@ -3,6 +3,11 @@ package com.example.demo.Objects;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Class representing request for joining to a specific project
+ *
+ * @author Thorvas
+ */
 @Getter
 @Setter
 @NoArgsConstructor

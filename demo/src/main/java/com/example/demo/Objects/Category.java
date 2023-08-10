@@ -8,6 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
+/**
+ * Class representing category
+ *
+ * @author Thorvas
+ */
 @Data
 @Entity
 @Builder

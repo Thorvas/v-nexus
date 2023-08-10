@@ -29,6 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller for volunteers
+ *
  * @author Thorvas
  */
 @RestController
@@ -55,6 +56,7 @@ public class VolunteerController {
 
     /**
      * GET endpoint for volunteers. It retrieves list of all volunteers
+     *
      * @return JSON response containing list of all volunteers
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -83,6 +85,7 @@ public class VolunteerController {
 
     /**
      * GET endpoint for volunteers. It retrieves volunteer based on id parameter
+     *
      * @param id Long id value of retrieved volunteer
      * @return JSON response containing retrieved volunteer
      */
@@ -103,6 +106,7 @@ public class VolunteerController {
 
     /**
      * GET endpoint for projects associated with certain volunteer
+     *
      * @param id Long id value of inspected volunteer
      * @return JSON response containing list of retrieved projects
      */
@@ -128,6 +132,7 @@ public class VolunteerController {
 
     /**
      * GET endpoint for projects that are owned by volunteer
+     *
      * @param id Long id value of inspected volunteer
      * @return JSON response containing list of projects owned by volunteer
      */
@@ -153,6 +158,7 @@ public class VolunteerController {
 
     /**
      * PATCH endpoint for volunteers
+     *
      * @param volunteer Long id value of updated volunteer
      * @return JSON response containing updated volunteer
      */
@@ -180,6 +186,7 @@ public class VolunteerController {
 
     /**
      * DELETE endpoint for volunteers
+     *
      * @param id Long id value of deleted volunteer
      * @return JSON response containing
      */
@@ -205,8 +212,9 @@ public class VolunteerController {
 
     /**
      * POST endpoint for volunteer's interests
+     *
      * @param interests List of String that contains interests of volunteer
-     * @param id Long id value of edited volunteer
+     * @param id        Long id value of edited volunteer
      * @return JSON response containing updated volunteer
      */
     @PostMapping(value = "/{id}/interests", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -225,9 +233,7 @@ public class VolunteerController {
             volunteerDTO.add(rootLink);
 
             return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
-        }
-
-        else {
+        } else {
             throw new AccessDeniedException(PERMISSION_DENIED_MESSAGE);
         }
     }

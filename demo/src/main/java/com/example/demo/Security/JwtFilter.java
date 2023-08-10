@@ -17,6 +17,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Custom filter for JWT authentication. It checks whether JWT token has been passed within headers
+ * If token is provided, it is validated. If it's valid, authentication is set to this token. If not, request is passed further
+ *
+ * @author Thorvas
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -27,6 +33,15 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    /**
+     * Method responsible for filtering request
+     *
+     * @param request     Incoming request
+     * @param response    Expected response
+     * @param filterChain filterChain object representing filters protecting resources
+     * @throws ServletException Possible thrown exception
+     * @throws IOException      Possible thrown exception
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -64,9 +79,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
         filterChain.doFilter(request, response);
-
-
     }
 }

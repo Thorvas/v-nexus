@@ -5,6 +5,11 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Utility class that makes adding elements to class collections easier
+ *
+ * @author Thorvas
+ */
 public class CollectionsUtil {
 
     public static <T> Set<T> addElementToSet(Set<T> collection, T element) {

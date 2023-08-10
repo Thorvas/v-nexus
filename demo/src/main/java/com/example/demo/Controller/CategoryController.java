@@ -66,7 +66,7 @@ public class CategoryController {
 
         if (authenticationService.checkIfAdmin(loggedUser)) {
 
-            Category savedCategory = categoryService.createCategory(category.getCategoryName(), category.getCategoryDescription(), category.getCategoryPopularity());
+            Category savedCategory = categoryService.createCategory(category);
             CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(savedCategory);
 
             return new ResponseEntity<>(categoryDTO, HttpStatus.CREATED);

@@ -4,6 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * Class representing authentication request. It can be either used for login or registration attempts
+ *
+ * @author Thorvas
+ */
 @Data
 public class AuthenticationRequest {
 

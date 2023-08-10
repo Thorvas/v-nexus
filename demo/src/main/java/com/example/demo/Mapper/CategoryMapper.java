@@ -11,12 +11,23 @@ import org.springframework.stereotype.Component;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * Mapper for categories
+ *
+ * @author Thorvas
+ */
 @Component
 public class CategoryMapper {
 
     @Autowired
     private ModelMapper modelMapper;
 
+    /**
+     * Method that maps given category into its DTO with HATEOAS links
+     *
+     * @param categoryToMap Category that is to be mapped into DTO
+     * @return Mapped categoryDTO object
+     */
     public CategoryDTO mapCategoryToDTO(Category categoryToMap) {
 
         CategoryDTO newDTO = modelMapper.map(categoryToMap, CategoryDTO.class);

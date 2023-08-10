@@ -11,12 +11,23 @@ import org.springframework.stereotype.Component;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * Mapper for opinions
+ *
+ * @author Thorvas
+ */
 @Component
 public class OpinionMapper {
 
     @Autowired
     private ModelMapper modelMapper;
 
+    /**
+     * Method that maps given opinion into its DTO with HATEOAS links
+     *
+     * @param opinionToMap Opinion that is to be mapped into DTO
+     * @return Mapped opinionDTO object
+     */
     public OpinionDTO mapOpinionToDTO(Opinion opinionToMap) {
 
         OpinionDTO newDTO = modelMapper.map(opinionToMap, OpinionDTO.class);

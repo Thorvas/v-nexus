@@ -18,6 +18,11 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Main exception handler that is responsible for returning proper JSON responses for thrown exceptions
+ *
+ * @author Thorvas
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -103,11 +108,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ArgumentNotValidError> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
-                                                                          HttpServletRequest request) {
+                                                                                       HttpServletRequest request) {
 
         Map<String, String> errorMap = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errorMap.put(error.getField(),error.getDefaultMessage());
+            errorMap.put(error.getField(), error.getDefaultMessage());
         });
 
         ArgumentNotValidError apiError = new ArgumentNotValidError(

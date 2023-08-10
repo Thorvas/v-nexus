@@ -12,6 +12,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Configuration containing beans for application
+ *
+ * @author Thorvas
+ */
 @Configuration
 public class ProjectConfiguration {
 

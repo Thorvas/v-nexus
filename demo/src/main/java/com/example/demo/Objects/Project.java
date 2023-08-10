@@ -14,6 +14,11 @@ import java.time.LocalDate;
 import java.util.Set;
 
 
+/**
+ * Class representing project
+ *
+ * @author Thorvas
+ */
 @Getter
 @Setter
 @AllArgsConstructor

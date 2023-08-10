@@ -9,6 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Custom implementation of user details
+ */
 @Getter
 @Setter
 public class CustomUserDetails implements UserDetails {
