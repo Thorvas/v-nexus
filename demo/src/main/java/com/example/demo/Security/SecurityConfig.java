@@ -1,6 +1,7 @@
 package com.example.demo.Security;
 
 import com.example.demo.Services.UserDetailsCustomImpl;
+import com.example.demo.Utility.DelegatingAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
     @Autowired
     private UserDetailsCustomImpl userDetailsService;
+
+    @Autowired
+    private DelegatingAuthenticationEntryPoint delegatingAuthenticationEntryPoint;
 
     @Autowired
     private AuthenticationProvider authenticationProvider;
@@ -44,6 +48,7 @@ public class SecurityConfig {
                                 AntPathRequestMatcher.antMatcher("/api/v1/auth/**")).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(handler -> handler.authenticationEntryPoint(delegatingAuthenticationEntryPoint))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -3,6 +3,7 @@ package com.example.demo.Controller;
 import com.example.demo.Objects.AuthenticationRequest;
 import com.example.demo.Objects.AuthenticationResponse;
 import com.example.demo.Services.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class AuthenticationController {
      * @return created JWT token based on provided credentials
      */
     @PostMapping(value = "/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody AuthenticationRequest request){
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody AuthenticationRequest request){
 
         AuthenticationResponse response = authenticationService.register(request).orElseThrow(() -> new IllegalArgumentException(USER_EXISTS_ERROR));
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -43,7 +44,7 @@ public class AuthenticationController {
      * @return created JWT token based on provided credentials
      */
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
 
         AuthenticationResponse response = authenticationService.login(request).orElseThrow(() -> new BadCredentialsException(INCORRECT_CREDENTIALS_ERROR));
         return new ResponseEntity<>(response, HttpStatus.OK);
