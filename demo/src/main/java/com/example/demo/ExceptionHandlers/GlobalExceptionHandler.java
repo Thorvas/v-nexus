@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiError> handleEntityNotFound(Exception e,
+    public ResponseEntity<ApiError> handleEntityNotFound(EntityNotFoundException e,
                                                          HttpServletRequest request) {
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
@@ -100,7 +100,6 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ArgumentNotValidError> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
