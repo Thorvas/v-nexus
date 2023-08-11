@@ -1,7 +1,7 @@
 package com.example.demo.ExceptionHandlers;
 
-import com.example.demo.CustomExceptions.ApiError;
-import com.example.demo.CustomExceptions.ArgumentNotValidError;
+import com.example.demo.Error.ApiError;
+import com.example.demo.Error.ArgumentNotValidError;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
