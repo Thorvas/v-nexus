@@ -1,5 +1,8 @@
 package com.example.demo.Volunteer;
 
+import com.example.demo.Authentication.AuthenticationService;
+import com.example.demo.Project.ProjectDTO;
+import com.example.demo.Project.ProjectMapper;
 import com.example.demo.User.CustomUserDetails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service responsible for volunteer operations
@@ -22,6 +26,15 @@ public class VolunteerService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private VolunteerMapper volunteerMapper;
+
+    @Autowired
+    private ProjectMapper projectMapper;
 
     /**
      * Returns currently logged volunteer
@@ -41,9 +54,19 @@ public class VolunteerService {
      * @param volunteer Updated volunteer
      * @param interests Interests that will be contained within volunteer object
      */
-    public void updateInterests(Volunteer volunteer, List<String> interests) {
+    public Optional<VolunteerDTO> updateInterests(Volunteer volunteer, List<String> interests) {
 
-        volunteer.setInterests(interests);
+        if (this.isMatchingVolunteer(this.getLoggedVolunteer(), volunteer) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
+
+            volunteer.setInterests(interests);
+
+            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteer);
+
+            return Optional.of(volunteerDTO);
+        }
+
+        return Optional.empty();
+
     }
 
     /**
@@ -51,9 +74,18 @@ public class VolunteerService {
      *
      * @return List of found volunteers
      */
-    public List<Volunteer> searchVolunteers() {
+    public Optional<List<VolunteerDTO>> searchVolunteers() {
 
-        return repository.findAll();
+        List<Volunteer> foundVolunteers = repository.findAll();
+
+        if (!foundVolunteers.isEmpty()) {
+            List<VolunteerDTO> volunteerDTOs = foundVolunteers.stream()
+                    .map(volunteerMapper::mapVolunteerToDTO)
+                    .collect(Collectors.toList());
+            return Optional.of(volunteerDTOs);
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -65,6 +97,45 @@ public class VolunteerService {
     public Optional<Volunteer> findVolunteer(Long id) {
 
         return repository.findById(id);
+    }
+
+    public Optional<VolunteerDTO> searchVolunteer(Long id) {
+
+        if (this.findVolunteer(id).isPresent()) {
+            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(this.findVolunteer(id).get());
+
+            return Optional.of(volunteerDTO);
+        } return Optional.empty();
+    }
+
+    public Optional<List<ProjectDTO>> getParticipatingProjects(Long id) {
+
+        if (this.findVolunteer(id).isPresent()) {
+
+            Volunteer volunteer = this.findVolunteer(id).get();
+
+            List<ProjectDTO> projectDTOs = volunteer.getParticipatingProjects().stream()
+                    .map(projectMapper::mapProjectToDTO)
+                    .collect(Collectors.toList());
+
+            return Optional.of(projectDTOs);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<List<ProjectDTO>> getOwnedProjects(Long id) {
+
+        if (this.findVolunteer(id).isPresent()) {
+
+            Volunteer volunteer = this.findVolunteer(id).get();
+
+            List<ProjectDTO> projectDTOs = volunteer.getOwnedProjects().stream()
+                    .map(projectMapper::mapProjectToDTO)
+                    .collect(Collectors.toList());
+
+            return Optional.of(projectDTOs);
+        }
+        return Optional.empty();
     }
 
     /**
@@ -84,24 +155,42 @@ public class VolunteerService {
      *
      * @param volunteer Deleted volunteer
      */
-    public void deleteVolunteer(Volunteer volunteer) {
-        repository.delete(volunteer);
+    public Optional<VolunteerDTO> deleteVolunteer(Volunteer volunteer) {
+
+        if (this.isMatchingVolunteer(this.getLoggedVolunteer(), volunteer) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
+
+            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteer);
+
+            repository.delete(volunteer);
+
+            return Optional.of(volunteerDTO);
+        }
+
+        return Optional.empty();
+
     }
 
     /**
      * Updates volunteer
      *
      * @param sourceVolunteer Volunteer object representing old data
-     * @param volunteerDTO    VolunteerDTO object representing new data
+     * @param volunteerRequest    VolunteerDTO object representing new data
      * @return Updated volunteer
      */
-    public Volunteer updateVolunteer(Volunteer sourceVolunteer, VolunteerDTO volunteerDTO) {
+    public Optional<VolunteerDTO> updateVolunteer(Volunteer sourceVolunteer, VolunteerDTO volunteerRequest) {
 
-        Volunteer volunteer = modelMapper.map(volunteerDTO, Volunteer.class);
+        if (this.isMatchingVolunteer(sourceVolunteer, this.getLoggedVolunteer()) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
+            Volunteer volunteer = modelMapper.map(volunteerRequest, Volunteer.class);
 
-        volunteer.setId(sourceVolunteer.getId());
-        repository.save(volunteer);
+            volunteer.setId(sourceVolunteer.getId());
 
-        return volunteer;
+            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteer);
+
+            repository.save(volunteer);
+
+            return Optional.of(volunteerDTO);
+        }
+
+        return Optional.empty();
     }
 }
