@@ -58,7 +58,7 @@ public class AuthenticationService {
         UserData userData = UserData.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(UserRole.ROLE_ADMIN)
+                .role(UserRole.ROLE_VOLUNTEER)
                 .isEnabled(true)
                 .isAccountNonExpired(true)
                 .isCredentialsNonExpired(true)

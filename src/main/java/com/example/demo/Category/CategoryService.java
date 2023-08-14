@@ -1,14 +1,11 @@
 package com.example.demo.Category;
 
-import com.example.demo.Category.CategoryDTO;
-import com.example.demo.Category.Category;
-import com.example.demo.Category.CategoryRepository;
+import com.example.demo.Error.CategoryNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service responsible for category operations
@@ -50,9 +47,13 @@ public class CategoryService {
      * @param id Id value of searched category
      * @return Optional containing result of search
      */
-    public Optional<Category> findCategory(Long id) {
+    public Category findCategory(Long id) {
 
-        return categoryRepository.findById(id);
+        if (categoryRepository.findById(id).isPresent()) {
+            return categoryRepository.findById(id).get();
+        }
+
+        throw new CategoryNotFoundException("Requested category could not be found.");
     }
 
     /**

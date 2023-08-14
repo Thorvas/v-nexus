@@ -2,8 +2,8 @@ package com.example.demo.Utility;
 
 import jakarta.persistence.EntityNotFoundException;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class that makes adding elements to class collections easier
@@ -12,18 +12,19 @@ import java.util.Set;
  */
 public class CollectionsUtil {
 
-    public static <T> Set<T> addElementToSet(Set<T> collection, T element) {
+    public static <T> List<T> addElementToList(List<T> collection, T element) {
 
         if (collection == null) {
 
-            collection = new HashSet<>();
+            collection = new ArrayList<>();
         }
+
         collection.add(element);
 
         return collection;
     }
 
-    public static <T> Set<T> removeElementFromSet(Set<T> collection, T element) {
+    public static <T> List<T> removeElementFromList(List<T> collection, T element) {
 
         if (collection != null) {
 

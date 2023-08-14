@@ -1,11 +1,9 @@
 package com.example.demo.Request;
 
-import com.example.demo.Authentication.AuthenticationService;
 import com.example.demo.Project.Project;
 import com.example.demo.Project.ProjectDTO;
-import com.example.demo.Project.ProjectMapper;
 import com.example.demo.Project.ProjectService;
-import com.example.demo.Volunteer.*;
+import com.example.demo.Volunteer.VolunteerDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -34,25 +32,9 @@ public class RequestController {
     private ProjectService projectService;
 
     @Autowired
-    private VolunteerService volunteerService;
-
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private VolunteerMapper volunteerMapper;
-
-    @Autowired
     private RequestService requestService;
 
-    @Autowired
-    private RequestMapper requestMapper;
-
-    @Autowired
-    private ProjectMapper projectMapper;
-
     private final String PERMISSION_DENIED_MESSAGE = "You are not permitted to perform this operation.";
-    private final String VOLUNTEER_NOT_FOUND_MESSAGE = "Requested volunteer could not be found.";
     private final String PROJECT_NOT_FOUND_MESSAGE = "Requested project could not be found.";
     private final String REQUEST_NOT_FOUND_MESSAGE = "Request could not be found.";
 
@@ -60,8 +42,8 @@ public class RequestController {
     private final String RESOURCE_PATH_LINK = "resource-path";
 
     private Link rootLink() {
-        return linkTo(methodOn(VolunteerController.class)
-                .getVolunteers()).withRel(ROOT_LINK);
+        return linkTo(methodOn(RequestController.class)
+                .getAllRequests()).withRel(ROOT_LINK);
     }
 
     /**
@@ -112,8 +94,7 @@ public class RequestController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> getSpecificRequest(@PathVariable Long id) {
 
-        VolunteerRequest request = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
-        RequestDTO requestDTO = requestMapper.mapRequestToDTO(request);
+        RequestDTO requestDTO = requestService.searchRequest(id).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
 
         requestDTO.add(rootLink());
 

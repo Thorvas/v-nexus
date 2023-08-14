@@ -179,6 +179,19 @@ public class RequestService {
         return requestMapper.mapRequestToDTO(newRequest);
     }
 
+    public Optional<RequestDTO> searchRequest(Long id) {
+
+        if (this.findRequest(id).isPresent()) {
+
+            VolunteerRequest request = this.findRequest(id).get();
+            RequestDTO requestDTO = requestMapper.mapRequestToDTO(request);
+
+            return Optional.of(requestDTO);
+        }
+
+        return Optional.empty();
+    }
+
     public Optional<ProjectDTO> getRequestedProject(VolunteerRequest request) {
 
         return Optional.of(projectMapper.mapProjectToDTO(request.getRequestedProject()));

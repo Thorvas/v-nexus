@@ -1,31 +1,23 @@
 package com.example.demo.Opinion;
 
-import com.example.demo.Project.ProjectController;
-import com.example.demo.Project.ProjectDTO;
-import com.example.demo.Volunteer.VolunteerDTO;
-import com.example.demo.Project.ProjectMapper;
-import com.example.demo.Volunteer.VolunteerMapper;
-import com.example.demo.Project.Project;
-import com.example.demo.Volunteer.Volunteer;
 import com.example.demo.Authentication.AuthenticationService;
-import com.example.demo.Project.ProjectService;
+import com.example.demo.Project.*;
+import com.example.demo.Volunteer.Volunteer;
+import com.example.demo.Volunteer.VolunteerDTO;
+import com.example.demo.Volunteer.VolunteerMapper;
 import com.example.demo.Volunteer.VolunteerService;
-import com.example.demo.Volunteer.VolunteerController;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -43,7 +35,6 @@ public class OpinionController {
     private final String OPINION_NOT_FOUND_MESSAGE = "Requested opinion could not be found.";
     private final String PERMISSION_DENIED_MESSAGE = "You are not permitted to perform this operation.";
     private final String VOLUNTEER_NOT_FOUND_MESSAGE = "Requested volunteer could not be found.";
-    private final String ROOT_LINK = "root";
 
     @Autowired
     private OpinionService opinionService;
@@ -66,6 +57,12 @@ public class OpinionController {
     @Autowired
     private AuthenticationService authenticationService;
 
+    private Link rootLink() {
+        String ROOT_LINK = "root";
+        return linkTo(methodOn(ProjectController.class)
+                .listProjects()).withRel(ROOT_LINK);
+    }
+
     /**
      * GET endpoint for opinions. Allows authenticated users to retrieve specific opinion
      *
@@ -75,14 +72,9 @@ public class OpinionController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> getOpinion(@PathVariable Long id) {
 
-        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
+        OpinionDTO opinionDTO = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
 
-        OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(foundOpinion);
-
-        Link rootLink = linkTo(methodOn(OpinionController.class)
-                .getAllOpinions()).withRel(ROOT_LINK);
-
-        opinionDTO.add(rootLink);
+        opinionDTO.add(rootLink());
 
         return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
     }
@@ -95,11 +87,7 @@ public class OpinionController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<OpinionDTO>> getAllOpinions() {
 
-        List<Opinion> opinions = opinionService.searchAllOpinions();
-
-        List<OpinionDTO> opinionDTOs = opinions.stream()
-                .map(opinionMapper::mapOpinionToDTO)
-                .collect(Collectors.toList());
+        List<OpinionDTO> opinionDTOs = opinionService.searchAllOpinions();
 
         Link selfLink = linkTo(methodOn(OpinionController.class)
                 .getAllOpinions()).withSelfRel();
@@ -118,16 +106,11 @@ public class OpinionController {
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
 
-        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
+        Opinion foundOpinion = opinionService.findOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
 
-        Project describedProject = foundOpinion.getDescribedProject();
+        ProjectDTO projectDTO = opinionService.getDescribedProject(foundOpinion);
 
-        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(describedProject);
-
-        Link rootLink = WebMvcLinkBuilder.linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel(ROOT_LINK);
-
-        projectDTO.add(rootLink);
+        projectDTO.add(rootLink());
 
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
@@ -141,15 +124,11 @@ public class OpinionController {
     @GetMapping(value = "/{id}/author", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getAuthor(@PathVariable Long id) {
 
-        Opinion foundOpinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
-        Volunteer author = foundOpinion.getAuthor();
+        Opinion foundOpinion = opinionService.findOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
 
-        VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(author);
+        VolunteerDTO volunteerDTO = opinionService.getAuthor(foundOpinion);
 
-        Link rootLink = linkTo(methodOn(VolunteerController.class)
-                .getVolunteers()).withRel(ROOT_LINK);
-
-        volunteerDTO.add(rootLink);
+        volunteerDTO.add(rootLink());
 
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
@@ -167,22 +146,12 @@ public class OpinionController {
                                                   @RequestParam(name = "projectId") Long projectId,
                                                   @Valid @RequestBody OpinionDTO opinion) {
 
-        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
         Volunteer author = volunteerService.findVolunteer(authorId).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
-        Project describedProject = projectService.findProject(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        Project describedProject = projectService.findProject(projectId);
 
-        if (opinionService.isOpinionAuthor(author, loggedUser) || authenticationService.checkIfAdmin(loggedUser)) {
+        OpinionDTO opinionDTO = opinionService.createOpinion(author, describedProject, opinion).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
 
-            Opinion savedOpinion = opinionService.createOpinion(author, describedProject, opinion);
-
-            OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(savedOpinion);
-
-            return new ResponseEntity<>(opinionDTO, HttpStatus.CREATED);
-
-        } else {
-
-            throw new AccessDeniedException(PERMISSION_DENIED_MESSAGE);
-        }
+        return new ResponseEntity<>(opinionDTO, HttpStatus.CREATED);
     }
 
     /**
@@ -194,19 +163,10 @@ public class OpinionController {
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id) {
 
-        Opinion opinion = opinionService.searchOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
-        Volunteer loggedUser = volunteerService.findVolunteer(volunteerService.getLoggedVolunteer().getId()).orElseThrow(() -> new EntityNotFoundException(VOLUNTEER_NOT_FOUND_MESSAGE));
+        Opinion opinion = opinionService.findOpinion(id).orElseThrow(() -> new EntityNotFoundException(OPINION_NOT_FOUND_MESSAGE));
 
-        if (opinionService.isOpinionAuthor(opinion.getAuthor(), loggedUser) || authenticationService.checkIfAdmin(loggedUser)) {
+        OpinionDTO opinionDTO = opinionService.deleteOpinion(opinion).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
 
-            opinionService.deleteOpinion(opinion);
-
-            OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(opinion);
-
-            return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
-        } else {
-
-            throw new BadCredentialsException(PERMISSION_DENIED_MESSAGE);
-        }
+        return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
     }
 }

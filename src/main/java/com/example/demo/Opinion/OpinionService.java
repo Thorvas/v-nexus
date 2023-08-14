@@ -1,7 +1,13 @@
 package com.example.demo.Opinion;
 
+import com.example.demo.Authentication.AuthenticationService;
 import com.example.demo.Project.Project;
+import com.example.demo.Project.ProjectDTO;
+import com.example.demo.Project.ProjectMapper;
 import com.example.demo.Volunteer.Volunteer;
+import com.example.demo.Volunteer.VolunteerDTO;
+import com.example.demo.Volunteer.VolunteerMapper;
+import com.example.demo.Volunteer.VolunteerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +23,44 @@ public class OpinionService {
     @Autowired
     OpinionRepository repository;
 
+    @Autowired
+    OpinionMapper opinionMapper;
+
+    @Autowired
+    ProjectMapper projectMapper;
+
+    @Autowired
+    VolunteerService volunteerService;
+
+    @Autowired
+    AuthenticationService authenticationService;
+
+    @Autowired
+    VolunteerMapper volunteerMapper;
+
+    public Optional<Opinion> findOpinion(Long id) {
+
+        return repository.findById(id);
+    }
+
     /**
      * Searches for opinion based on id parameter
      *
      * @param id Id value of searched opinion
      * @return Optional containing result of search
      */
-    public Optional<Opinion> searchOpinion(Long id) {
+    public Optional<OpinionDTO> searchOpinion(Long id) {
 
-        return repository.findById(id);
+        if (this.findOpinion(id).isPresent()) {
+
+            Opinion opinion = this.findOpinion(id).get();
+            OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(opinion);
+
+            return Optional.of(opinionDTO);
+        }
+
+        return Optional.empty();
+
     }
 
     /**
@@ -33,9 +68,27 @@ public class OpinionService {
      *
      * @return List of all found opinions
      */
-    public List<Opinion> searchAllOpinions() {
+    public List<OpinionDTO> searchAllOpinions() {
 
-        return repository.findAll();
+        List<Opinion> opinions = repository.findAll();
+
+        return opinions.stream()
+                .map(opinionMapper::mapOpinionToDTO)
+                .toList();
+    }
+
+    public VolunteerDTO getAuthor(Opinion opinion) {
+
+        Volunteer author = opinion.getAuthor();
+
+        return volunteerMapper.mapVolunteerToDTO(author);
+    }
+
+    public ProjectDTO getDescribedProject(Opinion opinion) {
+
+        Project describedProject = opinion.getDescribedProject();
+
+        return projectMapper.mapProjectToDTO(describedProject);
     }
 
     /**
@@ -43,9 +96,18 @@ public class OpinionService {
      *
      * @param opinion Deleted opinion object
      */
-    public void deleteOpinion(Opinion opinion) {
+    public Optional<OpinionDTO> deleteOpinion(Opinion opinion) {
 
-        repository.delete(opinion);
+        if (this.isOpinionAuthor(opinion.getAuthor(), volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+
+            repository.delete(opinion);
+
+            return Optional.of(opinionMapper.mapOpinionToDTO(opinion));
+        }
+
+        return Optional.empty();
+
+
     }
 
     /**
@@ -68,16 +130,21 @@ public class OpinionService {
      * @param opinionDTO OpinionDTO containing content of opinion
      * @return Created opinion
      */
-    public Opinion createOpinion(Volunteer author, Project project, OpinionDTO opinionDTO) {
+    public Optional<OpinionDTO> createOpinion(Volunteer author, Project project, OpinionDTO opinionDTO) {
 
-        Opinion opinion = Opinion.builder()
-                .opinion(opinionDTO.getContent())
-                .author(author)
-                .describedProject(project)
-                .build();
+        if (this.isOpinionAuthor(author, volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
-        repository.save(opinion);
+            Opinion opinion = Opinion.builder()
+                    .opinion(opinionDTO.getContent())
+                    .author(author)
+                    .describedProject(project)
+                    .build();
 
-        return opinion;
+            repository.save(opinion);
+
+            return Optional.of(opinionMapper.mapOpinionToDTO(opinion));
+        }
+
+        return Optional.empty();
     }
 }

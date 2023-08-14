@@ -1,6 +1,7 @@
 package com.example.demo.Project;
 
 import com.example.demo.Volunteer.VolunteerController;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -27,6 +28,7 @@ public class ProjectMapper {
      * @param projectToMap Project that is to be mapped into DTO
      * @return Mapped projectDTO object
      */
+    @SneakyThrows
     public ProjectDTO mapProjectToDTO(Project projectToMap) {
 
         ProjectDTO newDTO = modelMapper.map(projectToMap, ProjectDTO.class);

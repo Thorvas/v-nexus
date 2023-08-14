@@ -1,6 +1,8 @@
 package com.example.demo.Project;
 
 import com.example.demo.Category.Category;
+import com.example.demo.Error.EntityNotPresentInCollectionException;
+import com.example.demo.Error.EntityPresentInCollectionException;
 import com.example.demo.Request.VolunteerRequest;
 import com.example.demo.Opinion.Opinion;
 import com.example.demo.Utility.CollectionsUtil;
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 
@@ -55,7 +58,7 @@ public class Project {
             name = "volunteer_project",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "volunteer_id"))
-    private Set<Volunteer> projectVolunteers;
+    private List<Volunteer> projectVolunteers;
 
     @ManyToOne
     @JoinColumn(name = "volunteer_owner")
@@ -68,7 +71,7 @@ public class Project {
     private boolean projectStatus;
 
     @OneToMany(mappedBy = "describedProject")
-    private Set<Opinion> projectOpinions;
+    private List<Opinion> projectOpinions;
 
     @OneToMany(mappedBy = "requestedProject")
     private Set<VolunteerRequest> requestsToProject;
@@ -78,37 +81,56 @@ public class Project {
             name = "category_project",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<Category> categories;
+    private List<Category> categories;
 
-    public Set<Volunteer> addVolunteerToProject(Volunteer volunteer) {
+    public List<Volunteer> addVolunteerToProject(Volunteer volunteer) {
 
-        Set<Volunteer> newList = CollectionsUtil.addElementToSet(this.getProjectVolunteers(), volunteer);
-        this.setProjectVolunteers(newList);
+        if (!this.getProjectVolunteers().contains(volunteer)) {
 
-        return newList;
+            List<Volunteer> newList = CollectionsUtil.addElementToList(this.getProjectVolunteers(), volunteer);
+            this.setProjectVolunteers(newList);
+
+            return newList;
+        }
+
+        throw new EntityPresentInCollectionException("Volunteer is already in project.");
     }
 
-    public Set<Volunteer> removeVolunteerFromProject(Volunteer volunteer) {
+    public List<Volunteer> removeVolunteerFromProject(Volunteer volunteer) {
 
-        Set<Volunteer> newList = CollectionsUtil.removeElementFromSet(this.getProjectVolunteers(), volunteer);
-        this.setProjectVolunteers(newList);
+        if (this.getProjectVolunteers().contains(volunteer)) {
 
-        return newList;
+            List<Volunteer> newList = CollectionsUtil.removeElementFromList(this.getProjectVolunteers(), volunteer);
+            this.setProjectVolunteers(newList);
+
+            return newList;
+        }
+
+        throw new EntityNotPresentInCollectionException("Volunteer does not belong to this project.");
     }
 
-    public Set<Category> addCategoryToProject(Category category) {
+    public List<Category> addCategoryToProject(Category category) {
 
-        Set<Category> newList = CollectionsUtil.addElementToSet(this.getCategories(), category);
-        this.setCategories(newList);
+        if (!this.getCategories().contains(category)) {
 
-        return newList;
+            List<Category> newList = CollectionsUtil.addElementToList(this.getCategories(), category);
+            this.setCategories(newList);
+
+            return newList;
+        }
+
+        throw new EntityPresentInCollectionException("Project is already assigned to this category.");
     }
 
-    public Set<Category> removeCategoryFromProject(Category category) {
+    public List<Category> removeCategoryFromProject(Category category) {
 
-        Set<Category> newList = CollectionsUtil.removeElementFromSet(this.getCategories(), category);
-        this.setCategories(newList);
+        if (this.getCategories().contains(category)) {
+            List<Category> newList = CollectionsUtil.removeElementFromList(this.getCategories(), category);
+            this.setCategories(newList);
 
-        return newList;
+            return newList;
+        }
+
+        throw new EntityNotPresentInCollectionException("Project is not assigned to this category.");
     }
 }

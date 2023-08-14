@@ -1,6 +1,7 @@
 package com.example.demo.Volunteer;
 
 import com.example.demo.Authentication.AuthenticationService;
+import com.example.demo.Error.VolunteerNotFoundException;
 import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Project.ProjectMapper;
 import com.example.demo.User.CustomUserDetails;
@@ -94,9 +95,13 @@ public class VolunteerService {
      * @param id Id of searched volunteer
      * @return Optional containing result of search
      */
-    public Optional<Volunteer> findVolunteer(Long id) {
+    public Volunteer findVolunteer(Long id) {
 
-        return repository.findById(id);
+        if (repository.findById(id).isPresent()) {
+            return repository.findById(id).get();
+        }
+
+        throw new VolunteerNotFoundException("Requested volunteer could not be found");
     }
 
     public Optional<VolunteerDTO> searchVolunteer(Long id) {

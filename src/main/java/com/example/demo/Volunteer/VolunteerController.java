@@ -27,12 +27,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class VolunteerController {
     private final String PERMISSION_DENIED_MESSAGE = "You are not permitted to perform this operation.";
     private final String VOLUNTEER_NOT_FOUND_MESSAGE = "Requested volunteer could not be found.";
-    private final String ROOT_LINK = "root";
 
     @Autowired
     private VolunteerService volunteerService;
 
     private Link rootLink() {
+        String ROOT_LINK = "root";
         return linkTo(methodOn(VolunteerController.class)
                 .getVolunteers()).withRel(ROOT_LINK);
     }
