@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,9 +87,7 @@ public class ProjectService {
             project.addVolunteerToProject(volunteer);
             projectRepository.save(project);
 
-            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteer);
-
-            return volunteerDTO;
+            return volunteerMapper.mapVolunteerToDTO(volunteer);
         }
 
         throw new InsufficientPermissionsException("You cannot add volunteer to project because you are not an administrator.");
@@ -108,8 +107,7 @@ public class ProjectService {
             project.addCategoryToProject(category);
             projectRepository.save(project);
 
-            CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(category);
-            return categoryDTO;
+            return categoryMapper.mapCategoryToDTO(category);
         }
 
         throw new InsufficientPermissionsException("You cannot add category to project because you are not an owner of project.");
@@ -129,8 +127,7 @@ public class ProjectService {
             project.removeCategoryFromProject(category);
             projectRepository.save(project);
 
-            CategoryDTO categoryDTO = categoryMapper.mapCategoryToDTO(category);
-            return categoryDTO;
+            return categoryMapper.mapCategoryToDTO(category);
         }
 
         throw new InsufficientPermissionsException("You cannot remove category from project because you are not an owner of project.");
@@ -150,9 +147,7 @@ public class ProjectService {
             project.removeVolunteerFromProject(volunteer);
             projectRepository.save(project);
 
-            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteer);
-
-            return volunteerDTO;
+            return volunteerMapper.mapVolunteerToDTO(volunteer);
         }
 
         throw new InsufficientPermissionsException("You cannot remove volunteer from project because you are not an owner or project.");
@@ -190,14 +185,17 @@ public class ProjectService {
 
         Project project = modelMapper.map(requestProject, Project.class);
 
+        project.setProjectVolunteers(new ArrayList<>());
+        project.setCategories(new ArrayList<>());
+        project.setProjectOpinions(new ArrayList<>());
+        project.setRequestsToProject(new ArrayList<>());
+
         project.setOwnerVolunteer(volunteerService.getLoggedVolunteer());
         project.addVolunteerToProject(volunteerService.getLoggedVolunteer());
 
         projectRepository.save(project);
 
-        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(project);
-
-        return projectDTO;
+        return projectMapper.mapProjectToDTO(project);
     }
 
     public List<OpinionDTO> getOpinions(Long projectId) {
@@ -207,11 +205,10 @@ public class ProjectService {
         List<Opinion> opinions = project.getProjectOpinions();
 
         if (!opinions.isEmpty()) {
-            List<OpinionDTO> opinionDTOs = opinions.stream()
+
+            return opinions.stream()
                     .map(opinionMapper::mapOpinionToDTO)
                     .collect(Collectors.toList());
-
-            return opinionDTOs;
         }
 
         throw new CollectionEmptyException("Project does not have any opinions yet.");
@@ -234,11 +231,9 @@ public class ProjectService {
 
         List<Project> projects = projectRepository.findWithDate(date);
 
-        List<ProjectDTO> projectDTOs = projects.stream()
+        return projects.stream()
                 .map(projectMapper::mapProjectToDTO)
                 .collect(Collectors.toList());
-
-        return projectDTOs;
     }
 
     /**
@@ -287,11 +282,9 @@ public class ProjectService {
 
         if (!projects.isEmpty()) {
 
-            List<ProjectDTO> projectDTOs = projects.stream()
+            return projects.stream()
                     .map(projectMapper::mapProjectToDTO)
                     .collect(Collectors.toList());
-
-            return projectDTOs;
         }
         throw new CollectionEmptyException("Currently there are no projects in database.");
     }
@@ -299,9 +292,8 @@ public class ProjectService {
     public ProjectDTO searchProject(Long id) {
 
         Project project = this.findProject(id);
-        ProjectDTO projectDTO = projectMapper.mapProjectToDTO(project);
 
-        return projectDTO;
+        return projectMapper.mapProjectToDTO(project);
     }
 
     public List<VolunteerDTO> getVolunteers(Long projectId) {
@@ -310,11 +302,9 @@ public class ProjectService {
 
         if (!project.getProjectVolunteers().isEmpty()) {
 
-            List<VolunteerDTO> projectDTOs = project.getProjectVolunteers().stream()
+            return project.getProjectVolunteers().stream()
                     .map(volunteerMapper::mapVolunteerToDTO)
                     .collect(Collectors.toList());
-
-            return projectDTOs;
         }
 
         throw new EntityNotPresentInCollectionException("Project does not have any volunteers yet.");
@@ -332,11 +322,9 @@ public class ProjectService {
 
         if (!foundProjects.isEmpty()) {
 
-            List<ProjectDTO> projectDTOs = foundProjects.stream()
+            return foundProjects.stream()
                     .map(projectMapper::mapProjectToDTO)
                     .collect(Collectors.toList());
-
-            return projectDTOs;
         }
 
         throw new CollectionEmptyException("Projects with requested location could not be found.");
@@ -353,11 +341,10 @@ public class ProjectService {
         List<Project> foundProjects = projectRepository.findWithStatus(status);
 
         if (!foundProjects.isEmpty()) {
-            List<ProjectDTO> projectDTOs = foundProjects.stream()
+
+            return foundProjects.stream()
                     .map(projectMapper::mapProjectToDTO)
                     .collect(Collectors.toList());
-
-            return projectDTOs;
         }
 
         throw new CollectionEmptyException("Projects with requested status could not be found.");
@@ -370,11 +357,10 @@ public class ProjectService {
         List<Category> categories = project.getCategories();
 
         if (!categories.isEmpty()) {
-            List<CategoryDTO> categoryDTOs = categories.stream()
+
+            return categories.stream()
                     .map(categoryMapper::mapCategoryToDTO)
                     .toList();
-
-            return categoryDTOs;
         }
 
         throw new CollectionEmptyException("Project does not have any categories yet.");
@@ -392,9 +378,7 @@ public class ProjectService {
 
             projectRepository.delete(project);
 
-            ProjectDTO projectDTO = projectMapper.mapProjectToDTO(project);
-
-            return projectDTO;
+            return projectMapper.mapProjectToDTO(project);
         }
 
         throw new InsufficientPermissionsException("You cannot delete project because you are not its owner");

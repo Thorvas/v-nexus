@@ -1,9 +1,12 @@
 package com.example.demo.Opinion;
 
 import com.example.demo.Authentication.AuthenticationService;
+import com.example.demo.Error.InsufficientPermissionsException;
+import com.example.demo.Error.OpinionNotFoundException;
 import com.example.demo.Project.Project;
 import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Project.ProjectMapper;
+import com.example.demo.Project.ProjectService;
 import com.example.demo.Volunteer.Volunteer;
 import com.example.demo.Volunteer.VolunteerDTO;
 import com.example.demo.Volunteer.VolunteerMapper;
@@ -12,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service responsible for opinion operations
@@ -22,6 +24,9 @@ public class OpinionService {
 
     @Autowired
     OpinionRepository repository;
+
+    @Autowired
+    ProjectService projectService;
 
     @Autowired
     OpinionMapper opinionMapper;
@@ -38,9 +43,13 @@ public class OpinionService {
     @Autowired
     VolunteerMapper volunteerMapper;
 
-    public Optional<Opinion> findOpinion(Long id) {
+    public Opinion findOpinion(Long id) {
 
-        return repository.findById(id);
+        if (repository.findById(id).isPresent()) {
+            return repository.findById(id).get();
+        }
+
+        throw new OpinionNotFoundException("Requested opinion could not be found");
     }
 
     /**
@@ -49,18 +58,11 @@ public class OpinionService {
      * @param id Id value of searched opinion
      * @return Optional containing result of search
      */
-    public Optional<OpinionDTO> searchOpinion(Long id) {
+    public OpinionDTO searchOpinion(Long id) {
 
-        if (this.findOpinion(id).isPresent()) {
+        Opinion opinion = this.findOpinion(id);
 
-            Opinion opinion = this.findOpinion(id).get();
-            OpinionDTO opinionDTO = opinionMapper.mapOpinionToDTO(opinion);
-
-            return Optional.of(opinionDTO);
-        }
-
-        return Optional.empty();
-
+        return opinionMapper.mapOpinionToDTO(opinion);
     }
 
     /**
@@ -77,14 +79,18 @@ public class OpinionService {
                 .toList();
     }
 
-    public VolunteerDTO getAuthor(Opinion opinion) {
+    public VolunteerDTO getAuthor(Long opinionId) {
+
+        Opinion opinion = this.findOpinion(opinionId);
 
         Volunteer author = opinion.getAuthor();
 
         return volunteerMapper.mapVolunteerToDTO(author);
     }
 
-    public ProjectDTO getDescribedProject(Opinion opinion) {
+    public ProjectDTO getDescribedProject(Long opinionId) {
+
+        Opinion opinion = this.findOpinion(opinionId);
 
         Project describedProject = opinion.getDescribedProject();
 
@@ -93,19 +99,19 @@ public class OpinionService {
 
     /**
      * Deletes opinion
-     *
-     * @param opinion Deleted opinion object
      */
-    public Optional<OpinionDTO> deleteOpinion(Opinion opinion) {
+    public OpinionDTO deleteOpinion(Long opinionId) {
+
+        Opinion opinion = this.findOpinion(opinionId);
 
         if (this.isOpinionAuthor(opinion.getAuthor(), volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
             repository.delete(opinion);
 
-            return Optional.of(opinionMapper.mapOpinionToDTO(opinion));
+            return opinionMapper.mapOpinionToDTO(opinion);
         }
 
-        return Optional.empty();
+        throw new InsufficientPermissionsException("You cannot delete this opinion because you are not its author");
 
 
     }
@@ -125,26 +131,21 @@ public class OpinionService {
     /**
      * Creates an opinion
      *
-     * @param author     Volunteer object treated as author of opinion
-     * @param project    Project object treated as described project
+     * @param projectId  Project object treated as described project
      * @param opinionDTO OpinionDTO containing content of opinion
      * @return Created opinion
      */
-    public Optional<OpinionDTO> createOpinion(Volunteer author, Project project, OpinionDTO opinionDTO) {
+    public OpinionDTO createOpinion(Long projectId, OpinionDTO opinionDTO) {
 
-        if (this.isOpinionAuthor(author, volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        Project project = projectService.findProject(projectId);
+        Opinion opinion = Opinion.builder()
+                .opinion(opinionDTO.getContent())
+                .author(volunteerService.getLoggedVolunteer())
+                .describedProject(project)
+                .build();
 
-            Opinion opinion = Opinion.builder()
-                    .opinion(opinionDTO.getContent())
-                    .author(author)
-                    .describedProject(project)
-                    .build();
+        repository.save(opinion);
 
-            repository.save(opinion);
-
-            return Optional.of(opinionMapper.mapOpinionToDTO(opinion));
-        }
-
-        return Optional.empty();
+        return opinionMapper.mapOpinionToDTO(opinion);
     }
 }

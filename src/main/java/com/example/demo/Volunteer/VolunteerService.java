@@ -1,6 +1,8 @@
 package com.example.demo.Volunteer;
 
 import com.example.demo.Authentication.AuthenticationService;
+import com.example.demo.Error.CollectionEmptyException;
+import com.example.demo.Error.InsufficientPermissionsException;
 import com.example.demo.Error.VolunteerNotFoundException;
 import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Project.ProjectMapper;
@@ -11,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -52,21 +53,20 @@ public class VolunteerService {
     /**
      * Updates interests of volunteer
      *
-     * @param volunteer Updated volunteer
      * @param interests Interests that will be contained within volunteer object
      */
-    public Optional<VolunteerDTO> updateInterests(Volunteer volunteer, List<String> interests) {
+    public VolunteerDTO updateInterests(Long volunteerId, List<String> interests) {
+
+        Volunteer volunteer = this.findVolunteer(volunteerId);
 
         if (this.isMatchingVolunteer(this.getLoggedVolunteer(), volunteer) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
 
             volunteer.setInterests(interests);
 
-            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteer);
-
-            return Optional.of(volunteerDTO);
+            return volunteerMapper.mapVolunteerToDTO(volunteer);
         }
 
-        return Optional.empty();
+        throw new InsufficientPermissionsException("You are not permitted to modify this volunteer's interests");
 
     }
 
@@ -75,18 +75,17 @@ public class VolunteerService {
      *
      * @return List of found volunteers
      */
-    public Optional<List<VolunteerDTO>> searchVolunteers() {
+    public List<VolunteerDTO> searchVolunteers() {
 
         List<Volunteer> foundVolunteers = repository.findAll();
 
         if (!foundVolunteers.isEmpty()) {
-            List<VolunteerDTO> volunteerDTOs = foundVolunteers.stream()
+            return foundVolunteers.stream()
                     .map(volunteerMapper::mapVolunteerToDTO)
                     .collect(Collectors.toList());
-            return Optional.of(volunteerDTOs);
         }
 
-        return Optional.empty();
+        throw new CollectionEmptyException("There are no volunteers in database");
     }
 
     /**
@@ -104,43 +103,35 @@ public class VolunteerService {
         throw new VolunteerNotFoundException("Requested volunteer could not be found");
     }
 
-    public Optional<VolunteerDTO> searchVolunteer(Long id) {
+    public VolunteerDTO searchVolunteer(Long id) {
 
-        if (this.findVolunteer(id).isPresent()) {
-            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(this.findVolunteer(id).get());
-
-            return Optional.of(volunteerDTO);
-        } return Optional.empty();
+        return volunteerMapper.mapVolunteerToDTO(this.findVolunteer(id));
     }
 
-    public Optional<List<ProjectDTO>> getParticipatingProjects(Long id) {
+    public List<ProjectDTO> getParticipatingProjects(Long id) {
 
-        if (this.findVolunteer(id).isPresent()) {
+        Volunteer volunteer = this.findVolunteer(id);
 
-            Volunteer volunteer = this.findVolunteer(id).get();
+        if (!volunteer.getParticipatingProjects().isEmpty()) {
 
-            List<ProjectDTO> projectDTOs = volunteer.getParticipatingProjects().stream()
+            return volunteer.getParticipatingProjects().stream()
                     .map(projectMapper::mapProjectToDTO)
                     .collect(Collectors.toList());
-
-            return Optional.of(projectDTOs);
         }
-        return Optional.empty();
+
+        throw new CollectionEmptyException("Volunteer is not participating in any project yet.");
     }
 
-    public Optional<List<ProjectDTO>> getOwnedProjects(Long id) {
+    public List<ProjectDTO> getOwnedProjects(Long id) {
 
-        if (this.findVolunteer(id).isPresent()) {
+        Volunteer volunteer = this.findVolunteer(id);
+        if (!volunteer.getOwnedProjects().isEmpty()) {
 
-            Volunteer volunteer = this.findVolunteer(id).get();
-
-            List<ProjectDTO> projectDTOs = volunteer.getOwnedProjects().stream()
+            return volunteer.getOwnedProjects().stream()
                     .map(projectMapper::mapProjectToDTO)
                     .collect(Collectors.toList());
-
-            return Optional.of(projectDTOs);
         }
-        return Optional.empty();
+        throw new CollectionEmptyException("Volunteer does not own any projects");
     }
 
     /**
@@ -157,10 +148,10 @@ public class VolunteerService {
 
     /**
      * Deletes volunteer
-     *
-     * @param volunteer Deleted volunteer
      */
-    public Optional<VolunteerDTO> deleteVolunteer(Volunteer volunteer) {
+    public VolunteerDTO deleteVolunteer(Long volunteerId) {
+
+        Volunteer volunteer = this.findVolunteer(volunteerId);
 
         if (this.isMatchingVolunteer(this.getLoggedVolunteer(), volunteer) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
 
@@ -168,21 +159,22 @@ public class VolunteerService {
 
             repository.delete(volunteer);
 
-            return Optional.of(volunteerDTO);
+            return volunteerDTO;
         }
 
-        return Optional.empty();
+        throw new InsufficientPermissionsException("You are not permitted to delete this volnteer.");
 
     }
 
     /**
      * Updates volunteer
      *
-     * @param sourceVolunteer Volunteer object representing old data
-     * @param volunteerRequest    VolunteerDTO object representing new data
+     * @param volunteerRequest VolunteerDTO object representing new data
      * @return Updated volunteer
      */
-    public Optional<VolunteerDTO> updateVolunteer(Volunteer sourceVolunteer, VolunteerDTO volunteerRequest) {
+    public VolunteerDTO updateVolunteer(Long volunteerId, VolunteerDTO volunteerRequest) {
+
+        Volunteer sourceVolunteer = this.findVolunteer(volunteerId);
 
         if (this.isMatchingVolunteer(sourceVolunteer, this.getLoggedVolunteer()) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
             Volunteer volunteer = modelMapper.map(volunteerRequest, Volunteer.class);
@@ -193,9 +185,9 @@ public class VolunteerService {
 
             repository.save(volunteer);
 
-            return Optional.of(volunteerDTO);
+            return volunteerDTO;
         }
 
-        return Optional.empty();
+        throw new InsufficientPermissionsException("You are not permitted to update this volunteer's data");
     }
 }

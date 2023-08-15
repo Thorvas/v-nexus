@@ -1,17 +1,14 @@
 package com.example.demo.Request;
 
-import com.example.demo.Project.Project;
 import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Project.ProjectService;
 import com.example.demo.Volunteer.VolunteerDTO;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,10 +31,6 @@ public class RequestController {
     @Autowired
     private RequestService requestService;
 
-    private final String PERMISSION_DENIED_MESSAGE = "You are not permitted to perform this operation.";
-    private final String PROJECT_NOT_FOUND_MESSAGE = "Requested project could not be found.";
-    private final String REQUEST_NOT_FOUND_MESSAGE = "Request could not be found.";
-
     private final String ROOT_LINK = "root";
     private final String RESOURCE_PATH_LINK = "resource-path";
 
@@ -55,9 +48,7 @@ public class RequestController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> createRequest(@RequestParam("projectId") Long id) {
 
-        Project foundProject = projectService.findProject(id).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
-
-        RequestDTO requestDTO = requestService.createRequest(foundProject);
+        RequestDTO requestDTO = requestService.createRequest(id);
 
         requestDTO.add(rootLink());
 
@@ -73,7 +64,7 @@ public class RequestController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<RequestDTO>> getAllRequests() {
 
-        List<RequestDTO> requestDTOs = requestService.searchAllRequests().orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
+        List<RequestDTO> requestDTOs = requestService.searchAllRequests();
 
         Link selfLink = linkTo(methodOn(RequestController.class)
                 .getAllRequests()).withSelfRel();
@@ -94,7 +85,7 @@ public class RequestController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> getSpecificRequest(@PathVariable Long id) {
 
-        RequestDTO requestDTO = requestService.searchRequest(id).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
+        RequestDTO requestDTO = requestService.searchRequest(id);
 
         requestDTO.add(rootLink());
 
@@ -110,8 +101,7 @@ public class RequestController {
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> deleteRequest(@PathVariable Long id) {
 
-        VolunteerRequest request = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
-        RequestDTO requestDTO = requestService.deleteRequest(request).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
+        RequestDTO requestDTO = requestService.deleteRequest(id);
 
         requestDTO.add(rootLink());
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);
@@ -126,9 +116,7 @@ public class RequestController {
     @GetMapping(value = "/{id}/sender", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getRequestSender(@PathVariable Long id) {
 
-        VolunteerRequest request = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
-
-        VolunteerDTO volunteerDTO = requestService.getRequestSender(request).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
+        VolunteerDTO volunteerDTO = requestService.getRequestSender(id);
         Link selfLink = linkTo(methodOn(RequestController.class).getRequestSender(id)).withRel(RESOURCE_PATH_LINK);
 
         volunteerDTO.add(rootLink(), selfLink);
@@ -144,9 +132,7 @@ public class RequestController {
     @GetMapping(value = "/{id}/receiver", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> getRequestReceiver(@PathVariable Long id) {
 
-        VolunteerRequest request = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
-
-        VolunteerDTO volunteerDTO = requestService.getRequestReceiver(request).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
+        VolunteerDTO volunteerDTO = requestService.getRequestReceiver(id);
         Link selfLink = linkTo(methodOn(RequestController.class).getRequestReceiver(id)).withRel(RESOURCE_PATH_LINK);
 
         volunteerDTO.add(rootLink(), selfLink);
@@ -162,9 +148,7 @@ public class RequestController {
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProjectDTO> getRequestProject(@PathVariable Long id) {
 
-        VolunteerRequest request = requestService.findRequest(id).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
-
-        ProjectDTO projectDTO = requestService.getRequestedProject(request).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND_MESSAGE));
+        ProjectDTO projectDTO = requestService.getRequestedProject(id);
         Link selfLink = linkTo(methodOn(RequestController.class).getRequestProject(id)).withRel(RESOURCE_PATH_LINK);
 
         projectDTO.add(rootLink(), selfLink);
@@ -180,9 +164,7 @@ public class RequestController {
     @PatchMapping(value = "/{id}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> acceptRequest(@PathVariable("id") Long requestId) {
 
-        VolunteerRequest request = requestService.findRequest(requestId).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
-
-        RequestDTO requestDTO = requestService.acceptRequest(request).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
+        RequestDTO requestDTO = requestService.acceptRequest(requestId);
         Link selfLink = linkTo(methodOn(RequestController.class).acceptRequest(requestId)).withRel(RESOURCE_PATH_LINK);
 
         requestDTO.add(rootLink(), selfLink);
@@ -198,9 +180,7 @@ public class RequestController {
     @PatchMapping(value = "/{id}/decline", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestDTO> declineRequest(@PathVariable("id") Long requestId) {
 
-        VolunteerRequest request = requestService.findRequest(requestId).orElseThrow(() -> new EntityNotFoundException(REQUEST_NOT_FOUND_MESSAGE));
-
-        RequestDTO requestDTO = requestService.declineRequest(request).orElseThrow(() -> new AccessDeniedException(PERMISSION_DENIED_MESSAGE));
+        RequestDTO requestDTO = requestService.declineRequest(requestId);
         Link selfLink = linkTo(methodOn(RequestController.class).declineRequest(requestId)).withRel(RESOURCE_PATH_LINK);
 
         requestDTO.add(rootLink(), selfLink);

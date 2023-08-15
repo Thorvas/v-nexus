@@ -1,11 +1,18 @@
 package com.example.demo.Category;
 
+import com.example.demo.Authentication.AuthenticationService;
 import com.example.demo.Error.CategoryNotFoundException;
+import com.example.demo.Error.CollectionEmptyException;
+import com.example.demo.Error.InsufficientPermissionsException;
+import com.example.demo.Project.ProjectDTO;
+import com.example.demo.Project.ProjectMapper;
+import com.example.demo.Volunteer.VolunteerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service responsible for category operations
@@ -19,6 +26,18 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private VolunteerService volunteerService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private ProjectMapper projectMapper;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     /**
@@ -26,19 +45,50 @@ public class CategoryService {
      *
      * @return List of categories
      */
-    public List<Category> searchCategories() {
+    public List<CategoryDTO> searchCategories() {
 
-        return categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+
+        if (!categories.isEmpty()) {
+
+            return categories.stream()
+                    .map(categoryMapper::mapCategoryToDTO)
+                    .collect(Collectors.toList());
+        }
+
+        throw new CollectionEmptyException("There are no categories in database");
     }
 
     /**
      * Deletes category
      *
-     * @param category Provided category to delete
      */
-    public void deleteCategory(Category category) {
+    public CategoryDTO deleteCategory(Long categoryId) {
 
-        categoryRepository.delete(category);
+        Category category = this.findCategory(categoryId);
+
+        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+
+            categoryRepository.delete(category);
+
+            return categoryMapper.mapCategoryToDTO(category);
+        }
+
+        throw new InsufficientPermissionsException("You cannot delete categories because you are not an administrator");
+    }
+
+    public CategoryDTO searchCategory(Long id) {
+
+        return categoryMapper.mapCategoryToDTO(this.findCategory(id));
+    }
+
+    public List<ProjectDTO> retrieveProjectsFromCategory(Long categoryId) {
+
+        Category category = this.findCategory(categoryId);
+
+        return category.getProjectsCategories().stream()
+                .map(projectMapper::mapProjectToDTO)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -59,18 +109,24 @@ public class CategoryService {
     /**
      * Updated category in database
      *
-     * @param sourceCategory Category containing old values
      * @param categoryDTO    Category containing new values
      * @return Updated category object
      */
-    public Category updateCategory(Category sourceCategory, CategoryDTO categoryDTO) {
+    public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) {
 
-        Category category = modelMapper.map(categoryDTO, Category.class);
+        Category sourceCategory = this.findCategory(categoryId);
 
-        category.setId(sourceCategory.getId());
-        categoryRepository.save(category);
+        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
-        return category;
+            Category category = modelMapper.map(categoryDTO, Category.class);
+
+            category.setId(sourceCategory.getId());
+            categoryRepository.save(category);
+
+            return categoryMapper.mapCategoryToDTO(category);
+        }
+
+        throw new InsufficientPermissionsException("You are not permitted to update categories");
     }
 
     /**
@@ -79,16 +135,21 @@ public class CategoryService {
      * @param categoryDTO DTO object containing values to create
      * @return Newly created category object
      */
-    public Category createCategory(CategoryDTO categoryDTO) {
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
 
-        Category category = Category.builder()
-                .categoryName(categoryDTO.getCategoryName())
-                .categoryDescription(categoryDTO.getCategoryDescription())
-                .categoryPopularity(categoryDTO.getCategoryPopularity())
-                .build();
+        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
-        categoryRepository.save(category);
+            Category category = Category.builder()
+                    .categoryName(categoryDTO.getCategoryName())
+                    .categoryDescription(categoryDTO.getCategoryDescription())
+                    .categoryPopularity(categoryDTO.getCategoryPopularity())
+                    .build();
 
-        return category;
+            categoryRepository.save(category);
+
+            return categoryMapper.mapCategoryToDTO(category);
+        }
+
+        throw new InsufficientPermissionsException("You are not permitted to create new categories");
     }
 }

@@ -3,8 +3,8 @@ package com.example.demo.Project;
 import com.example.demo.Category.Category;
 import com.example.demo.Error.EntityNotPresentInCollectionException;
 import com.example.demo.Error.EntityPresentInCollectionException;
-import com.example.demo.Request.VolunteerRequest;
 import com.example.demo.Opinion.Opinion;
+import com.example.demo.Request.VolunteerRequest;
 import com.example.demo.Utility.CollectionsUtil;
 import com.example.demo.Volunteer.Volunteer;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -18,7 +18,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -74,7 +73,7 @@ public class Project {
     private List<Opinion> projectOpinions;
 
     @OneToMany(mappedBy = "requestedProject")
-    private Set<VolunteerRequest> requestsToProject;
+    private List<VolunteerRequest> requestsToProject;
 
     @ManyToMany
     @JoinTable(
@@ -84,6 +83,7 @@ public class Project {
     private List<Category> categories;
 
     public List<Volunteer> addVolunteerToProject(Volunteer volunteer) {
+
 
         if (!this.getProjectVolunteers().contains(volunteer)) {
 
@@ -96,9 +96,10 @@ public class Project {
         throw new EntityPresentInCollectionException("Volunteer is already in project.");
     }
 
+
     public List<Volunteer> removeVolunteerFromProject(Volunteer volunteer) {
 
-        if (this.getProjectVolunteers().contains(volunteer)) {
+        if (this.getProjectVolunteers().contains(volunteer) || this.getProjectVolunteers() == null) {
 
             List<Volunteer> newList = CollectionsUtil.removeElementFromList(this.getProjectVolunteers(), volunteer);
             this.setProjectVolunteers(newList);
@@ -111,7 +112,7 @@ public class Project {
 
     public List<Category> addCategoryToProject(Category category) {
 
-        if (!this.getCategories().contains(category)) {
+        if (!this.getCategories().contains(category) || this.getCategories() == null) {
 
             List<Category> newList = CollectionsUtil.addElementToList(this.getCategories(), category);
             this.setCategories(newList);
@@ -124,7 +125,7 @@ public class Project {
 
     public List<Category> removeCategoryFromProject(Category category) {
 
-        if (this.getCategories().contains(category)) {
+        if (this.getCategories().contains(category) || this.getCategories() == null) {
             List<Category> newList = CollectionsUtil.removeElementFromList(this.getCategories(), category);
             this.setCategories(newList);
 
