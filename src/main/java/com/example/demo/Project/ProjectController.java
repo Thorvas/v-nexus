@@ -36,6 +36,8 @@ public class ProjectController {
     @Autowired
     private VolunteerService volunteerService;
 
+    private final String RESOURCE_PATH_LINK = "resource-path";
+
     private Link rootLink() {
         String ROOT_LINK = "root";
         return linkTo(methodOn(ProjectController.class)
@@ -53,6 +55,11 @@ public class ProjectController {
 
         ProjectDTO projectDTO = projectService.createProject(project);
 
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .saveProject(project)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
+
         return new ResponseEntity<>(projectDTO, HttpStatus.CREATED);
     }
 
@@ -67,7 +74,7 @@ public class ProjectController {
 
         List<ProjectDTO> projectDTOs = projectService.searchAllProjects();
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .listProjects()).withSelfRel();
+                .listProjects()).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink);
 
@@ -85,7 +92,10 @@ public class ProjectController {
 
         ProjectDTO projectDTO = projectService.searchProject(id);
 
-        projectDTO.add(rootLink());
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .getProject(id)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
 
@@ -103,7 +113,7 @@ public class ProjectController {
         List<VolunteerDTO> volunteerDTOs = projectService.getVolunteers(id);
 
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .getVolunteers(id)).withSelfRel();
+                .getVolunteers(id)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<VolunteerDTO> resource = CollectionModel.of(volunteerDTOs, selfLink, rootLink());
 
@@ -121,6 +131,11 @@ public class ProjectController {
 
         VolunteerDTO volunteerDTO = projectService.getOwner(id);
 
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .getOwner(id)).withRel(RESOURCE_PATH_LINK);
+
+        volunteerDTO.add(rootLink(), selfLink);
+
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
 
@@ -137,7 +152,7 @@ public class ProjectController {
         List<OpinionDTO> opinionDTOs = projectService.getOpinions(id);
 
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .getOpinions(id)).withSelfRel();
+                .getOpinions(id)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<OpinionDTO> resource = CollectionModel.of(opinionDTOs, selfLink, rootLink());
 
@@ -156,7 +171,7 @@ public class ProjectController {
         List<ProjectDTO> projectDTOs = projectService.searchProjectsWithLocation(location);
 
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .getProjectsWithLocation(location)).withSelfRel();
+                .getProjectsWithLocation(location)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink());
 
@@ -175,7 +190,7 @@ public class ProjectController {
         List<ProjectDTO> projectDTOs = projectService.searchProjectsWithStatus(status);
 
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .getProjectsWithStatus(status)).withSelfRel();
+                .getProjectsWithStatus(status)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink());
 
@@ -194,7 +209,7 @@ public class ProjectController {
         List<CategoryDTO> categories = projectService.searchCategories(id);
 
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .getCategories(id)).withSelfRel();
+                .getCategories(id)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<CategoryDTO> resource = CollectionModel.of(categories, selfLink, rootLink());
 
@@ -214,7 +229,7 @@ public class ProjectController {
         List<ProjectDTO> projectDTOs = projectService.searchProjectsWithDate(date);
 
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .getProjectsWithDate(date)).withSelfRel();
+                .getProjectsWithDate(date)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink());
 
@@ -234,6 +249,11 @@ public class ProjectController {
 
         ProjectDTO projectDTO = projectService.updateProject(id, project);
 
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .patchProject(project, id)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
+
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 
@@ -251,6 +271,11 @@ public class ProjectController {
 
         ProjectDTO projectDTO = projectService.changeOwner(volunteerId, projectId);
 
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .changeProjectOwner(projectId, volunteerId)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
+
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 
@@ -267,6 +292,11 @@ public class ProjectController {
     ) {
 
         CategoryDTO categoryDTO = projectService.addCategoryToProject(projectId, categoryId);
+
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .addCategoryToProject(projectId, categoryId)).withRel(RESOURCE_PATH_LINK);
+
+        categoryDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
     }
@@ -286,6 +316,11 @@ public class ProjectController {
 
         CategoryDTO categoryDTO = projectService.removeCategoryFromProject(projectId, categoryId);
 
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .removeCategoryFromProject(projectId, categoryId)).withRel(RESOURCE_PATH_LINK);
+
+        categoryDTO.add(rootLink(), selfLink);
+
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
     }
 
@@ -299,6 +334,11 @@ public class ProjectController {
     public ResponseEntity<ProjectDTO> deleteProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = projectService.deleteProject(id);
+
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .deleteProject(id)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
@@ -316,6 +356,11 @@ public class ProjectController {
 
         VolunteerDTO volunteerDTO = projectService.addVolunteerToProject(volunteerId, projectId);
 
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .addVolunteerToProject(projectId, volunteerId)).withRel(RESOURCE_PATH_LINK);
+
+        volunteerDTO.add(rootLink(), selfLink);
+
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
 
@@ -331,6 +376,11 @@ public class ProjectController {
                                                                    @PathVariable("volunteerId") Long volunteerId) {
 
         VolunteerDTO volunteerDTO = projectService.removeVolunteerFromProject(volunteerId, projectId);
+
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .removeVolunteerFromProject(projectId, volunteerId)).withRel(RESOURCE_PATH_LINK);
+
+        volunteerDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }

@@ -27,6 +27,8 @@ public class VolunteerController {
     @Autowired
     private VolunteerService volunteerService;
 
+    private final String RESOURCE_PATH_LINK = "resource-path";
+
     private Link rootLink() {
         String ROOT_LINK = "root";
         return linkTo(methodOn(VolunteerController.class)
@@ -44,7 +46,7 @@ public class VolunteerController {
         List<VolunteerDTO> volunteerDTOs = volunteerService.searchVolunteers();
 
         Link selfLink = linkTo(methodOn(VolunteerController.class)
-                .getVolunteers()).withSelfRel();
+                .getVolunteers()).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<VolunteerDTO> resource = CollectionModel.of(volunteerDTOs, selfLink);
 
@@ -79,7 +81,7 @@ public class VolunteerController {
         List<ProjectDTO> projectDTOs = volunteerService.getParticipatingProjects(id);
 
         Link selfLink = linkTo(methodOn(VolunteerController.class)
-                .getProjects(id)).withSelfRel();
+                .getProjects(id)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink());
 
@@ -98,7 +100,7 @@ public class VolunteerController {
         List<ProjectDTO> projectDTOs = volunteerService.getOwnedProjects(id);
 
         Link selfLink = linkTo(methodOn(VolunteerController.class)
-                .getOwnedProjects(id)).withSelfRel();
+                .getOwnedProjects(id)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink());
 
@@ -117,7 +119,9 @@ public class VolunteerController {
 
         VolunteerDTO volunteerDTO = volunteerService.updateVolunteer(id, volunteer);
 
-        volunteerDTO.add(rootLink());
+        Link resourceLink = linkTo(methodOn(VolunteerController.class).updateVolunteer(id, volunteer)).withRel(RESOURCE_PATH_LINK);
+
+        volunteerDTO.add(rootLink(), resourceLink);
 
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
@@ -130,9 +134,12 @@ public class VolunteerController {
      */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id) {
+
         VolunteerDTO volunteerDTO = volunteerService.deleteVolunteer(id);
 
-        volunteerDTO.add(rootLink());
+        Link resourceLink = linkTo(methodOn(VolunteerController.class).deleteEntity(id)).withRel(RESOURCE_PATH_LINK);
+
+        volunteerDTO.add(rootLink(), resourceLink);
 
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
@@ -149,7 +156,9 @@ public class VolunteerController {
 
         VolunteerDTO volunteerDTO = volunteerService.updateInterests(id, interests);
 
-        volunteerDTO.add(rootLink());
+        Link resourceLink = linkTo(methodOn(VolunteerController.class).addInterests(interests, id)).withRel(RESOURCE_PATH_LINK);
+
+        volunteerDTO.add(rootLink(), resourceLink);
 
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }

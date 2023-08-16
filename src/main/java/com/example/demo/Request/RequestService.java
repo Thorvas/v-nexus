@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 /**
  * Service responsible for request operations
+ *
+ * @author Thorvas
  */
 @Service
 public class RequestService {
@@ -69,7 +71,7 @@ public class RequestService {
      * Searches for specific request based on id parameter
      *
      * @param id Id of searched request
-     * @return Optional containing result of search
+     * @return Result of search
      */
     public VolunteerRequest findRequest(Long id) {
 
@@ -80,6 +82,12 @@ public class RequestService {
         throw new RequestNotFoundException("Request could not be found");
     }
 
+    /**
+     * Searches for sender of request
+     *
+     * @param requestId Id value of request
+     * @return Volunteer that is sender of request
+     */
     public VolunteerDTO getRequestSender(Long requestId) {
 
         VolunteerRequest request = this.findRequest(requestId);
@@ -92,6 +100,12 @@ public class RequestService {
         throw new InsufficientPermissionsException("You are not permitted to view who is the sender of request.");
     }
 
+    /**
+     * Searches for receiver of request
+     *
+     * @param requestId Id value of request
+     * @return Volunteer that is receiver of request
+     */
     public VolunteerDTO getRequestReceiver(Long requestId) {
 
         VolunteerRequest request = this.findRequest(requestId);
@@ -106,6 +120,9 @@ public class RequestService {
 
     /**
      * Deletes requests
+     *
+     * @param requestId Id value of request
+     * @return Deleted request
      */
     public RequestDTO deleteRequest(Long requestId) {
 
@@ -171,32 +188,49 @@ public class RequestService {
     /**
      * Creates request
      *
+     * @param projectId Id value of requested project
      * @return Created request
      */
     public RequestDTO createRequest(Long projectId) {
 
         Project foundProject = projectService.findProject(projectId);
 
-        VolunteerRequest newRequest = VolunteerRequest.builder()
-                .requestReceiver(foundProject.getOwnerVolunteer())
-                .requestSender(this.volunteerService.getLoggedVolunteer())
-                .requestedProject(foundProject)
-                .status(RequestStatus.PENDING)
-                .build();
+        if (foundProject.getProjectVolunteers().contains(volunteerService.getLoggedVolunteer())) {
+            VolunteerRequest newRequest = VolunteerRequest.builder()
+                    .requestReceiver(foundProject.getOwnerVolunteer())
+                    .requestSender(this.volunteerService.getLoggedVolunteer())
+                    .requestedProject(foundProject)
+                    .status(RequestStatus.PENDING)
+                    .build();
 
-        requestRepository.save(newRequest);
+            requestRepository.save(newRequest);
 
-        return requestMapper.mapRequestToDTO(newRequest);
+            return requestMapper.mapRequestToDTO(newRequest);
+        }
+
+        throw new InsufficientPermissionsException("You already participate in this project");
     }
 
-    public RequestDTO searchRequest(Long volunteerId) {
+    /**
+     * Searches for request in database using utility method
+     *
+     * @param requestId Id value of request
+     * @return Result of search
+     */
+    public RequestDTO searchRequest(Long requestId) {
 
-        VolunteerRequest request = this.findRequest(volunteerId);
+        VolunteerRequest request = this.findRequest(requestId);
 
         return requestMapper.mapRequestToDTO(request);
 
     }
 
+    /**
+     * Searches for project of request based on id parameter
+     *
+     * @param requestId Id value of request
+     * @return Project that is associated with request
+     */
     public ProjectDTO getRequestedProject(Long requestId) {
 
         VolunteerRequest request = this.findRequest(requestId);
@@ -207,7 +241,8 @@ public class RequestService {
     /**
      * Declines request
      *
-     * @return Optional value that contains result of operation
+     * @param requestId Id value of request
+     * @return Request that is declined
      */
     public RequestDTO declineRequest(Long requestId) {
 
@@ -234,7 +269,8 @@ public class RequestService {
     /**
      * Accepts request
      *
-     * @return Optional value that contains result of operation
+     * @param requestId Id value of request
+     * @return Request that is accepted
      */
     public RequestDTO acceptRequest(Long requestId) {
 

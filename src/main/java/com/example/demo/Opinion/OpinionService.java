@@ -18,6 +18,8 @@ import java.util.List;
 
 /**
  * Service responsible for opinion operations
+ *
+ * @author Thorvas
  */
 @Service
 public class OpinionService {
@@ -43,6 +45,12 @@ public class OpinionService {
     @Autowired
     VolunteerMapper volunteerMapper;
 
+    /**
+     * Searches for opinion in database
+     *
+     * @param id Id value of searched opinion
+     * @return Found opinion
+     */
     public Opinion findOpinion(Long id) {
 
         if (repository.findById(id).isPresent()) {
@@ -53,10 +61,10 @@ public class OpinionService {
     }
 
     /**
-     * Searches for opinion based on id parameter
+     * Searches for opinion based on id parameter using utility method
      *
      * @param id Id value of searched opinion
-     * @return Optional containing result of search
+     * @return Found opinion
      */
     public OpinionDTO searchOpinion(Long id) {
 
@@ -79,6 +87,12 @@ public class OpinionService {
                 .toList();
     }
 
+    /**
+     * Retrieves author of opinion
+     *
+     * @param opinionId Id value of inspected opinion
+     * @return Author of opinion
+     */
     public VolunteerDTO getAuthor(Long opinionId) {
 
         Opinion opinion = this.findOpinion(opinionId);
@@ -99,6 +113,9 @@ public class OpinionService {
 
     /**
      * Deletes opinion
+     *
+     * @param opinionId Id value of deleted opinion
+     * @return Deleted opinion
      */
     public OpinionDTO deleteOpinion(Long opinionId) {
 

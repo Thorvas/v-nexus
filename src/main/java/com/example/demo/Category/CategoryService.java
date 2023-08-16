@@ -9,10 +9,15 @@ import com.example.demo.Project.ProjectMapper;
 import com.example.demo.Volunteer.VolunteerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Service responsible for category operations
@@ -45,15 +50,17 @@ public class CategoryService {
      *
      * @return List of categories
      */
-    public List<CategoryDTO> searchCategories() {
+    public CollectionModel<CategoryDTO> searchCategories() {
 
         List<Category> categories = categoryRepository.findAll();
+        Link selfLink = linkTo(methodOn(CategoryController.class)
+                .retrieveCategories()).withSelfRel();
 
         if (!categories.isEmpty()) {
 
-            return categories.stream()
+            return CollectionModel.of(categories.stream()
                     .map(categoryMapper::mapCategoryToDTO)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList()), selfLink);
         }
 
         throw new CollectionEmptyException("There are no categories in database");
@@ -62,6 +69,8 @@ public class CategoryService {
     /**
      * Deletes category
      *
+     * @param categoryId Id value of deleted category
+     * @return Deleted category
      */
     public CategoryDTO deleteCategory(Long categoryId) {
 
@@ -77,11 +86,23 @@ public class CategoryService {
         throw new InsufficientPermissionsException("You cannot delete categories because you are not an administrator");
     }
 
+    /**
+     * Searches for category by id parameter using utility method
+     *
+     * @param id Id value of searched category
+     * @return Found category
+     */
     public CategoryDTO searchCategory(Long id) {
 
         return categoryMapper.mapCategoryToDTO(this.findCategory(id));
     }
 
+    /**
+     * Retrieves projects associated with category
+     *
+     * @param categoryId Id value of category
+     * @return List of projects associated with category
+     */
     public List<ProjectDTO> retrieveProjectsFromCategory(Long categoryId) {
 
         Category category = this.findCategory(categoryId);
@@ -95,7 +116,7 @@ public class CategoryService {
      * Searches for category within database
      *
      * @param id Id value of searched category
-     * @return Optional containing result of search
+     * @return Found category
      */
     public Category findCategory(Long id) {
 
@@ -109,7 +130,8 @@ public class CategoryService {
     /**
      * Updated category in database
      *
-     * @param categoryDTO    Category containing new values
+     * @param categoryId  Id value of category
+     * @param categoryDTO Category containing new values
      * @return Updated category object
      */
     public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) {
@@ -118,12 +140,8 @@ public class CategoryService {
 
         if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
-            Category category = modelMapper.map(categoryDTO, Category.class);
-
-            category.setId(sourceCategory.getId());
-            categoryRepository.save(category);
-
-            return categoryMapper.mapCategoryToDTO(category);
+            modelMapper.map(categoryDTO, sourceCategory);
+            return categoryMapper.mapCategoryToDTO(sourceCategory);
         }
 
         throw new InsufficientPermissionsException("You are not permitted to update categories");

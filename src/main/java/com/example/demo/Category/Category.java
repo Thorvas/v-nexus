@@ -5,9 +5,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class representing category
@@ -18,9 +18,13 @@ import java.util.Set;
 @Entity
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "category")
 public class Category {
+
+    public Category() {
+
+        this.projectsCategories = new ArrayList<>();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +40,6 @@ public class Category {
     private Integer categoryPopularity;
 
     @ManyToMany(mappedBy = "categories")
-    private Set<Project> projectsCategories;
+    private List<Project> projectsCategories;
 
 }

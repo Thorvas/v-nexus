@@ -31,10 +31,10 @@ public class RequestController {
     @Autowired
     private RequestService requestService;
 
-    private final String ROOT_LINK = "root";
     private final String RESOURCE_PATH_LINK = "resource-path";
 
     private Link rootLink() {
+        String ROOT_LINK = "root";
         return linkTo(methodOn(RequestController.class)
                 .getAllRequests()).withRel(ROOT_LINK);
     }
@@ -50,7 +50,10 @@ public class RequestController {
 
         RequestDTO requestDTO = requestService.createRequest(id);
 
-        requestDTO.add(rootLink());
+        Link resourceLink = linkTo(methodOn(RequestController.class)
+                .createRequest(id)).withRel(RESOURCE_PATH_LINK);
+
+        requestDTO.add(rootLink(), resourceLink);
 
         return new ResponseEntity<>(requestDTO, HttpStatus.CREATED);
 
@@ -67,7 +70,7 @@ public class RequestController {
         List<RequestDTO> requestDTOs = requestService.searchAllRequests();
 
         Link selfLink = linkTo(methodOn(RequestController.class)
-                .getAllRequests()).withSelfRel();
+                .getAllRequests()).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<RequestDTO> resource = CollectionModel.of(requestDTOs, selfLink);
 
@@ -87,7 +90,10 @@ public class RequestController {
 
         RequestDTO requestDTO = requestService.searchRequest(id);
 
-        requestDTO.add(rootLink());
+        Link selfLink = linkTo(methodOn(RequestController.class)
+                .getSpecificRequest(id)).withRel(RESOURCE_PATH_LINK);
+
+        requestDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);
     }
@@ -102,8 +108,10 @@ public class RequestController {
     public ResponseEntity<RequestDTO> deleteRequest(@PathVariable Long id) {
 
         RequestDTO requestDTO = requestService.deleteRequest(id);
+        Link selfLink = linkTo(methodOn(RequestController.class)
+                .deleteRequest(id)).withRel(RESOURCE_PATH_LINK);
 
-        requestDTO.add(rootLink());
+        requestDTO.add(rootLink(), selfLink);
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);
     }
 
@@ -117,7 +125,8 @@ public class RequestController {
     public ResponseEntity<VolunteerDTO> getRequestSender(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = requestService.getRequestSender(id);
-        Link selfLink = linkTo(methodOn(RequestController.class).getRequestSender(id)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(RequestController.class)
+                .getRequestSender(id)).withRel(RESOURCE_PATH_LINK);
 
         volunteerDTO.add(rootLink(), selfLink);
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
@@ -133,7 +142,8 @@ public class RequestController {
     public ResponseEntity<VolunteerDTO> getRequestReceiver(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = requestService.getRequestReceiver(id);
-        Link selfLink = linkTo(methodOn(RequestController.class).getRequestReceiver(id)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(RequestController.class)
+                .getRequestReceiver(id)).withRel(RESOURCE_PATH_LINK);
 
         volunteerDTO.add(rootLink(), selfLink);
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
@@ -149,7 +159,8 @@ public class RequestController {
     public ResponseEntity<ProjectDTO> getRequestProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = requestService.getRequestedProject(id);
-        Link selfLink = linkTo(methodOn(RequestController.class).getRequestProject(id)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(RequestController.class)
+                .getRequestProject(id)).withRel(RESOURCE_PATH_LINK);
 
         projectDTO.add(rootLink(), selfLink);
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
@@ -165,7 +176,8 @@ public class RequestController {
     public ResponseEntity<RequestDTO> acceptRequest(@PathVariable("id") Long requestId) {
 
         RequestDTO requestDTO = requestService.acceptRequest(requestId);
-        Link selfLink = linkTo(methodOn(RequestController.class).acceptRequest(requestId)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(RequestController.class)
+                .acceptRequest(requestId)).withRel(RESOURCE_PATH_LINK);
 
         requestDTO.add(rootLink(), selfLink);
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);
@@ -181,7 +193,8 @@ public class RequestController {
     public ResponseEntity<RequestDTO> declineRequest(@PathVariable("id") Long requestId) {
 
         RequestDTO requestDTO = requestService.declineRequest(requestId);
-        Link selfLink = linkTo(methodOn(RequestController.class).declineRequest(requestId)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(RequestController.class)
+                .declineRequest(requestId)).withRel(RESOURCE_PATH_LINK);
 
         requestDTO.add(rootLink(), selfLink);
         return new ResponseEntity<>(requestDTO, HttpStatus.OK);

@@ -1,6 +1,5 @@
 package com.example.demo.Opinion;
 
-import com.example.demo.Project.ProjectController;
 import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Volunteer.VolunteerDTO;
 import jakarta.validation.Valid;
@@ -29,10 +28,12 @@ public class OpinionController {
     @Autowired
     private OpinionService opinionService;
 
+    private final String RESOURCE_PATH_LINK = "resource-path";
+
     private Link rootLink() {
         String ROOT_LINK = "root";
-        return linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel(ROOT_LINK);
+        return linkTo(methodOn(OpinionController.class)
+                .getAllOpinions()).withRel(ROOT_LINK);
     }
 
     /**
@@ -46,7 +47,10 @@ public class OpinionController {
 
         OpinionDTO opinionDTO = opinionService.searchOpinion(id);
 
-        opinionDTO.add(rootLink());
+        Link selfLink = linkTo(methodOn(OpinionController.class)
+                .getOpinion(id)).withRel(RESOURCE_PATH_LINK);
+
+        opinionDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
     }
@@ -62,7 +66,7 @@ public class OpinionController {
         List<OpinionDTO> opinionDTOs = opinionService.searchAllOpinions();
 
         Link selfLink = linkTo(methodOn(OpinionController.class)
-                .getAllOpinions()).withSelfRel();
+                .getAllOpinions()).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<OpinionDTO> resource = CollectionModel.of(opinionDTOs, selfLink);
 
@@ -80,7 +84,10 @@ public class OpinionController {
 
         ProjectDTO projectDTO = opinionService.getDescribedProject(id);
 
-        projectDTO.add(rootLink());
+        Link selfLink = linkTo(methodOn(OpinionController.class)
+                .getProject(id)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
@@ -96,7 +103,10 @@ public class OpinionController {
 
         VolunteerDTO volunteerDTO = opinionService.getAuthor(id);
 
-        volunteerDTO.add(rootLink());
+        Link selfLink = linkTo(methodOn(OpinionController.class)
+                .getAuthor(id)).withRel(RESOURCE_PATH_LINK);
+
+        volunteerDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
     }
@@ -114,6 +124,11 @@ public class OpinionController {
 
         OpinionDTO opinionDTO = opinionService.createOpinion(projectId, opinion);
 
+        Link selfLink = linkTo(methodOn(OpinionController.class)
+                .postOpinion(projectId, opinion)).withRel(RESOURCE_PATH_LINK);
+
+        opinionDTO.add(rootLink(), selfLink);
+
         return new ResponseEntity<>(opinionDTO, HttpStatus.CREATED);
     }
 
@@ -127,6 +142,11 @@ public class OpinionController {
     public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id) {
 
         OpinionDTO opinionDTO = opinionService.deleteOpinion(id);
+
+        Link selfLink = linkTo(methodOn(OpinionController.class)
+                .deleteOpinion(id)).withRel(RESOURCE_PATH_LINK);
+
+        opinionDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
     }

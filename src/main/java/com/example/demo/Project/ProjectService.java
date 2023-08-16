@@ -21,12 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Service responsible for project operations
+ *
+ * @author Thorvas
  */
 @Service
 public class ProjectService {
@@ -76,6 +77,10 @@ public class ProjectService {
 
     /**
      * Adds volunteer to project
+     *
+     * @param volunteerId Id value of volunteer that is added to project
+     * @param projectId   Id value of project that is modified
+     * @return Volunteer that is added to project
      */
     public VolunteerDTO addVolunteerToProject(Long volunteerId, Long projectId) {
 
@@ -96,6 +101,9 @@ public class ProjectService {
     /**
      * Adds category to project
      *
+     * @param projectId  Id value of project that is modified
+     * @param categoryId Id value of category that is added to project
+     * @return Category that is added to project
      */
     public CategoryDTO addCategoryToProject(Long projectId, Long categoryId) {
 
@@ -116,6 +124,9 @@ public class ProjectService {
     /**
      * Removes category from project
      *
+     * @param projectId  Id value of project that is modified
+     * @param categoryId Id value of category that is removed
+     * @return Category that is removed from project
      */
     public CategoryDTO removeCategoryFromProject(Long projectId, Long categoryId) {
 
@@ -136,6 +147,9 @@ public class ProjectService {
     /**
      * Removes volunteer from project
      *
+     * @param volunteerId Id value of volunteer that is removed from project
+     * @param projectId   Id value of modified project
+     * @return Removed volunteer from project
      */
     public VolunteerDTO removeVolunteerFromProject(Long volunteerId, Long projectId) {
 
@@ -156,6 +170,8 @@ public class ProjectService {
     /**
      * Changes owner of project
      *
+     * @param volunteerId Id value of volunteer that will be new owner
+     * @param projectId   Id value of project that will be modified
      * @return Modified project object
      */
     public ProjectDTO changeOwner(Long volunteerId, Long projectId) {
@@ -185,11 +201,6 @@ public class ProjectService {
 
         Project project = modelMapper.map(requestProject, Project.class);
 
-        project.setProjectVolunteers(new ArrayList<>());
-        project.setCategories(new ArrayList<>());
-        project.setProjectOpinions(new ArrayList<>());
-        project.setRequestsToProject(new ArrayList<>());
-
         project.setOwnerVolunteer(volunteerService.getLoggedVolunteer());
         project.addVolunteerToProject(volunteerService.getLoggedVolunteer());
 
@@ -198,6 +209,12 @@ public class ProjectService {
         return projectMapper.mapProjectToDTO(project);
     }
 
+    /**
+     * Retrieves list of opinions associated with project
+     *
+     * @param projectId Id value of project that is inspected
+     * @return List of opinions associated with project
+     */
     public List<OpinionDTO> getOpinions(Long projectId) {
 
         Project project = this.findProject(projectId);
@@ -214,6 +231,12 @@ public class ProjectService {
         throw new CollectionEmptyException("Project does not have any opinions yet.");
     }
 
+    /**
+     * Retrieves volunteer that is an owner of project
+     *
+     * @param projectId Id value of inspected project
+     * @return Volunteer owner of project
+     */
     public VolunteerDTO getOwner(Long projectId) {
 
         Project project = this.findProject(projectId);
@@ -251,7 +274,8 @@ public class ProjectService {
     /**
      * Updates project
      *
-     * @param projectDTO    ProjectDTO object representing new values that will replace old object
+     * @param projectId  Id value of updated project
+     * @param projectDTO ProjectDTO object representing new values that will replace old object
      * @return Updated project
      */
     public ProjectDTO updateProject(Long projectId, ProjectDTO projectDTO) {
@@ -260,11 +284,11 @@ public class ProjectService {
 
         if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), sourceProject) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
-            Project project = modelMapper.map(projectDTO, Project.class);
-            project.setId(sourceProject.getId());
-            projectRepository.save(project);
+            modelMapper.map(projectDTO, sourceProject);
 
-            return projectMapper.mapProjectToDTO(project);
+            projectRepository.save(sourceProject);
+
+            return projectMapper.mapProjectToDTO(sourceProject);
         }
 
         throw new InsufficientPermissionsException("You cannot update that projects because you are not its owner.");
@@ -289,6 +313,12 @@ public class ProjectService {
         throw new CollectionEmptyException("Currently there are no projects in database.");
     }
 
+    /**
+     * Searches for project in database using utility method
+     *
+     * @param id Id value of searched project
+     * @return Found project
+     */
     public ProjectDTO searchProject(Long id) {
 
         Project project = this.findProject(id);
@@ -296,6 +326,12 @@ public class ProjectService {
         return projectMapper.mapProjectToDTO(project);
     }
 
+    /**
+     * Retrieves volunteers associated with project
+     *
+     * @param projectId Id value of inspected project
+     * @return List of volunteers associated with project
+     */
     public List<VolunteerDTO> getVolunteers(Long projectId) {
 
         Project project = this.findProject(projectId);
@@ -350,6 +386,12 @@ public class ProjectService {
         throw new CollectionEmptyException("Projects with requested status could not be found.");
     }
 
+    /**
+     * Searches for categories associated with project
+     *
+     * @param projectId Id value of inspected project
+     * @return List of categories associated with project
+     */
     public List<CategoryDTO> searchCategories(Long projectId) {
 
         Project project = this.findProject(projectId);
@@ -369,6 +411,8 @@ public class ProjectService {
     /**
      * Deletes project
      *
+     * @param projectId Id value of project
+     * @return Deleted project
      */
     public ProjectDTO deleteProject(Long projectId) {
 

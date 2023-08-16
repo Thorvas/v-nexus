@@ -53,7 +53,9 @@ public class VolunteerService {
     /**
      * Updates interests of volunteer
      *
-     * @param interests Interests that will be contained within volunteer object
+     * @param volunteerId - Id value of updated volunteer
+     * @param interests   Interests that will be contained within volunteer object
+     * @return VolunteerDTO object that contains updated volunteer
      */
     public VolunteerDTO updateInterests(Long volunteerId, List<String> interests) {
 
@@ -92,7 +94,7 @@ public class VolunteerService {
      * Searches for individual volunteer based on id parameter
      *
      * @param id Id of searched volunteer
-     * @return Optional containing result of search
+     * @return Result of search containing found volunteer
      */
     public Volunteer findVolunteer(Long id) {
 
@@ -103,11 +105,23 @@ public class VolunteerService {
         throw new VolunteerNotFoundException("Requested volunteer could not be found");
     }
 
+    /**
+     * Searches for individual volunteer using utility method
+     *
+     * @param id Id of searched volunteer
+     * @return Result of search containing found volunteer
+     */
     public VolunteerDTO searchVolunteer(Long id) {
 
         return volunteerMapper.mapVolunteerToDTO(this.findVolunteer(id));
     }
 
+    /**
+     * Searches for projects that volunteer participates in
+     *
+     * @param id Id value of inspected volunteer
+     * @return List of projects associated with volunteer
+     */
     public List<ProjectDTO> getParticipatingProjects(Long id) {
 
         Volunteer volunteer = this.findVolunteer(id);
@@ -122,6 +136,12 @@ public class VolunteerService {
         throw new CollectionEmptyException("Volunteer is not participating in any project yet.");
     }
 
+    /**
+     * Searches for projects that volunteer owns
+     *
+     * @param id Id value of inspected volunteer
+     * @return List of projects owned by volunteer
+     */
     public List<ProjectDTO> getOwnedProjects(Long id) {
 
         Volunteer volunteer = this.findVolunteer(id);
@@ -148,6 +168,9 @@ public class VolunteerService {
 
     /**
      * Deletes volunteer
+     *
+     * @param volunteerId Id value of inspected volunteer
+     * @return Deleted volunteer
      */
     public VolunteerDTO deleteVolunteer(Long volunteerId) {
 

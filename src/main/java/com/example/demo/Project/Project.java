@@ -13,10 +13,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,7 +28,6 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "project")
 @JsonIdentityInfo(
@@ -36,6 +35,13 @@ import java.util.List;
         property = "id"
 )
 public class Project {
+
+    public Project() {
+        this.setProjectVolunteers(new ArrayList<>());
+        this.setCategories(new ArrayList<>());
+        this.setProjectOpinions(new ArrayList<>());
+        this.setRequestsToProject(new ArrayList<>());
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,7 +105,7 @@ public class Project {
 
     public List<Volunteer> removeVolunteerFromProject(Volunteer volunteer) {
 
-        if (this.getProjectVolunteers().contains(volunteer) || this.getProjectVolunteers() == null) {
+        if (this.getProjectVolunteers().contains(volunteer)) {
 
             List<Volunteer> newList = CollectionsUtil.removeElementFromList(this.getProjectVolunteers(), volunteer);
             this.setProjectVolunteers(newList);
@@ -112,7 +118,7 @@ public class Project {
 
     public List<Category> addCategoryToProject(Category category) {
 
-        if (!this.getCategories().contains(category) || this.getCategories() == null) {
+        if (!this.getCategories().contains(category)) {
 
             List<Category> newList = CollectionsUtil.addElementToList(this.getCategories(), category);
             this.setCategories(newList);
@@ -125,7 +131,7 @@ public class Project {
 
     public List<Category> removeCategoryFromProject(Category category) {
 
-        if (this.getCategories().contains(category) || this.getCategories() == null) {
+        if (this.getCategories().contains(category)) {
             List<Category> newList = CollectionsUtil.removeElementFromList(this.getCategories(), category);
             this.setCategories(newList);
 

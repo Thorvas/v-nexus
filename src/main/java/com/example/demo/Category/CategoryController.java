@@ -1,6 +1,5 @@
 package com.example.demo.Category;
 
-import com.example.demo.Project.ProjectController;
 import com.example.demo.Project.ProjectDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +29,12 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    private final String RESOURCE_PATH_LINK = "resource-path";
+
     private Link rootLink() {
         String ROOT_LINK = "root";
-        return linkTo(methodOn(ProjectController.class)
-                .listProjects()).withRel(ROOT_LINK);
+        return linkTo(methodOn(CategoryController.class)
+                .retrieveCategories()).withRel(ROOT_LINK);
     }
 
     /**
@@ -47,13 +48,18 @@ public class CategoryController {
 
         CategoryDTO categoryDTO = categoryService.createCategory(category);
 
+        Link selfLink = linkTo(methodOn(CategoryController.class)
+                .postCategory(category)).withRel(RESOURCE_PATH_LINK);
+
+        categoryDTO.add(rootLink(), selfLink);
+
         return new ResponseEntity<>(categoryDTO, HttpStatus.CREATED);
     }
 
     /**
      * PATCH endpoint for categories. Allows administrators to modify existing categories.
      *
-     * @param category passed JSON category that will replace its' existing counterpart
+     * @param category passed JSON category that will replace its existing counterpart
      * @param id       Long id value of updated category
      * @return JSON response containing updated category
      */
@@ -63,6 +69,11 @@ public class CategoryController {
 
 
         CategoryDTO categoryDTO = categoryService.updateCategory(id, category);
+
+        Link selfLink = linkTo(methodOn(CategoryController.class)
+                .updateCategory(category, id)).withRel(RESOURCE_PATH_LINK);
+
+        categoryDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
     }
@@ -78,10 +89,10 @@ public class CategoryController {
 
         CategoryDTO categoryDTO = categoryService.deleteCategory(id);
 
-        Link selfLink = linkTo(methodOn(CategoryController.class).deleteCategory(id))
-                .withSelfRel();
+        Link selfLink = linkTo(methodOn(CategoryController.class)
+                .deleteCategory(id)).withRel(RESOURCE_PATH_LINK);
 
-        categoryDTO.add(selfLink);
+        categoryDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
     }
@@ -94,14 +105,14 @@ public class CategoryController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<CategoryDTO>> retrieveCategories() {
 
-        List<CategoryDTO> categoryDTOs = categoryService.searchCategories();
+        CollectionModel<CategoryDTO> categoryDTOs = categoryService.searchCategories();
 
         Link selfLink = linkTo(methodOn(CategoryController.class)
-                .retrieveCategories()).withSelfRel();
+                .retrieveCategories()).withRel(RESOURCE_PATH_LINK);
 
-        CollectionModel<CategoryDTO> resource = CollectionModel.of(categoryDTOs, selfLink);
+        categoryDTOs.add(rootLink(), selfLink);
 
-        return new ResponseEntity<>(resource, HttpStatus.OK);
+        return new ResponseEntity<>(categoryDTOs, HttpStatus.OK);
     }
 
     /**
@@ -115,7 +126,10 @@ public class CategoryController {
 
         CategoryDTO categoryDTO = categoryService.searchCategory(id);
 
-        categoryDTO.add(rootLink());
+        Link selfLink = linkTo(methodOn(CategoryController.class)
+                .retrieveCategory(id)).withRel(RESOURCE_PATH_LINK);
+
+        categoryDTO.add(rootLink(), selfLink);
 
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
     }
@@ -132,7 +146,7 @@ public class CategoryController {
         List<ProjectDTO> projectDTOs = categoryService.retrieveProjectsFromCategory(id);
 
         Link selfLink = linkTo(methodOn(CategoryController.class)
-                .retrieveProjects(id)).withSelfRel();
+                .retrieveProjects(id)).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink());
 
