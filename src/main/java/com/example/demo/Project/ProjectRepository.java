@@ -1,6 +1,5 @@
 package com.example.demo.Project;
 
-import com.example.demo.Project.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -21,5 +20,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findWithLocation(String location);
 
     @Query("SELECT p FROM Project p WHERE p.projectStatus = :status")
-    List<Project> findWithStatus(boolean status);
+    List<Project> findWithStatus(ProjectStatus status);
 }

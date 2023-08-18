@@ -185,7 +185,7 @@ public class ProjectController {
      * @return JSON response containing list of projects that are active or inactive
      */
     @GetMapping(value = "/status/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CollectionModel<ProjectDTO>> getProjectsWithStatus(@PathVariable Boolean status) {
+    public ResponseEntity<CollectionModel<ProjectDTO>> getProjectsWithStatus(@PathVariable ProjectStatus status) {
 
         List<ProjectDTO> projectDTOs = projectService.searchProjectsWithStatus(status);
 
@@ -195,6 +195,64 @@ public class ProjectController {
         CollectionModel<ProjectDTO> resource = CollectionModel.of(projectDTOs, selfLink, rootLink());
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
+    }
+
+
+    /**
+     * PATCH endpoint for opening projects
+     *
+     * @param id Id value of opened project
+     * @return JSON response containing updated project
+     */
+    @PatchMapping(value = "/{id}/open", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectDTO> openProject(@PathVariable Long id) {
+
+        ProjectDTO projectDTO = projectService.openProject(id);
+
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .openProject(id)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
+
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+    }
+
+    /**
+     * PATCH endpoint for closing projects
+     *
+     * @param id Id value of closed project
+     * @return JSON response containing updated project
+     */
+    @PatchMapping(value = "/{id}/close", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectDTO> closeProject(@PathVariable Long id) {
+
+        ProjectDTO projectDTO = projectService.closeProject(id);
+
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .closeProject(id)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
+
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+    }
+
+    /**
+     * PATCH endpoint for finishing projects
+     *
+     * @param id Id value of finished project
+     * @return JSON response containing updated project
+     */
+    @PatchMapping(value = "/{id}/finish", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectDTO> finishProject(@PathVariable Long id) {
+
+        ProjectDTO projectDTO = projectService.finishProject(id);
+
+        Link selfLink = linkTo(methodOn(ProjectController.class)
+                .finishProject(id)).withRel(RESOURCE_PATH_LINK);
+
+        projectDTO.add(rootLink(), selfLink);
+
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 
     /**

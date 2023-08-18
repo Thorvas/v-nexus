@@ -195,17 +195,21 @@ public class RequestService {
 
         Project foundProject = projectService.findProject(projectId);
 
-        if (foundProject.getProjectVolunteers().contains(volunteerService.getLoggedVolunteer())) {
-            VolunteerRequest newRequest = VolunteerRequest.builder()
-                    .requestReceiver(foundProject.getOwnerVolunteer())
-                    .requestSender(this.volunteerService.getLoggedVolunteer())
-                    .requestedProject(foundProject)
-                    .status(RequestStatus.PENDING)
-                    .build();
+        if (projectService.isProjectOpen(foundProject)) {
+            if (foundProject.getProjectVolunteers().contains(volunteerService.getLoggedVolunteer())) {
+                VolunteerRequest newRequest = VolunteerRequest.builder()
+                        .requestReceiver(foundProject.getOwnerVolunteer())
+                        .requestSender(this.volunteerService.getLoggedVolunteer())
+                        .requestedProject(foundProject)
+                        .status(RequestStatus.PENDING)
+                        .build();
 
-            requestRepository.save(newRequest);
+                requestRepository.save(newRequest);
 
-            return requestMapper.mapRequestToDTO(newRequest);
+                return requestMapper.mapRequestToDTO(newRequest);
+            }
+
+            throw new WrongStatusException("Project doesn't accept any new participants");
         }
 
         throw new InsufficientPermissionsException("You already participate in this project");
@@ -279,13 +283,17 @@ public class RequestService {
         if ((this.isVolunteerReceiver(request, volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer()))) {
             if (volunteerService.getLoggedVolunteer().getOwnedProjects().contains(request.getRequestedProject())) {
                 if (this.hasPendingStatus(request)) {
-                    request.getRequestedProject().addVolunteerToProject(request.getRequestSender());
-                    request.setStatus(RequestStatus.ACCEPTED);
+                    if (!projectService.isProjectFull(request.getRequestedProject())) {
+                        request.getRequestedProject().addVolunteerToProject(request.getRequestSender());
+                        request.setStatus(RequestStatus.ACCEPTED);
 
-                    projectRepository.save(request.getRequestedProject());
-                    requestRepository.save(request);
+                        projectRepository.save(request.getRequestedProject());
+                        requestRepository.save(request);
 
-                    return requestMapper.mapRequestToDTO(request);
+                        return requestMapper.mapRequestToDTO(request);
+                    }
+
+                    throw new WrongStatusException("Project is already full");
                 }
 
                 throw new WrongStatusException("Request doesn't have pending status");

@@ -5,10 +5,7 @@ import com.example.demo.Category.Category;
 import com.example.demo.Category.CategoryDTO;
 import com.example.demo.Category.CategoryMapper;
 import com.example.demo.Category.CategoryService;
-import com.example.demo.Error.CollectionEmptyException;
-import com.example.demo.Error.EntityNotPresentInCollectionException;
-import com.example.demo.Error.InsufficientPermissionsException;
-import com.example.demo.Error.ProjectNotFoundException;
+import com.example.demo.Error.*;
 import com.example.demo.Opinion.Opinion;
 import com.example.demo.Opinion.OpinionDTO;
 import com.example.demo.Opinion.OpinionMapper;
@@ -73,6 +70,134 @@ public class ProjectService {
         }
 
         throw new ProjectNotFoundException("Requested project could not be found.");
+    }
+
+    /**
+     * Sets project's status to FINISHED
+     *
+     * @param id Id value of edited project
+     * @return ProjectDTO of edited project
+     */
+    public ProjectDTO finishProject(Long id) {
+
+        Project project = findProject(id);
+
+        if (!this.isProjectFinished(project)) {
+            if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+
+                project.setProjectStatus(ProjectStatus.STATUS_CLOSED);
+                projectRepository.save(project);
+
+                return projectMapper.mapProjectToDTO(project);
+            }
+            throw new InsufficientPermissionsException("You are not an owner of project and you can't finish it");
+
+        }
+
+        throw new WrongStatusException("You can't close project that is not open");
+    }
+
+    /**
+     * Sets project's status to CLOSED
+     *
+     * @param id Id value of edited project
+     * @return ProjectDTO of edited project
+     */
+    public ProjectDTO closeProject(Long id) {
+
+        Project project = findProject(id);
+
+        if (this.isProjectClosed(project)) {
+            if (!this.isProjectFinished(project)) {
+                if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+                    project.setProjectStatus(ProjectStatus.STATUS_CLOSED);
+                    projectRepository.save(project);
+
+                    return projectMapper.mapProjectToDTO(project);
+                }
+                throw new InsufficientPermissionsException("You are not an owner of project and you can't close it");
+
+            }
+
+            throw new WrongStatusException("Project is already finished");
+        }
+
+        throw new WrongStatusException("You can't close project that is not open");
+    }
+
+    /**
+     * Checks whether project capacity is full
+     *
+     * @param project Inspected project
+     * @return Boolean result of check
+     */
+    public boolean isProjectFull(Project project) {
+
+        long participants = project.getProjectVolunteers().stream().count();
+
+        return participants >= project.getVolunteerCapacity();
+    }
+
+
+    /**
+     * Sets project's status to OPEN
+     *
+     * @param id Id value of edited project
+     * @return ProjectDTO of edited project
+     */
+    public ProjectDTO openProject(Long id) {
+
+        Project project = findProject(id);
+
+        if (this.isProjectOpen(project)) {
+            if (!this.isProjectFinished(project)) {
+                if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+                    project.setProjectStatus(ProjectStatus.STATUS_OPEN);
+                    projectRepository.save(project);
+
+                    return projectMapper.mapProjectToDTO(project);
+                }
+
+                throw new InsufficientPermissionsException("You are not an owner of project and you can't open it");
+            }
+
+            throw new WrongStatusException("Project is already finished");
+        }
+
+        throw new WrongStatusException("You can't open project that is not closed");
+    }
+
+    /**
+     * Checks whether project has open status
+     *
+     * @param project Inspected project
+     * @return Boolean value containing result of comparison
+     */
+    public boolean isProjectOpen(Project project) {
+
+        return project.getProjectStatus().equals(ProjectStatus.STATUS_OPEN);
+    }
+
+    /**
+     * Checks whether project has closed status
+     *
+     * @param project Inspected project
+     * @return Boolean value containing result of comparison
+     */
+    public boolean isProjectClosed(Project project) {
+
+        return project.getProjectStatus().equals(ProjectStatus.STATUS_CLOSED);
+    }
+
+    /**
+     * Checks whether project has finished status
+     *
+     * @param project Inspected project
+     * @return Boolean value containing result of comparison
+     */
+    public boolean isProjectFinished(Project project) {
+
+        return project.getProjectStatus().equals(ProjectStatus.STATUS_FINISHED);
     }
 
     /**
@@ -201,6 +326,7 @@ public class ProjectService {
 
         Project project = modelMapper.map(requestProject, Project.class);
 
+        project.setProjectStatus(ProjectStatus.STATUS_OPEN);
         project.setOwnerVolunteer(volunteerService.getLoggedVolunteer());
         project.addVolunteerToProject(volunteerService.getLoggedVolunteer());
 
@@ -372,7 +498,7 @@ public class ProjectService {
      * @param status Status of project representing whether project is active or not
      * @return List of projects that match with status
      */
-    public List<ProjectDTO> searchProjectsWithStatus(boolean status) {
+    public List<ProjectDTO> searchProjectsWithStatus(ProjectStatus status) {
 
         List<Project> foundProjects = projectRepository.findWithStatus(status);
 

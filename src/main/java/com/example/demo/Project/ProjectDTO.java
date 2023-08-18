@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -45,6 +42,11 @@ public class ProjectDTO extends RepresentationModel<ProjectDTO> {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate projectDate;
 
+    @Min(value = 0)
+    @NotNull(message = "Project capacity cannot be empty.")
+    @JsonProperty(value = "capacity")
+    private Integer capacity;
+
     @Size(min = 3, message = "Project location must be at least 3 characters long.")
     @NotBlank(message = "Project location cannot be empty.")
     @JsonProperty(value = "location")
@@ -52,5 +54,5 @@ public class ProjectDTO extends RepresentationModel<ProjectDTO> {
 
     @JsonProperty(value = "isActive")
     @NotNull(message = "Project status should either be 'true' or 'false'")
-    private Boolean projectStatus;
+    private ProjectStatus projectStatus;
 }

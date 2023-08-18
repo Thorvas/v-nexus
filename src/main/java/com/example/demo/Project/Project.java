@@ -50,8 +50,15 @@ public class Project {
     @Column(name = "project_name")
     private String projectName;
 
+    @Column(name = "project_capacity")
+    private Integer volunteerCapacity;
+
     @Column(name = "project_description")
     private String projectDescription;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "project_status")
+    private ProjectStatus projectStatus;
 
     @Column(name = "project_date")
     @Temporal(TemporalType.DATE)
@@ -71,9 +78,6 @@ public class Project {
 
     @Column(name = "project_location")
     private String projectLocation;
-
-    @Column(name = "project_status")
-    private boolean projectStatus;
 
     @OneToMany(mappedBy = "describedProject")
     private List<Opinion> projectOpinions;
