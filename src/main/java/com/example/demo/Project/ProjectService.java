@@ -85,7 +85,7 @@ public class ProjectService {
         if (!this.isProjectFinished(project)) {
             if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
-                project.setProjectStatus(ProjectStatus.STATUS_CLOSED);
+                project.setProjectStatus(ProjectStatus.STATUS_PROGRESS);
                 projectRepository.save(project);
 
                 return projectMapper.mapProjectToDTO(project);
@@ -103,14 +103,14 @@ public class ProjectService {
      * @param id Id value of edited project
      * @return ProjectDTO of edited project
      */
-    public ProjectDTO closeProject(Long id) {
+    public ProjectDTO progressProject(Long id) {
 
         Project project = findProject(id);
 
         if (this.isProjectClosed(project)) {
             if (!this.isProjectFinished(project)) {
                 if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
-                    project.setProjectStatus(ProjectStatus.STATUS_CLOSED);
+                    project.setProjectStatus(ProjectStatus.STATUS_PROGRESS);
                     projectRepository.save(project);
 
                     return projectMapper.mapProjectToDTO(project);
@@ -186,7 +186,7 @@ public class ProjectService {
      */
     public boolean isProjectClosed(Project project) {
 
-        return project.getProjectStatus().equals(ProjectStatus.STATUS_CLOSED);
+        return project.getProjectStatus().equals(ProjectStatus.STATUS_PROGRESS);
     }
 
     /**

@@ -218,18 +218,18 @@ public class ProjectController {
     }
 
     /**
-     * PATCH endpoint for closing projects
+     * PATCH endpoint for changing projects status to "In progress"
      *
-     * @param id Id value of closed project
+     * @param id Id value of changed project
      * @return JSON response containing updated project
      */
-    @PatchMapping(value = "/{id}/close", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectDTO> closeProject(@PathVariable Long id) {
+    @PatchMapping(value = "/{id}/progress", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProjectDTO> progressProject(@PathVariable Long id) {
 
-        ProjectDTO projectDTO = projectService.closeProject(id);
+        ProjectDTO projectDTO = projectService.progressProject(id);
 
         Link selfLink = linkTo(methodOn(ProjectController.class)
-                .closeProject(id)).withRel(RESOURCE_PATH_LINK);
+                .progressProject(id)).withRel(RESOURCE_PATH_LINK);
 
         projectDTO.add(rootLink(), selfLink);
 
@@ -322,7 +322,7 @@ public class ProjectController {
      * @param volunteerId Long id value of new owner
      * @return JSON response containing updated project
      */
-    @PatchMapping(value = "/{projectId}/change-owner/{volunteerId}")
+    @PatchMapping(value = "/{projectId}/owner/{volunteerId}")
     public ResponseEntity<ProjectDTO> changeProjectOwner(@PathVariable Long projectId,
                                                          @PathVariable Long volunteerId
     ) {
