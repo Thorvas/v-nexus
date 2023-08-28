@@ -192,23 +192,21 @@ public class VolunteerService {
     /**
      * Updates volunteer
      *
-     * @param volunteerRequest VolunteerDTO object representing new data
+     * @param volunteerDTO VolunteerDTO object representing new data
      * @return Updated volunteer
      */
-    public VolunteerDTO updateVolunteer(Long volunteerId, VolunteerDTO volunteerRequest) {
+    public VolunteerDTO updateVolunteer(Long volunteerId, VolunteerDTO volunteerDTO) {
 
         Volunteer sourceVolunteer = this.findVolunteer(volunteerId);
+        volunteerDTO.setId(volunteerId);
 
         if (this.isMatchingVolunteer(sourceVolunteer, this.getLoggedVolunteer()) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
-            Volunteer volunteer = modelMapper.map(volunteerRequest, Volunteer.class);
 
-            volunteer.setId(sourceVolunteer.getId());
+            modelMapper.map(volunteerDTO, sourceVolunteer);
 
-            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteer);
+            repository.save(sourceVolunteer);
 
-            repository.save(volunteer);
-
-            return volunteerDTO;
+            return volunteerMapper.mapVolunteerToDTO(sourceVolunteer);
         }
 
         throw new InsufficientPermissionsException("You are not permitted to update this volunteer's data");

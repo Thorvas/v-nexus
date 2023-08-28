@@ -54,7 +54,7 @@ public class VolunteerDTO extends RepresentationModel<VolunteerDTO> {
     @JsonProperty(value = "reputation")
     private Integer reputation;
 
-    @NotBlank(message = "Interests cannot be empty.")
+    @NotNull(message = "Interests cannot be empty.")
     @JsonProperty(value = "interests")
     private List<String> interests;
 

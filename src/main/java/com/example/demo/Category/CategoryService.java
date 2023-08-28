@@ -141,6 +141,9 @@ public class CategoryService {
         if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
             modelMapper.map(categoryDTO, sourceCategory);
+
+            categoryRepository.save(sourceCategory);
+
             return categoryMapper.mapCategoryToDTO(sourceCategory);
         }
 

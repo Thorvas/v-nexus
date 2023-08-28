@@ -6,8 +6,10 @@ package com.example.demo.User;
  * @author Thorvas
  */
 public enum UserAuthority {
-    READ("AUTHORITY_READ"),
-    WRITE("AUTHORITY_WRITE"),
+    CATEGORY("AUTHORITY_CATEGORY"),
+    OPINION("AUTHORITY_OPINION"),
+    PROJECT("AUTHORITY_PROJECT"),
+    VOLUNTEER("AUTHORITY_VOLUNTEER"),
     ADMIN("AUTHORITY_ADMIN");
 
     private final String authority;

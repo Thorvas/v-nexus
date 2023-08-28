@@ -9,8 +9,8 @@ import java.util.List;
  * @author Thorvas
  */
 public enum UserRole {
-    ROLE_VOLUNTEER(Arrays.asList(UserAuthority.READ, UserAuthority.WRITE)),
-    ROLE_ADMIN(Arrays.asList(UserAuthority.READ, UserAuthority.WRITE, UserAuthority.ADMIN));
+    ROLE_VOLUNTEER(Arrays.asList(UserAuthority.CATEGORY, UserAuthority.OPINION, UserAuthority.VOLUNTEER, UserAuthority.PROJECT)),
+    ROLE_ADMIN(Arrays.asList(UserAuthority.CATEGORY, UserAuthority.OPINION, UserAuthority.ADMIN, UserAuthority.VOLUNTEER, UserAuthority.PROJECT));
 
     private final List<UserAuthority> authorities;
 

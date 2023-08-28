@@ -284,6 +284,7 @@ public class RequestService {
             if (volunteerService.getLoggedVolunteer().getOwnedProjects().contains(request.getRequestedProject())) {
                 if (this.hasPendingStatus(request)) {
                     if (!projectService.isProjectFull(request.getRequestedProject())) {
+
                         request.getRequestedProject().addVolunteerToProject(request.getRequestSender());
                         request.setStatus(RequestStatus.ACCEPTED);
 

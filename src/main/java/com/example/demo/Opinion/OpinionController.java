@@ -32,8 +32,7 @@ public class OpinionController {
 
     private Link rootLink() {
         String ROOT_LINK = "root";
-        return linkTo(methodOn(OpinionController.class)
-                .getAllOpinions()).withRel(ROOT_LINK);
+        return linkTo(methodOn(OpinionController.class).getAllOpinions()).withRel(ROOT_LINK);
     }
 
     /**
@@ -47,8 +46,7 @@ public class OpinionController {
 
         OpinionDTO opinionDTO = opinionService.searchOpinion(id);
 
-        Link selfLink = linkTo(methodOn(OpinionController.class)
-                .getOpinion(id)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(OpinionController.class).getOpinion(id)).withRel(RESOURCE_PATH_LINK);
 
         opinionDTO.add(rootLink(), selfLink);
 
@@ -65,8 +63,7 @@ public class OpinionController {
 
         List<OpinionDTO> opinionDTOs = opinionService.searchAllOpinions();
 
-        Link selfLink = linkTo(methodOn(OpinionController.class)
-                .getAllOpinions()).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(OpinionController.class).getAllOpinions()).withRel(RESOURCE_PATH_LINK);
 
         CollectionModel<OpinionDTO> resource = CollectionModel.of(opinionDTOs, selfLink);
 
@@ -84,8 +81,7 @@ public class OpinionController {
 
         ProjectDTO projectDTO = opinionService.getDescribedProject(id);
 
-        Link selfLink = linkTo(methodOn(OpinionController.class)
-                .getProject(id)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(OpinionController.class).getProject(id)).withRel(RESOURCE_PATH_LINK);
 
         projectDTO.add(rootLink(), selfLink);
 
@@ -103,8 +99,7 @@ public class OpinionController {
 
         VolunteerDTO volunteerDTO = opinionService.getAuthor(id);
 
-        Link selfLink = linkTo(methodOn(OpinionController.class)
-                .getAuthor(id)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(OpinionController.class).getAuthor(id)).withRel(RESOURCE_PATH_LINK);
 
         volunteerDTO.add(rootLink(), selfLink);
 
@@ -119,13 +114,11 @@ public class OpinionController {
      * @return JSON response containing created opinion
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OpinionDTO> postOpinion(@RequestParam(name = "projectId") Long projectId,
-                                                  @Valid @RequestBody OpinionDTO opinion) {
+    public ResponseEntity<OpinionDTO> postOpinion(@RequestParam(name = "projectId") Long projectId, @Valid @RequestBody OpinionDTO opinion) {
 
         OpinionDTO opinionDTO = opinionService.createOpinion(projectId, opinion);
 
-        Link selfLink = linkTo(methodOn(OpinionController.class)
-                .postOpinion(projectId, opinion)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(OpinionController.class).postOpinion(projectId, opinion)).withRel(RESOURCE_PATH_LINK);
 
         opinionDTO.add(rootLink(), selfLink);
 
@@ -143,8 +136,27 @@ public class OpinionController {
 
         OpinionDTO opinionDTO = opinionService.deleteOpinion(id);
 
-        Link selfLink = linkTo(methodOn(OpinionController.class)
-                .deleteOpinion(id)).withRel(RESOURCE_PATH_LINK);
+        Link selfLink = linkTo(methodOn(OpinionController.class).deleteOpinion(id)).withRel(RESOURCE_PATH_LINK);
+
+        opinionDTO.add(rootLink(), selfLink);
+
+        return new ResponseEntity<>(opinionDTO, HttpStatus.OK);
+    }
+
+
+    /**
+     * PATCH endpoint for opinions. Allows users to update their opinions
+     *
+     * @param id      Long id value of updated opinions
+     * @param opinion Updated opinion
+     * @return JSON response containing value of updated opinion
+     */
+    @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OpinionDTO> updateOpinion(@PathVariable Long id, @RequestBody OpinionDTO opinion) {
+
+        OpinionDTO opinionDTO = opinionService.updateOpinion(id, opinion);
+
+        Link selfLink = linkTo(methodOn(OpinionController.class).updateOpinion(id, opinion)).withRel(RESOURCE_PATH_LINK);
 
         opinionDTO.add(rootLink(), selfLink);
 

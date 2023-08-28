@@ -11,6 +11,7 @@ import com.example.demo.Volunteer.Volunteer;
 import com.example.demo.Volunteer.VolunteerDTO;
 import com.example.demo.Volunteer.VolunteerMapper;
 import com.example.demo.Volunteer.VolunteerService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,9 @@ public class OpinionService {
 
     @Autowired
     VolunteerService volunteerService;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @Autowired
     AuthenticationService authenticationService;
@@ -82,9 +86,7 @@ public class OpinionService {
 
         List<Opinion> opinions = repository.findAll();
 
-        return opinions.stream()
-                .map(opinionMapper::mapOpinionToDTO)
-                .toList();
+        return opinions.stream().map(opinionMapper::mapOpinionToDTO).toList();
     }
 
     /**
@@ -121,7 +123,7 @@ public class OpinionService {
 
         Opinion opinion = this.findOpinion(opinionId);
 
-        if (this.isOpinionAuthor(opinion.getAuthor(), volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isOpinionAuthor(volunteerService.getLoggedVolunteer(), opinion) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
 
             repository.delete(opinion);
 
@@ -136,13 +138,13 @@ public class OpinionService {
     /**
      * Checks whether volunteer is author of opinion
      *
-     * @param author First user compared to second one
-     * @param user   Second user compared to first one
+     * @param author  User compared to opinion's author
+     * @param opinion Inspected opinion
      * @return Boolean containing result of comparison
      */
-    public boolean isOpinionAuthor(Volunteer author, Volunteer user) {
+    public boolean isOpinionAuthor(Volunteer author, Opinion opinion) {
 
-        return author.getId().equals(user.getId());
+        return author.getId().equals(opinion.getAuthor().getId());
     }
 
     /**
@@ -155,14 +157,33 @@ public class OpinionService {
     public OpinionDTO createOpinion(Long projectId, OpinionDTO opinionDTO) {
 
         Project project = projectService.findProject(projectId);
-        Opinion opinion = Opinion.builder()
-                .opinion(opinionDTO.getContent())
-                .author(volunteerService.getLoggedVolunteer())
-                .describedProject(project)
-                .build();
+        Opinion opinion = Opinion.builder().opinion(opinionDTO.getContent()).author(volunteerService.getLoggedVolunteer()).describedProject(project).build();
 
         repository.save(opinion);
 
         return opinionMapper.mapOpinionToDTO(opinion);
+    }
+
+    /**
+     * Updates an opinion
+     *
+     * @param opinionId  Long id value of updated opinion
+     * @param opinionDTO OpinionDTO object containing updated data
+     * @return JSON response containing updated DTO object
+     */
+    public OpinionDTO updateOpinion(Long opinionId, OpinionDTO opinionDTO) {
+
+        Opinion updatedOpinion = this.findOpinion(opinionId);
+
+        if (this.isOpinionAuthor(volunteerService.getLoggedVolunteer(), updatedOpinion) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+
+            modelMapper.map(opinionDTO, updatedOpinion);
+
+            repository.save(updatedOpinion);
+
+            return opinionMapper.mapOpinionToDTO(updatedOpinion);
+        }
+
+        throw new InsufficientPermissionsException("You are not permitted to modify this opinion content");
     }
 }

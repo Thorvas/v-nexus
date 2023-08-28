@@ -133,11 +133,11 @@ public class VolunteerController {
      * @return JSON response containing
      */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VolunteerDTO> deleteEntity(@PathVariable Long id) {
+    public ResponseEntity<VolunteerDTO> deleteVolunteer(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = volunteerService.deleteVolunteer(id);
 
-        Link resourceLink = linkTo(methodOn(VolunteerController.class).deleteEntity(id)).withRel(RESOURCE_PATH_LINK);
+        Link resourceLink = linkTo(methodOn(VolunteerController.class).deleteVolunteer(id)).withRel(RESOURCE_PATH_LINK);
 
         volunteerDTO.add(rootLink(), resourceLink);
 
@@ -160,6 +160,6 @@ public class VolunteerController {
 
         volunteerDTO.add(rootLink(), resourceLink);
 
-        return new ResponseEntity<>(volunteerDTO, HttpStatus.OK);
+        return new ResponseEntity<>(volunteerDTO, HttpStatus.CREATED);
     }
 }
