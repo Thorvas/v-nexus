@@ -133,7 +133,7 @@ public class ProjectService {
      */
     public boolean isProjectFull(Project project) {
 
-        long participants = project.getProjectVolunteers().stream().count();
+        int participants = project.getProjectVolunteers().size();
 
         return participants >= project.getVolunteerCapacity();
     }
@@ -324,7 +324,9 @@ public class ProjectService {
      */
     public ProjectDTO createProject(ProjectDTO requestProject) {
 
-        Project project = modelMapper.map(requestProject, Project.class);
+        Project project = new Project();
+
+        modelMapper.map(requestProject, project);
 
         project.setProjectStatus(ProjectStatus.STATUS_OPEN);
         project.setOwnerVolunteer(volunteerService.getLoggedVolunteer());

@@ -194,9 +194,11 @@ public class RequestService {
     public RequestDTO createRequest(Long projectId) {
 
         Project foundProject = projectService.findProject(projectId);
+        Volunteer volunteer = volunteerService.getLoggedVolunteer();
 
         if (projectService.isProjectOpen(foundProject)) {
-            if (foundProject.getProjectVolunteers().contains(volunteerService.getLoggedVolunteer())) {
+            if (!foundProject.getProjectVolunteers().contains(volunteer)) {
+
                 VolunteerRequest newRequest = VolunteerRequest.builder()
                         .requestReceiver(foundProject.getOwnerVolunteer())
                         .requestSender(this.volunteerService.getLoggedVolunteer())
@@ -209,10 +211,10 @@ public class RequestService {
                 return requestMapper.mapRequestToDTO(newRequest);
             }
 
-            throw new WrongStatusException("Project doesn't accept any new participants");
+            throw new InsufficientPermissionsException("You already participate in this project");
         }
+        throw new WrongStatusException("Project doesn't accept any new participants");
 
-        throw new InsufficientPermissionsException("You already participate in this project");
     }
 
     /**

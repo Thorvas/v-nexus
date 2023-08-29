@@ -26,9 +26,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RequestController {
 
     @Autowired
-    private ProjectService projectService;
-
-    @Autowired
     private RequestService requestService;
 
     private final String RESOURCE_PATH_LINK = "resource-path";

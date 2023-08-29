@@ -13,7 +13,7 @@ import org.springframework.hateoas.server.core.Relation;
  * @author Thorvas
  */
 @Data
-@Relation(collectionRelation = "projects", itemRelation = "project")
+@Relation(collectionRelation = "requests", itemRelation = "request")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"

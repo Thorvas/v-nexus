@@ -45,7 +45,7 @@ public class ProjectDTO extends RepresentationModel<ProjectDTO> {
     @Min(value = 0)
     @NotNull(message = "Project capacity cannot be empty.")
     @JsonProperty(value = "capacity")
-    private Integer capacity;
+    private Integer volunteerCapacity;
 
     @Size(min = 3, message = "Project location must be at least 3 characters long.")
     @NotBlank(message = "Project location cannot be empty.")

@@ -1,6 +1,7 @@
 package com.example.demo.ExceptionHandlers;
 
 import com.example.demo.Error.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -168,6 +169,19 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiError> handleExpiredJwtException(Exception e, HttpServletRequest request) {
+
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                e.getMessage(),
+                HttpStatus.FORBIDDEN.value(),
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

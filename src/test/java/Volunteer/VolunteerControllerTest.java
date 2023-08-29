@@ -75,9 +75,14 @@ public class VolunteerControllerTest {
     @Test
     public void getAllVolunteers_shouldReturn200Status() throws Exception {
 
-        mockMvc.perform(get("/api/v1/volunteers")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        VolunteerDTO volunteerDTO = new VolunteerDTO();
+        volunteerDTO.setId(volunteerId);
+
+        when(volunteerService.searchVolunteers()).thenReturn(List.of(volunteerDTO));
+
+        mockMvc.perform(get("/api/v1/volunteers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.volunteers[0].id").value(volunteerId));
     }
 
 

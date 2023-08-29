@@ -47,7 +47,8 @@ public class VolunteerService {
 
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return userDetails.getUserData().getReferencedVolunteer();
+        Volunteer volunteer = this.findVolunteer(userDetails.getUserData().getReferencedVolunteer().getId());
+        return volunteer;
     }
 
     /**
