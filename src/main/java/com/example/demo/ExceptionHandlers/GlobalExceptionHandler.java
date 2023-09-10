@@ -2,6 +2,7 @@ package com.example.demo.ExceptionHandlers;
 
 import com.example.demo.Error.*;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -171,19 +172,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ApiError> handleExpiredJwtException(Exception e, HttpServletRequest request) {
-
-        ApiError apiError = new ApiError(
-                request.getRequestURI(),
-                e.getMessage(),
-                HttpStatus.FORBIDDEN.value(),
-                LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
-    }
-
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiError> handleMethodNotSupportedException(Exception e, HttpServletRequest request) {
 
@@ -223,6 +211,34 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiError> handleExpiredJwtException(ExpiredJwtException e,
+                                                              HttpServletRequest request) {
+
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                e.getMessage(),
+                HttpStatus.UNAUTHORIZED.value(),
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ApiError> handleSignatureException(SignatureException e,
+                                                             HttpServletRequest request) {
+
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgument(Exception e,
                                                           HttpServletRequest request) {
@@ -258,11 +274,11 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
                 e.getMessage(),
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.FORBIDDEN.value(),
                 LocalDateTime.now()
         );
 
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

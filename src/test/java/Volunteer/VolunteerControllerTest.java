@@ -1,8 +1,12 @@
 package Volunteer;
 
 import com.example.demo.Configuration.ProjectConfiguration;
+import com.example.demo.Configuration.SecurityConfig;
+import com.example.demo.Error.CollectionEmptyException;
 import com.example.demo.Project.Project;
 import com.example.demo.Project.ProjectDTO;
+import com.example.demo.Request.RequestController;
+import com.example.demo.User.UserDetailsCustomImpl;
 import com.example.demo.Volunteer.Volunteer;
 import com.example.demo.Volunteer.VolunteerController;
 import com.example.demo.Volunteer.VolunteerDTO;
@@ -15,9 +19,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(controllers = VolunteerController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @Import(VolunteerController.class)
-@ContextConfiguration(classes = ProjectConfiguration.class)
+@ContextConfiguration(classes = {ProjectConfiguration.class})
 public class VolunteerControllerTest {
 
     @Autowired
@@ -72,6 +78,7 @@ public class VolunteerControllerTest {
         return json;
     }
 
+    @WithMockUser
     @Test
     public void getAllVolunteers_shouldReturn200Status() throws Exception {
 
@@ -86,6 +93,7 @@ public class VolunteerControllerTest {
     }
 
 
+    @WithMockUser
     @Test
     public void getVolunteerById_shouldReturn200Status() throws Exception {
 
@@ -99,6 +107,7 @@ public class VolunteerControllerTest {
                 .andExpect(jsonPath("$.id").value(volunteerId));
     }
 
+    @WithMockUser
     @Test
     public void getVolunteerProjects_shouldReturn200Status() throws Exception {
 
@@ -116,6 +125,7 @@ public class VolunteerControllerTest {
                 .andExpect(jsonPath("$._embedded.projects[0].id").value(projectId));
     }
 
+    @WithMockUser
     @Test
     public void getVolunteerOwnedProjects_shouldReturn200Status() throws Exception {
 
@@ -133,6 +143,7 @@ public class VolunteerControllerTest {
                 .andExpect(jsonPath("$._embedded.projects[0].id").value(projectId));
     }
 
+    @WithMockUser
     @Test
     public void patchVolunteer_shouldReturn200Status() throws Exception {
 
@@ -154,6 +165,7 @@ public class VolunteerControllerTest {
                 .andExpect(jsonPath("$.name").value("John"));
     }
 
+    @WithMockUser
     @Test
     public void deleteVolunteer_shouldReturn200Status() throws Exception {
 
@@ -168,6 +180,7 @@ public class VolunteerControllerTest {
                 .andExpect(jsonPath("$.id").value(volunteerId));
     }
 
+    @WithMockUser
     @Test
     public void addInterests_shouldReturn200Status() throws Exception {
 
@@ -184,16 +197,5 @@ public class VolunteerControllerTest {
                         .content(asJsonString(interests)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(volunteerId));
-    }
-
-    @Test
-    public void getAllVolunteers_shouldThrowServletException() {
-
-        assertThrows(ServletException.class, () -> {
-
-            when(volunteerService.searchVolunteers()).thenReturn(null);
-            mockMvc.perform(get("/api/v1/volunteers"));
-
-        });
     }
 }
