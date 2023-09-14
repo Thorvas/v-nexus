@@ -3,6 +3,9 @@ package com.example.demo.Request;
 import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Project.ProjectService;
 import com.example.demo.Volunteer.VolunteerDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -22,6 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @author Thorvas
  */
 @RestController
+@Tag(name = "Requests")
 @RequestMapping("/api/v1/requests")
 public class RequestController {
 
@@ -43,6 +47,7 @@ public class RequestController {
      * @return JSON response containing created request
      */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Posts request", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<RequestDTO> createRequest(@RequestParam("projectId") Long id) {
 
         RequestDTO requestDTO = requestService.createRequest(id);
@@ -62,6 +67,7 @@ public class RequestController {
      * @return JSON response containing retrieved requests
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves all requests", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<RequestDTO>> getAllRequests() {
 
         List<RequestDTO> requestDTOs = requestService.searchAllRequests();
@@ -83,6 +89,7 @@ public class RequestController {
      * @return JSON response containing returned request
      */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves specific request", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<RequestDTO> getSpecificRequest(@PathVariable Long id) {
 
         RequestDTO requestDTO = requestService.searchRequest(id);
@@ -102,6 +109,7 @@ public class RequestController {
      * @return JSON response containing deleted request
      */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Deletes request", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<RequestDTO> deleteRequest(@PathVariable Long id) {
 
         RequestDTO requestDTO = requestService.deleteRequest(id);
@@ -119,6 +127,7 @@ public class RequestController {
      * @return JSON response containing volunteer that is assumed to be request sender
      */
     @GetMapping(value = "/{id}/sender", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves sender of request", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> getRequestSender(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = requestService.getRequestSender(id);
@@ -136,6 +145,7 @@ public class RequestController {
      * @return JSON response containing volunteer that is assumed to be request receiver
      */
     @GetMapping(value = "/{id}/receiver", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves receiver of request", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> getRequestReceiver(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = requestService.getRequestReceiver(id);
@@ -153,6 +163,7 @@ public class RequestController {
      * @return JSON response containing project associated with request
      */
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves project associated with request", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> getRequestProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = requestService.getRequestedProject(id);
@@ -164,12 +175,13 @@ public class RequestController {
     }
 
     /**
-     * PATCH endpoint for accepting the request. It is accessible by receiver of request or administrator
+     * PUT endpoint for accepting the request. It is accessible by receiver of request or administrator
      *
      * @param requestId Long id value of accepted request
      * @return JSON response containing accepted request
      */
-    @PatchMapping(value = "/{id}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Accepts request", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<RequestDTO> acceptRequest(@PathVariable("id") Long requestId) {
 
         RequestDTO requestDTO = requestService.acceptRequest(requestId);
@@ -181,12 +193,13 @@ public class RequestController {
     }
 
     /**
-     * PATCH endpoint for declining the request. It is accessible by receiver of request or administrator
+     * PUT endpoint for declining the request. It is accessible by receiver of request or administrator
      *
      * @param requestId Long id value of declined request
      * @return JSON response containing declined request
      */
-    @PatchMapping(value = "/{id}/decline", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/decline", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Declines request", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<RequestDTO> declineRequest(@PathVariable("id") Long requestId) {
 
         RequestDTO requestDTO = requestService.declineRequest(requestId);

@@ -2,6 +2,9 @@ package com.example.demo.Opinion;
 
 import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Volunteer.VolunteerDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -22,6 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @author Thorvas
  */
 @RestController
+@Tag(name = "Opinions")
 @RequestMapping("/api/v1/opinions")
 public class OpinionController {
 
@@ -42,6 +46,7 @@ public class OpinionController {
      * @return JSON response containing retrieved opinion
      */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves specific opinion", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<OpinionDTO> getOpinion(@PathVariable Long id) {
 
         OpinionDTO opinionDTO = opinionService.searchOpinion(id);
@@ -59,6 +64,7 @@ public class OpinionController {
      * @return JSON response containing retrieved opinions
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves list of opinons", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<OpinionDTO>> getAllOpinions() {
 
         List<OpinionDTO> opinionDTOs = opinionService.searchAllOpinions();
@@ -77,6 +83,7 @@ public class OpinionController {
      * @return JSON response containing described project
      */
     @GetMapping(value = "/{id}/project", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves project related to opinion", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = opinionService.getDescribedProject(id);
@@ -95,6 +102,7 @@ public class OpinionController {
      * @return JSON response containing author as volunteer
      */
     @GetMapping(value = "/{id}/author", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves author of opinion", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> getAuthor(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = opinionService.getAuthor(id);
@@ -114,6 +122,7 @@ public class OpinionController {
      * @return JSON response containing created opinion
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Posts an opinion", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<OpinionDTO> postOpinion(@RequestParam(name = "projectId") Long projectId, @Valid @RequestBody OpinionDTO opinion) {
 
         OpinionDTO opinionDTO = opinionService.createOpinion(projectId, opinion);
@@ -132,6 +141,7 @@ public class OpinionController {
      * @return JSON response containing deleted opinion
      */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Deletes an opinion", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<OpinionDTO> deleteOpinion(@PathVariable Long id) {
 
         OpinionDTO opinionDTO = opinionService.deleteOpinion(id);
@@ -145,13 +155,14 @@ public class OpinionController {
 
 
     /**
-     * PATCH endpoint for opinions. Allows users to update their opinions
+     * PUT endpoint for opinions. Allows users to update their opinions
      *
      * @param id      Long id value of updated opinions
      * @param opinion Updated opinion
      * @return JSON response containing value of updated opinion
      */
-    @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Updates opinion", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<OpinionDTO> updateOpinion(@PathVariable Long id, @RequestBody OpinionDTO opinion) {
 
         OpinionDTO opinionDTO = opinionService.updateOpinion(id, opinion);

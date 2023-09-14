@@ -1,6 +1,9 @@
 package com.example.demo.Volunteer;
 
 import com.example.demo.Project.ProjectDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -21,6 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @author Thorvas
  */
 @RestController
+@Tag(name = "Volunteers")
 @RequestMapping("/api/v1/volunteers")
 public class VolunteerController {
 
@@ -41,6 +45,7 @@ public class VolunteerController {
      * @return JSON response containing list of all volunteers
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Returns list of volunteers", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<VolunteerDTO>> getVolunteers() {
 
         List<VolunteerDTO> volunteerDTOs = volunteerService.searchVolunteers();
@@ -60,6 +65,7 @@ public class VolunteerController {
      * @return JSON response containing retrieved volunteer
      */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Returns specific volunteer", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> getVolunteer(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = volunteerService.searchVolunteer(id);
@@ -76,6 +82,7 @@ public class VolunteerController {
      * @return JSON response containing list of retrieved projects
      */
     @GetMapping(value = "/{id}/projects", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Returns projects associated with volunteer", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<ProjectDTO>> getProjects(@PathVariable Long id) {
 
         List<ProjectDTO> projectDTOs = volunteerService.getParticipatingProjects(id);
@@ -95,6 +102,7 @@ public class VolunteerController {
      * @return JSON response containing list of projects owned by volunteer
      */
     @GetMapping(value = "/{id}/projects/owned", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Returns list of projects owned by volunteer", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<ProjectDTO>> getOwnedProjects(@PathVariable Long id) {
 
         List<ProjectDTO> projectDTOs = volunteerService.getOwnedProjects(id);
@@ -108,12 +116,13 @@ public class VolunteerController {
     }
 
     /**
-     * PATCH endpoint for volunteers
+     * PUT endpoint for volunteers
      *
      * @param volunteer Long id value of updated volunteer
      * @return JSON response containing updated volunteer
      */
-    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Updates volunteer", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> updateVolunteer(@PathVariable Long id,
                                                         @RequestBody @Valid VolunteerDTO volunteer) {
 
@@ -133,6 +142,7 @@ public class VolunteerController {
      * @return JSON response containing
      */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Deletes volunteer", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> deleteVolunteer(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = volunteerService.deleteVolunteer(id);
@@ -152,6 +162,7 @@ public class VolunteerController {
      * @return JSON response containing updated volunteer
      */
     @PostMapping(value = "/{id}/interests", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Creates interests for volunteer", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> addInterests(@Valid @RequestBody List<String> interests, @PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = volunteerService.updateInterests(id, interests);

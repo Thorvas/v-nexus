@@ -5,6 +5,9 @@ import com.example.demo.Category.CategoryService;
 import com.example.demo.Opinion.OpinionDTO;
 import com.example.demo.Volunteer.VolunteerDTO;
 import com.example.demo.Volunteer.VolunteerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -26,6 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @author Thorvas
  */
 @RestController
+@Tag(name = "Projects")
 @RequestMapping("/api/v1/projects")
 public class ProjectController {
 
@@ -51,6 +55,7 @@ public class ProjectController {
      * @return JSON response containing published project
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Posts project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> saveProject(@Valid @RequestBody ProjectDTO project) {
 
         ProjectDTO projectDTO = projectService.createProject(project);
@@ -70,6 +75,7 @@ public class ProjectController {
      * @return JSON response containing list of existing projects
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves list of existing projects", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<ProjectDTO>> listProjects() {
 
         List<ProjectDTO> projectDTOs = projectService.searchAllProjects();
@@ -88,6 +94,7 @@ public class ProjectController {
      * @return JSON response containing retrieved project
      */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves specific project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = projectService.searchProject(id);
@@ -108,6 +115,7 @@ public class ProjectController {
      * @return JSON response containing list of volunteers that participate in project
      */
     @GetMapping(value = "/{id}/volunteers", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves participants of project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<VolunteerDTO>> getVolunteers(@PathVariable Long id) {
 
         List<VolunteerDTO> volunteerDTOs = projectService.getVolunteers(id);
@@ -127,6 +135,7 @@ public class ProjectController {
      * @return JSON response containing volunteer being owner of inspected project
      */
     @GetMapping(value = "/{id}/owner", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves the owner of project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> getOwner(@PathVariable Long id) {
 
         VolunteerDTO volunteerDTO = projectService.getOwner(id);
@@ -146,6 +155,7 @@ public class ProjectController {
      * @return JSON response containing list of opinions that are regarding certain project
      */
     @GetMapping(value = "/{id}/opinions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves list of opinions related with project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<OpinionDTO>> getOpinions(@PathVariable Long id) {
 
 
@@ -166,6 +176,7 @@ public class ProjectController {
      * @return JSON response containing list of projects that are located within specified location
      */
     @GetMapping(value = "/location/{location}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves list of projects in specified location", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<ProjectDTO>> getProjectsWithLocation(@PathVariable String location) {
 
         List<ProjectDTO> projectDTOs = projectService.searchProjectsWithLocation(location);
@@ -185,6 +196,7 @@ public class ProjectController {
      * @return JSON response containing list of projects that are active or inactive
      */
     @GetMapping(value = "/status/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves projects with status", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<ProjectDTO>> getProjectsWithStatus(@PathVariable ProjectStatus status) {
 
         List<ProjectDTO> projectDTOs = projectService.searchProjectsWithStatus(status);
@@ -199,12 +211,13 @@ public class ProjectController {
 
 
     /**
-     * PATCH endpoint for opening projects
+     * PUT endpoint for opening projects
      *
      * @param id Id value of opened project
      * @return JSON response containing updated project
      */
-    @PatchMapping(value = "/{id}/open", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/open", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Sets project's state to open", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> openProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = projectService.openProject(id);
@@ -218,12 +231,13 @@ public class ProjectController {
     }
 
     /**
-     * PATCH endpoint for changing projects status to "In progress"
+     * PUT endpoint for changing projects status to "In progress"
      *
      * @param id Id value of changed project
      * @return JSON response containing updated project
      */
-    @PatchMapping(value = "/{id}/progress", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/progress", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Sets project's state to being in progress", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> progressProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = projectService.progressProject(id);
@@ -237,12 +251,13 @@ public class ProjectController {
     }
 
     /**
-     * PATCH endpoint for finishing projects
+     * PUT endpoint for finishing projects
      *
      * @param id Id value of finished project
      * @return JSON response containing updated project
      */
-    @PatchMapping(value = "/{id}/finish", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/finish", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Sets project's state to being finished", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> finishProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = projectService.finishProject(id);
@@ -262,6 +277,7 @@ public class ProjectController {
      * @return JSON response containing list of categories associated with project
      */
     @GetMapping(value = "/{id}/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves categories associated with project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<CategoryDTO>> getCategories(@PathVariable Long id) {
 
         List<CategoryDTO> categories = projectService.searchCategories(id);
@@ -282,6 +298,7 @@ public class ProjectController {
      * @return JSON response containing list of projects that match with specified date
      */
     @GetMapping(value = "/date/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieves projects that are matching with date", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<ProjectDTO>> getProjectsWithDate(@PathVariable LocalDate date) {
 
         List<ProjectDTO> projectDTOs = projectService.searchProjectsWithDate(date);
@@ -295,13 +312,14 @@ public class ProjectController {
     }
 
     /**
-     * PATCH endpoint for projects. It updates current project with data provided in request
+     * PUT endpoint for projects. It updates current project with data provided in request
      *
      * @param project project that will substitute existing project
      * @param id      Long id value of updated project
      * @return JSON response containing updated project
      */
-    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Updates project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> patchProject(@Valid @RequestBody ProjectDTO project,
                                                    @PathVariable Long id) {
 
@@ -316,13 +334,14 @@ public class ProjectController {
     }
 
     /**
-     * PATCH endpoint for changing owner of project
+     * PUT endpoint for changing owner of project
      *
      * @param projectId   Long id value of updated project
      * @param volunteerId Long id value of new owner
      * @return JSON response containing updated project
      */
-    @PatchMapping(value = "/{projectId}/owner/{volunteerId}")
+    @PutMapping(value = "/{projectId}/owner/{volunteerId}")
+    @Operation(summary = "Changes owner of project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> changeProjectOwner(@PathVariable Long projectId,
                                                          @PathVariable Long volunteerId
     ) {
@@ -345,6 +364,7 @@ public class ProjectController {
      * @return JSON response containing updated project
      */
     @PostMapping(value = "/{projectId}/add-category/{categoryId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Adds category to project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CategoryDTO> addCategoryToProject(@PathVariable Long projectId,
                                                             @PathVariable Long categoryId
     ) {
@@ -366,7 +386,8 @@ public class ProjectController {
      * @param categoryId Long id value of removed category
      * @return JSON response containing updated project
      */
-    @DeleteMapping(value = "/{projectId}/remove-category/{categoryId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{projectId}/category/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Removes category from project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CategoryDTO> removeCategoryFromProject(@PathVariable Long projectId,
                                                                  @PathVariable Long categoryId
     ) {
@@ -389,6 +410,7 @@ public class ProjectController {
      * @return JSON response containing deleted project
      */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Deletes project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ProjectDTO> deleteProject(@PathVariable Long id) {
 
         ProjectDTO projectDTO = projectService.deleteProject(id);
@@ -409,6 +431,7 @@ public class ProjectController {
      * @return JSON response containing updated project
      */
     @PostMapping(value = "/{projectId}/volunteers/{volunteerId}")
+    @Operation(summary = "Adds volunteer to project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> addVolunteerToProject(@PathVariable("projectId") Long projectId,
                                                               @PathVariable("volunteerId") Long volunteerId) {
 
@@ -430,6 +453,7 @@ public class ProjectController {
      * @return JSON response containing edited project
      */
     @DeleteMapping(value = "/{projectId}/volunteers/{volunteerId}")
+    @Operation(summary = "Removes volunteer from project", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<VolunteerDTO> removeVolunteerFromProject(@PathVariable("projectId") Long projectId,
                                                                    @PathVariable("volunteerId") Long volunteerId) {
 

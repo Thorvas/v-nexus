@@ -1,5 +1,8 @@
 package com.example.demo.Authentication;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Thorvas
  */
 @RestController
+@Tag(name = "Authentication")
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
@@ -35,6 +39,7 @@ public class AuthenticationController {
      * @return created JWT token based on provided credentials
      */
     @PostMapping(value = "/register")
+    @Operation(summary = "Allows user to register")
     public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody AuthenticationRequest request) {
 
         AuthenticationResponse response = authenticationService.register(request).orElseThrow(() -> new IllegalArgumentException(USER_EXISTS_ERROR));
@@ -48,6 +53,7 @@ public class AuthenticationController {
      * @return created JWT token based on provided credentials
      */
     @PostMapping(value = "/login")
+    @Operation(summary = "Allows user to login")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
 
         AuthenticationResponse response = authenticationService.login(request).orElseThrow(() -> new BadCredentialsException(INCORRECT_CREDENTIALS_ERROR));

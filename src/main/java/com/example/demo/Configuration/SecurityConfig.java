@@ -52,7 +52,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**"),
                                 AntPathRequestMatcher.antMatcher("/api/v1/auth/**"),
-                                AntPathRequestMatcher.antMatcher("/error")).permitAll()
+                                AntPathRequestMatcher.antMatcher("/error"),
+                                AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
+                                AntPathRequestMatcher.antMatcher("/v3/api-docs/**")).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(delegatingAuthenticationEntryPoint))

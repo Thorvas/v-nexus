@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -52,13 +54,19 @@ public class AuthenticationService {
     public Optional<AuthenticationResponse> register(AuthenticationRequest request) {
 
         Volunteer newVolunteer = new Volunteer();
+        newVolunteer.setName("Blank");
+        newVolunteer.setSurname("Blank");
+        newVolunteer.setDateOfBirth(LocalDate.of(2000, 12, 12));
+        newVolunteer.setContact("Blank");
+        newVolunteer.setReputation(0);
+        newVolunteer.setInterests(List.of("Blank"));
 
         volunteerRepository.save(newVolunteer);
 
         UserData userData = UserData.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(UserRole.ROLE_ADMIN)
+                .role(UserRole.ROLE_VOLUNTEER)
                 .isEnabled(true)
                 .isAccountNonExpired(true)
                 .isCredentialsNonExpired(true)
