@@ -1,13 +1,10 @@
 package com.example.demo.Volunteer;
 
-import com.example.demo.Authentication.AuthenticationService;
 import com.example.demo.Error.CollectionEmptyException;
 import com.example.demo.Error.InsufficientPermissionsException;
 import com.example.demo.Error.VolunteerNotFoundException;
 import com.example.demo.Project.ProjectDTO;
-import com.example.demo.Project.ProjectMapper;
 import com.example.demo.User.CustomUserDetails;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
