@@ -18,44 +18,44 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
-public class UserData {
+    public class UserData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(name = "username", unique = true)
-    private String username;
+        @Column(name = "username", unique = true)
+        private String username;
 
-    @Column(name = "password")
-    private String password;
+        @Column(name = "password")
+        private String password;
 
-    @Column(name = "is_active")
-    private boolean isActive;
+        @Column(name = "is_active")
+        private boolean isActive;
 
-    @Column(name = "is_unlocked")
-    private boolean isAccountNonLocked;
+        @Column(name = "is_unlocked")
+        private boolean isAccountNonLocked;
 
-    @Column(name = "is_actual")
-    private boolean isAccountNonExpired;
+        @Column(name = "is_actual")
+        private boolean isAccountNonExpired;
 
-    @Column(name = "credentials_actual")
-    private boolean isCredentialsNonExpired;
+        @Column(name = "credentials_actual")
+        private boolean isCredentialsNonExpired;
 
-    @Column(name = "is_enabled")
-    private boolean isEnabled;
+        @Column(name = "is_enabled")
+        private boolean isEnabled;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private UserRole role;
+        @Enumerated(EnumType.STRING)
+        @Column(name = "role")
+        private UserRole role;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "volunteer_id")
-    private Volunteer referencedVolunteer;
+        @OneToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "volunteer_id")
+        private Volunteer referencedVolunteer;
 
-    public boolean isAdmin() {
+        public boolean isAdmin() {
 
-        return role.equals(UserRole.ROLE_ADMIN);
+            return role.equals(UserRole.ROLE_ADMIN);
+        }
+
     }
-
-}

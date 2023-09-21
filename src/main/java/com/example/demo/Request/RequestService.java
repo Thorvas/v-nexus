@@ -1,15 +1,13 @@
 package com.example.demo.Request;
 
-import com.example.demo.Authentication.AuthenticationService;
 import com.example.demo.Error.CollectionEmptyException;
 import com.example.demo.Error.InsufficientPermissionsException;
 import com.example.demo.Error.RequestNotFoundException;
 import com.example.demo.Error.WrongStatusException;
-import com.example.demo.Project.*;
+import com.example.demo.Project.Project;
+import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Volunteer.Volunteer;
 import com.example.demo.Volunteer.VolunteerDTO;
-import com.example.demo.Volunteer.VolunteerMapper;
-import com.example.demo.Volunteer.VolunteerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,25 +26,7 @@ public class RequestService {
     private RequestRepository requestRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
-
-    @Autowired
-    private VolunteerService volunteerService;
-
-    @Autowired
-    private RequestMapper requestMapper;
-
-    @Autowired
-    private VolunteerMapper volunteerMapper;
-
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private ProjectMapper projectMapper;
-
-    @Autowired
-    private ProjectService projectService;
+    RequestServiceFacade requestServiceFacade;
 
 
     /**
@@ -60,7 +40,7 @@ public class RequestService {
 
         if (!foundRequests.isEmpty()) {
             return foundRequests.stream()
-                    .map(request -> requestMapper.mapRequestToDTO(request))
+                    .map(request -> requestServiceFacade.mapRequestToDTO(request))
                     .collect(Collectors.toList());
         }
 
@@ -92,9 +72,9 @@ public class RequestService {
 
         VolunteerRequest request = this.findRequest(requestId);
 
-        if (this.isVolunteerSenderOrReceiver(request, volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isVolunteerSenderOrReceiver(request, requestServiceFacade.getLoggedVolunteer()) || requestServiceFacade.checkIfAdmin(requestServiceFacade.getLoggedVolunteer())) {
 
-            return volunteerMapper.mapVolunteerToDTO(request.getRequestSender());
+            return requestServiceFacade.mapVolunteerToDTO(request.getRequestSender());
         }
 
         throw new InsufficientPermissionsException("You are not permitted to view who is the sender of request.");
@@ -110,9 +90,9 @@ public class RequestService {
 
         VolunteerRequest request = this.findRequest(requestId);
 
-        if (this.isVolunteerSenderOrReceiver(request, volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isVolunteerSenderOrReceiver(request, requestServiceFacade.getLoggedVolunteer()) || requestServiceFacade.checkIfAdmin(requestServiceFacade.getLoggedVolunteer())) {
 
-            return volunteerMapper.mapVolunteerToDTO(request.getRequestSender());
+            return requestServiceFacade.mapVolunteerToDTO(request.getRequestSender());
         }
 
         throw new InsufficientPermissionsException("You are not permitted to view who is the receiver of request.");
@@ -128,11 +108,11 @@ public class RequestService {
 
         VolunteerRequest request = this.findRequest(requestId);
 
-        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (requestServiceFacade.checkIfAdmin(requestServiceFacade.getLoggedVolunteer())) {
 
             requestRepository.delete(request);
 
-            return requestMapper.mapRequestToDTO(request);
+            return requestServiceFacade.mapRequestToDTO(request);
         }
 
         throw new InsufficientPermissionsException("You cannot delete request because you are not an administrator");
@@ -193,22 +173,22 @@ public class RequestService {
      */
     public RequestDTO createRequest(Long projectId) {
 
-        Project foundProject = projectService.findProject(projectId);
-        Volunteer volunteer = volunteerService.getLoggedVolunteer();
+        Project foundProject = requestServiceFacade.findProject(projectId);
+        Volunteer volunteer = requestServiceFacade.getLoggedVolunteer();
 
-        if (projectService.isProjectOpen(foundProject)) {
+        if (requestServiceFacade.isProjectOpen(foundProject)) {
             if (!foundProject.getProjectVolunteers().contains(volunteer)) {
 
                 VolunteerRequest newRequest = VolunteerRequest.builder()
                         .requestReceiver(foundProject.getOwnerVolunteer())
-                        .requestSender(this.volunteerService.getLoggedVolunteer())
+                        .requestSender(this.requestServiceFacade.getLoggedVolunteer())
                         .requestedProject(foundProject)
                         .status(RequestStatus.PENDING)
                         .build();
 
                 requestRepository.save(newRequest);
 
-                return requestMapper.mapRequestToDTO(newRequest);
+                return requestServiceFacade.mapRequestToDTO(newRequest);
             }
 
             throw new InsufficientPermissionsException("You already participate in this project");
@@ -227,7 +207,7 @@ public class RequestService {
 
         VolunteerRequest request = this.findRequest(requestId);
 
-        return requestMapper.mapRequestToDTO(request);
+        return requestServiceFacade.mapRequestToDTO(request);
 
     }
 
@@ -241,7 +221,7 @@ public class RequestService {
 
         VolunteerRequest request = this.findRequest(requestId);
 
-        return projectMapper.mapProjectToDTO(request.getRequestedProject());
+        return requestServiceFacade.mapProjectToDTO(request.getRequestedProject());
     }
 
     /**
@@ -254,13 +234,13 @@ public class RequestService {
 
         VolunteerRequest request = this.findRequest(requestId);
 
-        if (this.isVolunteerReceiver(request, volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
-            if (volunteerService.getLoggedVolunteer().getOwnedProjects().contains(request.getRequestedProject())) {
+        if (this.isVolunteerReceiver(request, requestServiceFacade.getLoggedVolunteer()) || requestServiceFacade.checkIfAdmin(requestServiceFacade.getLoggedVolunteer())) {
+            if (requestServiceFacade.getLoggedVolunteer().getOwnedProjects().contains(request.getRequestedProject())) {
                 if (this.hasPendingStatus(request)) {
                     request.setStatus(RequestStatus.DECLINED);
                     requestRepository.save(request);
 
-                    return requestMapper.mapRequestToDTO(request);
+                    return requestServiceFacade.mapRequestToDTO(request);
                 }
 
                 throw new WrongStatusException("Request doesn't have pending status");
@@ -282,18 +262,18 @@ public class RequestService {
 
         VolunteerRequest request = this.findRequest(requestId);
 
-        if ((this.isVolunteerReceiver(request, volunteerService.getLoggedVolunteer()) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer()))) {
-            if (volunteerService.getLoggedVolunteer().getOwnedProjects().contains(request.getRequestedProject())) {
+        if ((this.isVolunteerReceiver(request, requestServiceFacade.getLoggedVolunteer()) || requestServiceFacade.checkIfAdmin(requestServiceFacade.getLoggedVolunteer()))) {
+            if (requestServiceFacade.getLoggedVolunteer().getOwnedProjects().contains(request.getRequestedProject())) {
                 if (this.hasPendingStatus(request)) {
-                    if (!projectService.isProjectFull(request.getRequestedProject())) {
+                    if (!requestServiceFacade.isProjectFull(request.getRequestedProject())) {
 
                         request.getRequestedProject().addVolunteerToProject(request.getRequestSender());
                         request.setStatus(RequestStatus.ACCEPTED);
 
-                        projectRepository.save(request.getRequestedProject());
+                        requestServiceFacade.saveProject(request.getRequestedProject());
                         requestRepository.save(request);
 
-                        return requestMapper.mapRequestToDTO(request);
+                        return requestServiceFacade.mapRequestToDTO(request);
                     }
 
                     throw new WrongStatusException("Project is already full");

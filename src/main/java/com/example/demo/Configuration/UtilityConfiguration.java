@@ -1,5 +1,6 @@
 package com.example.demo.Configuration;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,14 @@ public class UtilityConfiguration {
     @Autowired
     public UtilityConfiguration(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        return modelMapper;
     }
 
     @Bean

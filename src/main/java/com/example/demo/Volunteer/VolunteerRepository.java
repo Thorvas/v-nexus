@@ -1,6 +1,5 @@
 package com.example.demo.Volunteer;
 
-import com.example.demo.Volunteer.Volunteer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

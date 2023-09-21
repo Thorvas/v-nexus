@@ -71,8 +71,8 @@ public class AuthenticationService {
                 .isAccountNonExpired(true)
                 .isCredentialsNonExpired(true)
                 .isActive(true)
-                .isAccountNonLocked(true)
                 .referencedVolunteer(newVolunteer)
+                .isAccountNonLocked(true)
                 .build();
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {

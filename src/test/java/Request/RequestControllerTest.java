@@ -1,6 +1,5 @@
 package Request;
 
-import com.example.demo.Configuration.ProjectConfiguration;
 import com.example.demo.Project.Project;
 import com.example.demo.Project.ProjectDTO;
 import com.example.demo.Request.RequestController;
@@ -33,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(controllers = RequestController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @Import(RequestController.class)
-@ContextConfiguration(classes = ProjectConfiguration.class)
 public class RequestControllerTest {
 
 

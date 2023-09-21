@@ -1,23 +1,14 @@
 package com.example.demo.Category;
 
-import com.example.demo.Authentication.AuthenticationService;
 import com.example.demo.Error.CategoryNotFoundException;
 import com.example.demo.Error.CollectionEmptyException;
 import com.example.demo.Error.InsufficientPermissionsException;
 import com.example.demo.Project.ProjectDTO;
-import com.example.demo.Project.ProjectMapper;
-import com.example.demo.Volunteer.VolunteerService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Service responsible for category operations
@@ -31,36 +22,22 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private VolunteerService volunteerService;
-
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private ProjectMapper projectMapper;
-
-    @Autowired
-    private CategoryMapper categoryMapper;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    CategoryServiceFacade categoryServiceFacade;
 
     /**
      * Returns list of existing categories
      *
      * @return List of categories
      */
-    public CollectionModel<CategoryDTO> searchCategories() {
+    public List<CategoryDTO> searchCategories() {
 
         List<Category> categories = categoryRepository.findAll();
-        Link selfLink = linkTo(methodOn(CategoryController.class)
-                .retrieveCategories()).withSelfRel();
 
         if (!categories.isEmpty()) {
 
-            return CollectionModel.of(categories.stream()
-                    .map(categoryMapper::mapCategoryToDTO)
-                    .collect(Collectors.toList()), selfLink);
+            return categories.stream()
+                    .map(categoryServiceFacade::mapCategoryToDTO)
+                    .collect(Collectors.toList());
         }
 
         throw new CollectionEmptyException("There are no categories in database");
@@ -76,11 +53,11 @@ public class CategoryService {
 
         Category category = this.findCategory(categoryId);
 
-        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (categoryServiceFacade.checkIfAdmin(categoryServiceFacade.getLoggedVolunteer())) {
 
             categoryRepository.delete(category);
 
-            return categoryMapper.mapCategoryToDTO(category);
+            return categoryServiceFacade.mapCategoryToDTO(category);
         }
 
         throw new InsufficientPermissionsException("You cannot delete categories because you are not an administrator");
@@ -94,7 +71,7 @@ public class CategoryService {
      */
     public CategoryDTO searchCategory(Long id) {
 
-        return categoryMapper.mapCategoryToDTO(this.findCategory(id));
+        return categoryServiceFacade.mapCategoryToDTO(this.findCategory(id));
     }
 
     /**
@@ -108,7 +85,7 @@ public class CategoryService {
         Category category = this.findCategory(categoryId);
 
         return category.getProjectsCategories().stream()
-                .map(projectMapper::mapProjectToDTO)
+                .map(categoryServiceFacade::mapProjectToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -138,13 +115,13 @@ public class CategoryService {
 
         Category sourceCategory = this.findCategory(categoryId);
 
-        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (categoryServiceFacade.checkIfAdmin(categoryServiceFacade.getLoggedVolunteer())) {
 
-            modelMapper.map(categoryDTO, sourceCategory);
+            categoryServiceFacade.mapDTOToCategory(categoryDTO, sourceCategory);
 
             categoryRepository.save(sourceCategory);
 
-            return categoryMapper.mapCategoryToDTO(sourceCategory);
+            return categoryServiceFacade.mapCategoryToDTO(sourceCategory);
         }
 
         throw new InsufficientPermissionsException("You are not permitted to update categories");
@@ -158,7 +135,7 @@ public class CategoryService {
      */
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
 
-        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (categoryServiceFacade.checkIfAdmin(categoryServiceFacade.getLoggedVolunteer())) {
 
             Category category = Category.builder()
                     .categoryName(categoryDTO.getCategoryName())
@@ -168,7 +145,7 @@ public class CategoryService {
 
             categoryRepository.save(category);
 
-            return categoryMapper.mapCategoryToDTO(category);
+            return categoryServiceFacade.mapCategoryToDTO(category);
         }
 
         throw new InsufficientPermissionsException("You are not permitted to create new categories");

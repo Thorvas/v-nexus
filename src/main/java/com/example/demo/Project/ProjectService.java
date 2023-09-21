@@ -1,19 +1,12 @@
 package com.example.demo.Project;
 
-import com.example.demo.Authentication.AuthenticationService;
 import com.example.demo.Category.Category;
 import com.example.demo.Category.CategoryDTO;
-import com.example.demo.Category.CategoryMapper;
-import com.example.demo.Category.CategoryService;
 import com.example.demo.Error.*;
 import com.example.demo.Opinion.Opinion;
 import com.example.demo.Opinion.OpinionDTO;
-import com.example.demo.Opinion.OpinionMapper;
 import com.example.demo.Volunteer.Volunteer;
 import com.example.demo.Volunteer.VolunteerDTO;
-import com.example.demo.Volunteer.VolunteerMapper;
-import com.example.demo.Volunteer.VolunteerService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,31 +23,10 @@ import java.util.stream.Collectors;
 public class ProjectService {
 
     @Autowired
+    private ProjectServiceFacade projectServiceFacade;
+
+    @Autowired
     private ProjectRepository projectRepository;
-
-    @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private VolunteerMapper volunteerMapper;
-
-    @Autowired
-    private VolunteerService volunteerService;
-
-    @Autowired
-    private ProjectMapper projectMapper;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private OpinionMapper opinionMapper;
-
-    @Autowired
-    private CategoryMapper categoryMapper;
-
-    @Autowired
-    private AuthenticationService authenticationService;
 
     /**
      * Searches for project based on id parameter
@@ -83,12 +55,12 @@ public class ProjectService {
         Project project = findProject(id);
 
         if (!this.isProjectFinished(project)) {
-            if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+            if (this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), project) || projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
 
                 project.setProjectStatus(ProjectStatus.STATUS_PROGRESS);
                 projectRepository.save(project);
 
-                return projectMapper.mapProjectToDTO(project);
+                return projectServiceFacade.mapProjectToDTO(project);
             }
             throw new InsufficientPermissionsException("You are not an owner of project and you can't finish it");
 
@@ -109,11 +81,11 @@ public class ProjectService {
 
         if (this.isProjectClosed(project)) {
             if (!this.isProjectFinished(project)) {
-                if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+                if (this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), project) || projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
                     project.setProjectStatus(ProjectStatus.STATUS_PROGRESS);
                     projectRepository.save(project);
 
-                    return projectMapper.mapProjectToDTO(project);
+                    return projectServiceFacade.mapProjectToDTO(project);
                 }
                 throw new InsufficientPermissionsException("You are not an owner of project and you can't close it");
 
@@ -151,11 +123,11 @@ public class ProjectService {
 
         if (this.isProjectOpen(project)) {
             if (!this.isProjectFinished(project)) {
-                if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+                if (this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), project) || projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
                     project.setProjectStatus(ProjectStatus.STATUS_OPEN);
                     projectRepository.save(project);
 
-                    return projectMapper.mapProjectToDTO(project);
+                    return projectServiceFacade.mapProjectToDTO(project);
                 }
 
                 throw new InsufficientPermissionsException("You are not an owner of project and you can't open it");
@@ -210,14 +182,14 @@ public class ProjectService {
     public VolunteerDTO addVolunteerToProject(Long volunteerId, Long projectId) {
 
         Project project = this.findProject(projectId);
-        Volunteer volunteer = volunteerService.findVolunteer(volunteerId);
+        Volunteer volunteer = projectServiceFacade.findVolunteer(volunteerId);
 
-        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
 
             project.addVolunteerToProject(volunteer);
             projectRepository.save(project);
 
-            return volunteerMapper.mapVolunteerToDTO(volunteer);
+            return projectServiceFacade.mapVolunteerToDTO(volunteer);
         }
 
         throw new InsufficientPermissionsException("You cannot add volunteer to project because you are not an administrator.");
@@ -233,14 +205,14 @@ public class ProjectService {
     public CategoryDTO addCategoryToProject(Long projectId, Long categoryId) {
 
         Project project = this.findProject(projectId);
-        Category category = categoryService.findCategory(categoryId);
+        Category category = projectServiceFacade.findCategory(categoryId);
 
-        if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), project) || projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
 
             project.addCategoryToProject(category);
             projectRepository.save(project);
 
-            return categoryMapper.mapCategoryToDTO(category);
+            return projectServiceFacade.mapCategoryToDTO(category);
         }
 
         throw new InsufficientPermissionsException("You cannot add category to project because you are not an owner of project.");
@@ -256,14 +228,14 @@ public class ProjectService {
     public CategoryDTO removeCategoryFromProject(Long projectId, Long categoryId) {
 
         Project project = this.findProject(projectId);
-        Category category = categoryService.findCategory(categoryId);
+        Category category = projectServiceFacade.findCategory(categoryId);
 
-        if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), project) || projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
 
             project.removeCategoryFromProject(category);
             projectRepository.save(project);
 
-            return categoryMapper.mapCategoryToDTO(category);
+            return projectServiceFacade.mapCategoryToDTO(category);
         }
 
         throw new InsufficientPermissionsException("You cannot remove category from project because you are not an owner of project.");
@@ -278,15 +250,15 @@ public class ProjectService {
      */
     public VolunteerDTO removeVolunteerFromProject(Long volunteerId, Long projectId) {
 
-        Volunteer volunteer = volunteerService.findVolunteer(volunteerId);
+        Volunteer volunteer = projectServiceFacade.findVolunteer(volunteerId);
         Project project = this.findProject(projectId);
 
-        if (authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer()) || this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project)) {
+        if (projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer()) || this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), project)) {
 
             project.removeVolunteerFromProject(volunteer);
             projectRepository.save(project);
 
-            return volunteerMapper.mapVolunteerToDTO(volunteer);
+            return projectServiceFacade.mapVolunteerToDTO(volunteer);
         }
 
         throw new InsufficientPermissionsException("You cannot remove volunteer from project because you are not an owner or project.");
@@ -302,15 +274,15 @@ public class ProjectService {
     public ProjectDTO changeOwner(Long volunteerId, Long projectId) {
 
         Project project = this.findProject(projectId);
-        Volunteer volunteer = volunteerService.findVolunteer(volunteerId);
+        Volunteer volunteer = projectServiceFacade.findVolunteer(volunteerId);
 
-        if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), project) || projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
 
             project.setOwnerVolunteer(volunteer);
 
             projectRepository.save(project);
 
-            return projectMapper.mapProjectToDTO(project);
+            return projectServiceFacade.mapProjectToDTO(project);
         }
 
         throw new InsufficientPermissionsException("You cannot change an owner of project because project does not belong to you.");
@@ -326,15 +298,15 @@ public class ProjectService {
 
         Project project = new Project();
 
-        modelMapper.map(requestProject, project);
+        projectServiceFacade.mapDTOToProject(requestProject, project);
 
         project.setProjectStatus(ProjectStatus.STATUS_OPEN);
-        project.setOwnerVolunteer(volunteerService.getLoggedVolunteer());
-        project.addVolunteerToProject(volunteerService.getLoggedVolunteer());
+        project.setOwnerVolunteer(projectServiceFacade.getLoggedVolunteer());
+        project.addVolunteerToProject(projectServiceFacade.getLoggedVolunteer());
 
         projectRepository.save(project);
 
-        return projectMapper.mapProjectToDTO(project);
+        return projectServiceFacade.mapProjectToDTO(project);
     }
 
     /**
@@ -352,7 +324,7 @@ public class ProjectService {
         if (!opinions.isEmpty()) {
 
             return opinions.stream()
-                    .map(opinionMapper::mapOpinionToDTO)
+                    .map(projectServiceFacade::mapOpinionToDTO)
                     .collect(Collectors.toList());
         }
 
@@ -369,7 +341,7 @@ public class ProjectService {
 
         Project project = this.findProject(projectId);
 
-        return volunteerMapper.mapVolunteerToDTO(project.getOwnerVolunteer());
+        return projectServiceFacade.mapVolunteerToDTO(project.getOwnerVolunteer());
     }
 
     /**
@@ -383,7 +355,7 @@ public class ProjectService {
         List<Project> projects = projectRepository.findWithDate(date);
 
         return projects.stream()
-                .map(projectMapper::mapProjectToDTO)
+                .map(projectServiceFacade::mapProjectToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -410,13 +382,13 @@ public class ProjectService {
 
         Project sourceProject = this.findProject(projectId);
 
-        if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), sourceProject) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), sourceProject) || projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
 
-            modelMapper.map(projectDTO, sourceProject);
+            projectServiceFacade.mapDTOToProject(projectDTO, sourceProject);
 
             projectRepository.save(sourceProject);
 
-            return projectMapper.mapProjectToDTO(sourceProject);
+            return projectServiceFacade.mapProjectToDTO(sourceProject);
         }
 
         throw new InsufficientPermissionsException("You cannot update that projects because you are not its owner.");
@@ -435,7 +407,7 @@ public class ProjectService {
         if (!projects.isEmpty()) {
 
             return projects.stream()
-                    .map(projectMapper::mapProjectToDTO)
+                    .map(projectServiceFacade::mapProjectToDTO)
                     .collect(Collectors.toList());
         }
         throw new CollectionEmptyException("Currently there are no projects in database.");
@@ -451,7 +423,7 @@ public class ProjectService {
 
         Project project = this.findProject(id);
 
-        return projectMapper.mapProjectToDTO(project);
+        return projectServiceFacade.mapProjectToDTO(project);
     }
 
     /**
@@ -467,7 +439,7 @@ public class ProjectService {
         if (!project.getProjectVolunteers().isEmpty()) {
 
             return project.getProjectVolunteers().stream()
-                    .map(volunteerMapper::mapVolunteerToDTO)
+                    .map(projectServiceFacade::mapVolunteerToDTO)
                     .collect(Collectors.toList());
         }
 
@@ -487,7 +459,7 @@ public class ProjectService {
         if (!foundProjects.isEmpty()) {
 
             return foundProjects.stream()
-                    .map(projectMapper::mapProjectToDTO)
+                    .map(projectServiceFacade::mapProjectToDTO)
                     .collect(Collectors.toList());
         }
 
@@ -507,7 +479,7 @@ public class ProjectService {
         if (!foundProjects.isEmpty()) {
 
             return foundProjects.stream()
-                    .map(projectMapper::mapProjectToDTO)
+                    .map(projectServiceFacade::mapProjectToDTO)
                     .collect(Collectors.toList());
         }
 
@@ -529,7 +501,7 @@ public class ProjectService {
         if (!categories.isEmpty()) {
 
             return categories.stream()
-                    .map(categoryMapper::mapCategoryToDTO)
+                    .map(projectServiceFacade::mapCategoryToDTO)
                     .toList();
         }
 
@@ -546,11 +518,11 @@ public class ProjectService {
 
         Project project = this.findProject(projectId);
 
-        if (this.isVolunteerProjectOwner(volunteerService.getLoggedVolunteer(), project) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isVolunteerProjectOwner(projectServiceFacade.getLoggedVolunteer(), project) || projectServiceFacade.checkIfAdmin(projectServiceFacade.getLoggedVolunteer())) {
 
             projectRepository.delete(project);
 
-            return projectMapper.mapProjectToDTO(project);
+            return projectServiceFacade.mapProjectToDTO(project);
         }
 
         throw new InsufficientPermissionsException("You cannot delete project because you are not its owner");

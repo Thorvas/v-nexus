@@ -1,17 +1,11 @@
 package com.example.demo.Opinion;
 
-import com.example.demo.Authentication.AuthenticationService;
 import com.example.demo.Error.InsufficientPermissionsException;
 import com.example.demo.Error.OpinionNotFoundException;
 import com.example.demo.Project.Project;
 import com.example.demo.Project.ProjectDTO;
-import com.example.demo.Project.ProjectMapper;
-import com.example.demo.Project.ProjectService;
 import com.example.demo.Volunteer.Volunteer;
 import com.example.demo.Volunteer.VolunteerDTO;
-import com.example.demo.Volunteer.VolunteerMapper;
-import com.example.demo.Volunteer.VolunteerService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,28 +20,10 @@ import java.util.List;
 public class OpinionService {
 
     @Autowired
-    OpinionRepository repository;
+    private OpinionServiceFacade opinionServiceFacade;
 
     @Autowired
-    ProjectService projectService;
-
-    @Autowired
-    OpinionMapper opinionMapper;
-
-    @Autowired
-    ProjectMapper projectMapper;
-
-    @Autowired
-    VolunteerService volunteerService;
-
-    @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
-    AuthenticationService authenticationService;
-
-    @Autowired
-    VolunteerMapper volunteerMapper;
+    OpinionRepository opinionRepository;
 
     /**
      * Searches for opinion in database
@@ -57,8 +33,8 @@ public class OpinionService {
      */
     public Opinion findOpinion(Long id) {
 
-        if (repository.findById(id).isPresent()) {
-            return repository.findById(id).get();
+        if (opinionRepository.findById(id).isPresent()) {
+            return opinionRepository.findById(id).get();
         }
 
         throw new OpinionNotFoundException("Requested opinion could not be found");
@@ -74,7 +50,7 @@ public class OpinionService {
 
         Opinion opinion = this.findOpinion(id);
 
-        return opinionMapper.mapOpinionToDTO(opinion);
+        return opinionServiceFacade.mapOpinionToDTO(opinion);
     }
 
     /**
@@ -84,9 +60,9 @@ public class OpinionService {
      */
     public List<OpinionDTO> searchAllOpinions() {
 
-        List<Opinion> opinions = repository.findAll();
+        List<Opinion> opinions = opinionRepository.findAll();
 
-        return opinions.stream().map(opinionMapper::mapOpinionToDTO).toList();
+        return opinions.stream().map(opinionServiceFacade::mapOpinionToDTO).toList();
     }
 
     /**
@@ -101,7 +77,7 @@ public class OpinionService {
 
         Volunteer author = opinion.getAuthor();
 
-        return volunteerMapper.mapVolunteerToDTO(author);
+        return opinionServiceFacade.mapVolunteerToDTO(author);
     }
 
     public ProjectDTO getDescribedProject(Long opinionId) {
@@ -110,7 +86,7 @@ public class OpinionService {
 
         Project describedProject = opinion.getDescribedProject();
 
-        return projectMapper.mapProjectToDTO(describedProject);
+        return opinionServiceFacade.mapProjectToDTO(describedProject);
     }
 
     /**
@@ -123,11 +99,11 @@ public class OpinionService {
 
         Opinion opinion = this.findOpinion(opinionId);
 
-        if (this.isOpinionAuthor(volunteerService.getLoggedVolunteer(), opinion) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isOpinionAuthor(opinionServiceFacade.getLoggedVolunteer(), opinion) || opinionServiceFacade.checkIfAdmin(opinionServiceFacade.getLoggedVolunteer())) {
 
-            repository.delete(opinion);
+            opinionRepository.delete(opinion);
 
-            return opinionMapper.mapOpinionToDTO(opinion);
+            return opinionServiceFacade.mapOpinionToDTO(opinion);
         }
 
         throw new InsufficientPermissionsException("You cannot delete this opinion because you are not its author");
@@ -156,12 +132,12 @@ public class OpinionService {
      */
     public OpinionDTO createOpinion(Long projectId, OpinionDTO opinionDTO) {
 
-        Project project = projectService.findProject(projectId);
-        Opinion opinion = Opinion.builder().opinion(opinionDTO.getContent()).author(volunteerService.getLoggedVolunteer()).describedProject(project).build();
+        Project project = opinionServiceFacade.findProject(projectId);
+        Opinion opinion = Opinion.builder().opinion(opinionDTO.getContent()).author(opinionServiceFacade.getLoggedVolunteer()).describedProject(project).build();
 
-        repository.save(opinion);
+        opinionRepository.save(opinion);
 
-        return opinionMapper.mapOpinionToDTO(opinion);
+        return opinionServiceFacade.mapOpinionToDTO(opinion);
     }
 
     /**
@@ -175,13 +151,13 @@ public class OpinionService {
 
         Opinion updatedOpinion = this.findOpinion(opinionId);
 
-        if (this.isOpinionAuthor(volunteerService.getLoggedVolunteer(), updatedOpinion) || authenticationService.checkIfAdmin(volunteerService.getLoggedVolunteer())) {
+        if (this.isOpinionAuthor(opinionServiceFacade.getLoggedVolunteer(), updatedOpinion) || opinionServiceFacade.checkIfAdmin(opinionServiceFacade.getLoggedVolunteer())) {
 
-            modelMapper.map(opinionDTO, updatedOpinion);
+            opinionServiceFacade.mapDTOToOpinion(opinionDTO, updatedOpinion);
 
-            repository.save(updatedOpinion);
+            opinionRepository.save(updatedOpinion);
 
-            return opinionMapper.mapOpinionToDTO(updatedOpinion);
+            return opinionServiceFacade.mapOpinionToDTO(updatedOpinion);
         }
 
         throw new InsufficientPermissionsException("You are not permitted to modify this opinion content");

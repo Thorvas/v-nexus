@@ -113,7 +113,7 @@ public class CategoryController {
     @Operation(summary = "Retrieves list of categories", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CollectionModel<CategoryDTO>> retrieveCategories() {
 
-        CollectionModel<CategoryDTO> categoryDTOs = categoryService.searchCategories();
+        CollectionModel<CategoryDTO> categoryDTOs = CollectionModel.of(categoryService.searchCategories());
 
         Link selfLink = linkTo(methodOn(CategoryController.class)
                 .retrieveCategories()).withRel(RESOURCE_PATH_LINK);

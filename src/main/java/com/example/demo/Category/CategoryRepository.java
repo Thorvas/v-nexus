@@ -1,6 +1,5 @@
 package com.example.demo.Category;
 
-import com.example.demo.Category.Category;
 import com.example.demo.Project.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

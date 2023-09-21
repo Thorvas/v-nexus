@@ -60,6 +60,16 @@ public class JwtService {
                 .compact();
     }
 
+    public String generateToken(
+            String username
+    ) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)))
+                .signWith(SignatureAlgorithm.HS256, getSignKey())
+                .compact();
+    }
+
     /**
      * Checks whether provided token is valid
      *

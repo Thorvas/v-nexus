@@ -27,16 +27,7 @@ public class VolunteerService {
     private VolunteerRepository repository;
 
     @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private VolunteerMapper volunteerMapper;
-
-    @Autowired
-    private ProjectMapper projectMapper;
+    VolunteerServiceFacade volunteerServiceFacade;
 
     /**
      * Returns currently logged volunteer
@@ -62,11 +53,11 @@ public class VolunteerService {
 
         Volunteer volunteer = this.findVolunteer(volunteerId);
 
-        if (this.isMatchingVolunteer(this.getLoggedVolunteer(), volunteer) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
+        if (this.isMatchingVolunteer(this.getLoggedVolunteer(), volunteer) || volunteerServiceFacade.checkIfAdmin(this.getLoggedVolunteer())) {
 
             volunteer.setInterests(interests);
 
-            return volunteerMapper.mapVolunteerToDTO(volunteer);
+            return volunteerServiceFacade.mapVolunteerToDTO(volunteer);
         }
 
         throw new InsufficientPermissionsException("You are not permitted to modify this volunteer's interests");
@@ -84,7 +75,7 @@ public class VolunteerService {
 
         if (!foundVolunteers.isEmpty()) {
             return foundVolunteers.stream()
-                    .map(volunteerMapper::mapVolunteerToDTO)
+                    .map(volunteerServiceFacade::mapVolunteerToDTO)
                     .collect(Collectors.toList());
         }
 
@@ -114,7 +105,7 @@ public class VolunteerService {
      */
     public VolunteerDTO searchVolunteer(Long id) {
 
-        return volunteerMapper.mapVolunteerToDTO(this.findVolunteer(id));
+        return volunteerServiceFacade.mapVolunteerToDTO(this.findVolunteer(id));
     }
 
     /**
@@ -130,7 +121,7 @@ public class VolunteerService {
         if (!volunteer.getParticipatingProjects().isEmpty()) {
 
             return volunteer.getParticipatingProjects().stream()
-                    .map(projectMapper::mapProjectToDTO)
+                    .map(volunteerServiceFacade::mapProjectToDTO)
                     .collect(Collectors.toList());
         }
 
@@ -149,7 +140,7 @@ public class VolunteerService {
         if (!volunteer.getOwnedProjects().isEmpty()) {
 
             return volunteer.getOwnedProjects().stream()
-                    .map(projectMapper::mapProjectToDTO)
+                    .map(volunteerServiceFacade::mapProjectToDTO)
                     .collect(Collectors.toList());
         }
         throw new CollectionEmptyException("Volunteer does not own any projects");
@@ -177,9 +168,9 @@ public class VolunteerService {
 
         Volunteer volunteer = this.findVolunteer(volunteerId);
 
-        if (this.isMatchingVolunteer(this.getLoggedVolunteer(), volunteer) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
+        if (this.isMatchingVolunteer(this.getLoggedVolunteer(), volunteer) || volunteerServiceFacade.checkIfAdmin(this.getLoggedVolunteer())) {
 
-            VolunteerDTO volunteerDTO = volunteerMapper.mapVolunteerToDTO(volunteer);
+            VolunteerDTO volunteerDTO = volunteerServiceFacade.mapVolunteerToDTO(volunteer);
 
             repository.delete(volunteer);
 
@@ -201,13 +192,13 @@ public class VolunteerService {
         Volunteer sourceVolunteer = this.findVolunteer(volunteerId);
         volunteerDTO.setId(volunteerId);
 
-        if (this.isMatchingVolunteer(sourceVolunteer, this.getLoggedVolunteer()) || authenticationService.checkIfAdmin(this.getLoggedVolunteer())) {
+        if (this.isMatchingVolunteer(sourceVolunteer, this.getLoggedVolunteer()) || volunteerServiceFacade.checkIfAdmin(this.getLoggedVolunteer())) {
 
-            modelMapper.map(volunteerDTO, sourceVolunteer);
+            volunteerServiceFacade.mapDTOToVolunteer(volunteerDTO, sourceVolunteer);
 
             repository.save(sourceVolunteer);
 
-            return volunteerMapper.mapVolunteerToDTO(sourceVolunteer);
+            return volunteerServiceFacade.mapVolunteerToDTO(sourceVolunteer);
         }
 
         throw new InsufficientPermissionsException("You are not permitted to update this volunteer's data");
